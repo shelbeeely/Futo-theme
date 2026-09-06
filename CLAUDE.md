@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v14**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v15**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -165,6 +165,31 @@ is sparsely documented anywhere else.
   correctly across the whole palette instead of one flat number tuned for
   one color.
 
+- **v15 (single-surface brushed keycaps + tight edge-light, checked with
+  `preview-theme`, not yet on a real device):** the user said v14 "doesn't
+  look like a mechanical keyboard," then shared a close-up photo of a real
+  one that showed exactly why — three misses, worst first: (1) v14's glow
+  filled ~45-95% of the dish on *every* key; the reference shows a small,
+  tight, bright point of light at the bottom edge, and only on a handful
+  of keys (most are plain dark at rest). (2) v14 kept the v10-era outer-
+  ring/inset-dish/crisp-highlight-line structure; the reference has one
+  continuous surface with a soft top-lit sheen, no visible split at all.
+  (3) v14's `gap = 1.5` was much wider than the reference's thin seams.
+  Fixed all three in `scripts/generate_assets.py`: `render_key` now
+  renders one gradient+texture surface (no separate dish/highlight/shadow
+  objects), `draw_edge_light` replaces `draw_bottom_glow` with a small
+  ellipse tightly clipped to the bottom edge (`glow_color=None` on most
+  keys skips it entirely), and `gap` dropped to `1.15` in `theme.txt`.
+  Row-banding and the gold "system key" tint are now genuinely subtle
+  (`tint_amount` ~0.05-0.10, down from ~0.14-0.30) to match the
+  reference — this trades away a usability cue the theme used to have
+  (spotting shift/backspace/enter by color), flagged as an open question
+  for the user rather than decided unilaterally a third time. Two AI
+  guesses in a row (the reference mockup, then this) had both missed
+  before the user gave a real close-up photo — when visual feedback says
+  "still not it" twice, ask for a reference or specifics rather than
+  guessing a third time blind.
+
 - **v14 (dark brushed-charcoal keycaps + underglow, checked with
   `preview-theme`, not yet on a real device):** replaces v12/v13's
   solid-color-ring look entirely. Prompted by a reference mockup the user
@@ -242,20 +267,23 @@ is sparsely documented anywhere else.
   `#bd361e`, clay `#b37545`, brown `#874725`, near-black `#422118`-derived —
   originally pulled from a "Warm-toned Groovy 70's" palette image the user
   uploaded.
-- **Row-banded letter keys:** top row = orange-red glow, home row = orange
-  glow, bottom row = brightened rust glow (lightened from the raw palette
-  rust to clear 3:1 contrast against the key face) — mirrors the source
-  palette's stacked swatch order.
-- **Gold glow** = "system key" signal (shift, backspace, 123, gear, comma/period).
-- **Dramatic, oversized gold glow** (`stickyon` asset) = caps-lock engaged —
-  as of v14 this has a real dish like every other key, not a flat fill;
-  see the v14 changelog entry above for why that changed.
-- **Bigger, brighter orange glow** = the enter/action key.
-- **Keycap silhouette:** outer body + inset concave dish + shadow + rim
-  highlight, not a flat blob — mimics a real physical keycap viewed head-on.
-  As of v14, both body and dish are dark brushed charcoal (not a solid
-  role color) with the role color expressed as a glow pooling at the
-  dish's base instead — see the v14 changelog entry above.
+- **Row-banded letter keys:** top row = orange-red tint, home row = orange
+  tint, bottom row = brightened rust tint — mirrors the source palette's
+  stacked swatch order. As of v15 this is a *very subtle* tint, not a
+  visible glow — see the v15 changelog entry above, and "Open items"
+  below (this traded away a usability cue, flagged for the user).
+- **Gold tint** = "system key" signal (shift, backspace, 123, gear,
+  comma/period) — also toned down to near-imperceptible as of v15.
+- **Dramatic gold point of light** (`stickyon` asset) = caps-lock engaged
+  — much bigger/brighter than any other key's accent, deliberately, so
+  the locked state is unmistakable at a glance.
+- **A small, tight point of orange light at the base** = the enter/action
+  key — the only other key with a visible glow at rest, per v15.
+- **Keycap silhouette, v15:** one continuous brushed-charcoal surface per
+  key with a subtle top-lit sheen — no separate outer-ring/inset-dish
+  regions, no crisp highlight line. Replaced the v10-v14 "outer body +
+  inset dish + rim highlight + contact shadow" structure entirely; see
+  the v15 changelog entry above for why.
 
 ## Build workflow
 
@@ -296,30 +324,36 @@ without (c) eventually happening.
 
 ## Open items / not yet done
 
+- **Row-banding and the gold system-key tint are now nearly imperceptible
+  by color alone (v15)** — a deliberate trade to match the reference
+  photo (which shows no color-coding on those keys either), but it gives
+  up a usability cue the theme used to have. Ask the user whether they
+  want a faint version of that cue restored (bump `tint_amount` for
+  `function`/row keys in `scripts/generate_assets.py`) rather than
+  deciding unilaterally — this is a real trade-off, not a bug.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, zwnj, previous_key, etc.) — only added the ones with a clear
   coding-relevant use case (tab, cursor arrows, globe, mic).
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
-  Not restyled for the v14 look either (still the old gold-ring style) for
-  the same reason — low priority since it's only visible on long-press.
-- v11 through v14 have all been checked with the `preview-theme` skill's
-  real render (v13's caught the dish-squeeze bug; v14 was confirmed on
-  QWERTY, Symbols, and Numpad) but **none of them have been
-  screenshotted/confirmed on a real device yet** — that's the immediate
-  next step. This repo's own history (dish contrast, icon regression, the
-  v13 dish-squeeze) is exactly why a real-code render or a real device
-  catches things static analysis can't — but real screen color/gamma and
-  actual touch/pressed-state interaction still need an actual device.
+  Not restyled for the v15 look either (still the old gold-ring style from
+  v11) for the same reason — low priority since it's only visible on
+  long-press.
+- v11 through v15 have all been checked with the `preview-theme` skill's
+  real render (v13's caught the dish-squeeze bug; v15's fixed the "doesn't
+  look mechanical" feedback) but **none of them have been screenshotted/
+  confirmed on a real device yet** — that's the immediate next step. This
+  repo's own history (dish contrast, icon regression, the v13 dish-squeeze,
+  v14's overall miss) is exactly why a real-code render or a real device
+  catches things static analysis can't.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v14. A first attempt at a brushed-plate
+  dark texture, untouched through v15. A first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
-  abandoned when the v14 mockup redirected effort to the keycaps instead.
-  Revisit only if the plain background still looks flat against the new
-  glowing keycaps once seen on a real device — the keycap redesign alone
-  may already be enough.
+  abandoned when effort redirected to the keycaps instead. Revisit only if
+  the plain background still looks flat against the now much more
+  realistic keycaps once seen on a real device.
 - `scripts/generate_assets.py`'s per-row gamma values (`0.72`/`1.0`/`1.35`
-  for row0/row1/row2) and the `gap = 1.5` value are first guesses, not
+  for row0/row1/row2) and the `gap = 1.15` value are first guesses, not
   device-measured — adjust them in the script (not by hand-editing the
   PNGs) if a real screenshot shows the effect is too subtle or too strong.

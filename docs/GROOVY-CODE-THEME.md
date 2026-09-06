@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v14**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v15**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -13,26 +13,33 @@ choices specific to this theme.
   `#bd361e`, clay `#b37545`, brown `#874725`, near-black `#422118`-derived —
   pulled from a "Warm-toned Groovy 70's" reference palette image. As of v14
   this is the *only* source of color anywhere in the rendering — see below.
-- **Row-banded letter keys:** top row = orange-red glow, home row = orange
-  glow, bottom row = brightened rust glow (lightened from the raw palette
-  rust to clear 3:1 contrast against the key face) — mirrors the source
-  palette's stacked swatch order. Implemented with `normal row 0`/
-  `row 1`/`row 2` matchrules (see `theme.txt`); the row-banding shows up
-  automatically on every layout that has 3+ letter/symbol rows (confirmed
-  via `preview-theme` on the `?123` Symbols and Numpad layouts too, not
-  just QWERTY — nothing layout-specific was needed).
-- **Gold glow** = "system key" signal (shift, backspace, 123, gear,
-  comma/period) — i.e. the `functional` matchrules.
-- **Dramatic gold glow** (`stickyon` asset) = caps-lock engaged — much
-  bigger/brighter than any other key's glow, deliberately, so the locked
-  state is unmistakable at a glance. Confirmed as the real caps-lock-locked
-  visual state, not just an icon change — see `docs/THEME-FORMAT.md`'s
-  `stickyon` entry.
-- **Bigger, brighter orange glow** = the `action` (enter) key.
-- **Keycap silhouette:** outer body + inset concave dish + shadow + rim
-  highlight, not a flat blob — mimics a real physical keycap viewed head-on.
-  As of v12 this is explicitly styled toward a mechanical-keyboard look
-  (see below), following `docs/MECHANICAL-KEYBOARD-GUIDE.md`.
+- **Row-banded letter keys:** top row = orange-red, home row = orange,
+  bottom row = brightened rust — mirrors the source palette's stacked
+  swatch order, implemented with `normal row 0`/`row 1`/`row 2` matchrules
+  (see `theme.txt`). As of v15 this is a *very subtle* tint (barely
+  perceptible at a glance, no visible glow) rather than a loud color
+  signal — see the v15 entry below for why. Confirmed via `preview-theme`
+  on the `?123` Symbols and Numpad layouts too, not just QWERTY — nothing
+  layout-specific was needed.
+- **Gold tint** = "system key" signal (shift, backspace, 123, gear,
+  comma/period) — i.e. the `functional` matchrules. As of v15 this is also
+  toned down to near-imperceptible, matching the row-banding above; the
+  reference photo that motivated v15 doesn't show any color-coding on
+  these keys either, only icon-vs-letter. Flagged as an open question in
+  "Open items" below — the user may want a faint version of this cue back.
+- **Dramatic gold point of light** (`stickyon` asset) = caps-lock engaged
+  — much bigger/brighter than any other key's accent, deliberately, so the
+  locked state is unmistakable at a glance. Confirmed as the real
+  caps-lock-locked visual state, not just an icon change — see
+  `docs/THEME-FORMAT.md`'s `stickyon` entry.
+- **A small, tight point of orange light at the base** = the `action`
+  (enter) key — the *only* other key with a visible glow at rest, per v15
+  (see below).
+- **Keycap silhouette, v15:** one continuous brushed-charcoal surface per
+  key with a subtle top-lit sheen (lighter near the top, darker toward the
+  bottom) — no separate outer-ring/inset-dish regions, no crisp highlight
+  line. This replaced the v10–v14 "outer body + inset dish + rim highlight
+  + contact shadow" structure entirely; see the v15 entry below for why.
 - **v12 mechanical-keyboard pass:** `gap` raised from `1` to `1.5` on every
   border asset (uniformly, so spacing stays even) to expose more
   background between keys — the single highest-leverage move in the
@@ -67,6 +74,27 @@ choices specific to this theme.
   See `scripts/generate_assets.py` for the full technique
   (`make_brushed_texture`, `draw_bottom_glow`).
 
+- **v15 redesign — the user said v14 "doesn't look like a mechanical
+  keyboard," and a close-up photo of a real one they shared showed exactly
+  why.** Three misses, in order of how much they mattered: (1) v14's glow
+  filled roughly half the dish on *every single key* — the reference shows
+  color as a small, tight, bright point of light right at the bottom edge,
+  and only on a handful of keys (the number row, one demo key); most keys
+  have no glow at all at rest. (2) v14 kept the v10-era "outer ring +
+  inset dish + crisp highlight line" structure — the reference has no
+  such split at all, just one continuous surface with a soft top-lit
+  sheen. (3) v14's `gap = 1.5` was much wider than the thin seams in the
+  reference. Fixed all three: `render_key` in `scripts/generate_assets.py`
+  now renders a single gradient+texture surface with no dish/highlight
+  objects, `draw_edge_light` replaces `draw_bottom_glow` with a small
+  ellipse clipped tightly to the bottom edge (most keys pass
+  `glow_color=None` and get no light at all), and `gap` dropped to `1.15`
+  in `theme.txt`. Row-banding and the gold "system key" tint are now
+  genuinely subtle (`tint_amount` down from ~0.14-0.30 to ~0.05-0.10) —
+  intentional, to match the reference, but flagged in "Open items" below
+  since it trades away a usability cue the theme used to have. As
+  before, confirmed via `preview-theme`, not a real device yet.
+
 ## Build workflow
 
 Assets are generated with Python + Pillow (PIL) + numpy, not hand-authored,
@@ -76,7 +104,7 @@ via `scripts/generate_assets.py` (`pip install pillow numpy`) — run
 constants live at the top of the script; the geometry constants
 (radius/outline/canvas size) must match `theme.txt`'s `slicing` values (see
 `docs/THEME-FORMAT.md`'s "Computing slicing values") if you change them.
-numpy is used for the brushed-texture generation and the vertical dish
+numpy is used for the brushed-texture generation and the vertical surface
 gradient — both are whole-array operations, not per-pixel Python loops
 (the earlier pure-Pillow attempt at a textured background had a bug that
 silently produced zero variance; vectorize this kind of thing). It
@@ -161,6 +189,16 @@ eventually happening.**
 
 ## Open items / not yet done
 
+- **Row-banding and the gold system-key tint are now nearly imperceptible
+  by color alone (v15)** — this was a deliberate trade to match the
+  reference photo, which shows no color-coding on those keys either
+  (letter vs. icon is the only differentiator there). This gives up a
+  usability cue the theme used to have (spot the shift/backspace/enter
+  keys by color at a glance). Ask the user whether they want a faint
+  version of that cue restored (bump `tint_amount` a bit for `function`/
+  row keys in `scripts/generate_assets.py`) or whether matching the
+  reference exactly is preferred — don't guess further on this one, it's
+  a real trade-off, not a bug.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, previous_key, etc. — full list in
   `docs/THEME-FORMAT.md`) — only the ones with a clear coding-relevant use
@@ -168,18 +206,17 @@ eventually happening.**
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs
   these to always-false, so it can only be verified in the real Android
-  app. They also weren't restyled for the v14 look (still the old
-  gold-ring style) since they can't be previewed to check the result — low
-  priority, since they're only visible during a long-press.
-- v11 through v14 have all been checked with the `preview-theme` skill's
+  app. They also weren't restyled for the v15 look (still the old
+  gold-ring style from v11) since they can't be previewed to check the
+  result — low priority, since they're only visible during a long-press.
+- v11 through v15 have all been checked with the `preview-theme` skill's
   real render but **none of them have been screenshotted/confirmed on a
   real device yet** — that's the immediate next verification step. Real
   screen color/gamma and actual touch/pressed-state interaction still
   can't be checked any other way.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v14 — a first attempt at a brushed-plate
+  dark texture, untouched through v15 — a first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
   abandoned when the v14 mockup redirected effort toward the keycaps
-  themselves instead. With the underglow keycaps now looking strong on
-  their own, revisit this only if the plain background still looks flat
-  next to them once seen on a real device — it may not be needed.
+  instead. Revisit only if the plain background still looks flat next to
+  the now much-more-realistic keycaps once seen on a real device.
