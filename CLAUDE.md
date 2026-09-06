@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v13**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v14**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -165,6 +165,32 @@ is sparsely documented anywhere else.
   correctly across the whole palette instead of one flat number tuned for
   one color.
 
+- **v14 (dark brushed-charcoal keycaps + underglow, checked with
+  `preview-theme`, not yet on a real device):** replaces v12/v13's
+  solid-color-ring look entirely. Prompted by a reference mockup the user
+  shared — a gaming-style keyboard with charcoal keycaps, visible
+  brushed-metal texture, color expressed as a glow bleeding from under
+  each key rather than a solid border, and one key shown dramatically lit.
+  **Every glow/tint color used is still one of Groovy Code's own 7-color
+  palette** (confirmed against the user's own palette reference image,
+  hex-for-hex) — only the *technique* came from the mockup, not any of its
+  colors. Concretely: every key is now a dark charcoal body+dish (both
+  textured with directional "brushed metal" noise) with a small per-role
+  tint blended in, plus a soft colored glow pooling in the bottom ~45% of
+  the dish (role color: gold=system, orange-red/orange/rust=row bands,
+  bigger/brighter orange=action). `stickyon` no longer gets the old
+  "deliberately flat, no dish" treatment — it now has a real dish like
+  every other key, just with a much bigger, much brighter gold glow (glow
+  height ~95-100% of the dish, alpha ~225-245) so the locked state reads as
+  unmistakably "lit up," directly matching the mockup's one dramatically-lit
+  key. Confirmed via `preview-theme` on QWERTY, the `?123` Symbols layout,
+  and Numpad — row-banding and the glow read correctly on all three without
+  any layout-specific work. Rewrote the brushed-texture generation with
+  numpy (`make_brushed_texture` in `scripts/generate_assets.py`) after a
+  pure-Pillow, per-pixel-Python-loop first attempt at a textured background
+  had a silent near-zero-variance bug — vectorize pixel-level image ops,
+  don't hand-loop them.
+
 - **v13 (dish-squeeze fix, checked with `preview-theme`, not yet on a real
   device):** v12's dish looked correct on every asset PNG viewed in
   isolation but rendered as a thin vertical sliver once actually imported
@@ -216,21 +242,26 @@ is sparsely documented anywhere else.
   `#bd361e`, clay `#b37545`, brown `#874725`, near-black `#422118`-derived —
   originally pulled from a "Warm-toned Groovy 70's" palette image the user
   uploaded.
-- **Row-banded letter keys:** top row = orange-red border, home row = orange,
-  bottom row = brightened rust (lightened from the raw palette rust to clear
-  3:1 contrast against the key face) — mirrors the source palette's stacked
-  swatch order.
-- **Gold border** = "system key" signal (shift, backspace, 123, gear, comma/period).
-- **Solid gold fill** (`stickyon` asset) = caps-lock engaged.
-- **Orange fill** = the enter/action key.
+- **Row-banded letter keys:** top row = orange-red glow, home row = orange
+  glow, bottom row = brightened rust glow (lightened from the raw palette
+  rust to clear 3:1 contrast against the key face) — mirrors the source
+  palette's stacked swatch order.
+- **Gold glow** = "system key" signal (shift, backspace, 123, gear, comma/period).
+- **Dramatic, oversized gold glow** (`stickyon` asset) = caps-lock engaged —
+  as of v14 this has a real dish like every other key, not a flat fill;
+  see the v14 changelog entry above for why that changed.
+- **Bigger, brighter orange glow** = the enter/action key.
 - **Keycap silhouette:** outer body + inset concave dish + shadow + rim
   highlight, not a flat blob — mimics a real physical keycap viewed head-on.
+  As of v14, both body and dish are dark brushed charcoal (not a solid
+  role color) with the role color expressed as a glow pooling at the
+  dish's base instead — see the v14 changelog entry above.
 
 ## Build workflow
 
-Assets are generated with Python + Pillow (PIL), not hand-authored, via
-`scripts/generate_assets.py` (run `python3 scripts/generate_assets.py` from
-the repo root — it writes the `Button-*.png` files in place). It covers all
+Assets are generated with Python + Pillow (PIL) + numpy, not hand-authored,
+via `scripts/generate_assets.py` (run `python3 scripts/generate_assets.py`
+from the repo root — it writes the `Button-*.png` files in place). It covers all
 16 non-icon border assets: `default`, `function`, `row0`/`row1`/`row2`,
 `action`, `space`, `stickyon`, each with a `-press`/`-pressed` pair.
 Palette/geometry constants live at the top of the script — see its
@@ -265,29 +296,29 @@ without (c) eventually happening.
 
 ## Open items / not yet done
 
-- The `?123` symbol/number layout has no custom row-banding or borders —
-  untouched since we never had a screenshot of it to design against.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, zwnj, previous_key, etc.) — only added the ones with a clear
   coding-relevant use case (tab, cursor arrows, globe, mic).
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
-- v11/v12/v13 have all been checked with the `preview-theme` skill's real
-  render (v13 specifically is what caught the dish-squeeze bug) but
-  **none of them have been screenshotted/confirmed on a real device yet**
-  — that's the immediate next step. This repo's own history (dish
-  contrast, icon regression, the v13 dish-squeeze) is exactly why a
-  real-code render or a real device catches things static analysis can't
-  — but real screen color/gamma and actual touch interaction still need an
-  actual device.
-- The background (`GroovyCode-background.png`) was deliberately left
-  untouched through v13 — the mechanical guide's "visible plate between
-  keys" idea (`docs/MECHANICAL-KEYBOARD-GUIDE.md`, point 1) calls for a
-  plate/PCB-textured background instead of the current soft dark sparkle
-  texture, but that's a bigger change than the keycap rendering and was
-  scoped out to keep each pass reviewable. Good next step, and cheap to
-  check with `preview-theme` before ever needing a device.
+  Not restyled for the v14 look either (still the old gold-ring style) for
+  the same reason — low priority since it's only visible on long-press.
+- v11 through v14 have all been checked with the `preview-theme` skill's
+  real render (v13's caught the dish-squeeze bug; v14 was confirmed on
+  QWERTY, Symbols, and Numpad) but **none of them have been
+  screenshotted/confirmed on a real device yet** — that's the immediate
+  next step. This repo's own history (dish contrast, icon regression, the
+  v13 dish-squeeze) is exactly why a real-code render or a real device
+  catches things static analysis can't — but real screen color/gamma and
+  actual touch/pressed-state interaction still need an actual device.
+- The background (`GroovyCode-background.png`) is still the original plain
+  dark texture, untouched through v14. A first attempt at a brushed-plate
+  background (pure Pillow, no numpy) had a near-zero-variance bug and was
+  abandoned when the v14 mockup redirected effort to the keycaps instead.
+  Revisit only if the plain background still looks flat against the new
+  glowing keycaps once seen on a real device — the keycap redesign alone
+  may already be enough.
 - `scripts/generate_assets.py`'s per-row gamma values (`0.72`/`1.0`/`1.35`
   for row0/row1/row2) and the `gap = 1.5` value are first guesses, not
   device-measured — adjust them in the script (not by hand-editing the

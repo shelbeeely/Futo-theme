@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 13
-description = "Warm-toned 70's-inspired dark theme styled as a mechanical keyboard: separated floating keycaps with a properly-proportioned sculpted dish (not squeezed thin), a crisp top rim highlight and tight contact shadow per key, row-varying dish falloff, and spacebar stabilizer dimples, plus row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 14
+description = "Warm-toned 70's-inspired dark theme styled as a mechanical keyboard: individual brushed-charcoal keycaps with a colored glow pooling under each key (gold for system keys, orange-red/orange/rust for the letter rows, brighter orange for enter, a dramatic gold glow for caps-lock), a properly-proportioned sculpted dish, crisp rim highlight and contact shadow, row-varying dish falloff, and spacebar stabilizer dimples — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true

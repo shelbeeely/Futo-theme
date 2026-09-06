@@ -1,10 +1,22 @@
 #!/usr/bin/env python3
-"""Generate Groovy Code's Button-*.png keycap assets (Pillow).
+"""Generate Groovy Code's Button-*.png keycap assets (Pillow + numpy).
 
-Renders a mechanical-keycap silhouette per key: an outer colored "sidewall"
-ring (the row/role border color) plus an inset "dish" with a top-to-bottom
-brightness falloff, a crisp rim highlight along the dish's top edge, and a
-tight contact shadow along its bottom edge. Same approach documented in
+v14: dark brushed-metal keycaps with a colored underglow, replacing the
+v12/v13 solid-color-ring approach. Reference: a mockup the user shared of a
+gaming-style keyboard -- charcoal keycaps with visible brushed texture,
+color expressed as a soft glow bleeding from under each key rather than a
+solid colored border, and one key shown dramatically lit (mapped onto our
+`stickyon`/caps-lock state). Per the user's standing instruction, every
+color used is still drawn from Groovy Code's own 7-color palette (the
+"Warm-toned Groovy 70's" set, see docs/GROOVY-CODE-THEME.md) -- no colors
+were borrowed from that reference image.
+
+Per key: an outer body and inset "dish", both dark charcoal with a subtle
+per-role tint and brushed-metal texture, a crisp rim highlight along the
+dish's top edge, a tight contact shadow along its bottom edge, and a
+soft colored glow pooling in the bottom portion of the dish (the role's
+accent color -- gold=system, orange-red/orange/rust=row bands, orange=
+action, brighter gold=stickyon). Documented in
 docs/MECHANICAL-KEYBOARD-GUIDE.md and docs/GROOVY-CODE-THEME.md.
 
 Geometry (radius/outline/canvas size) is fixed to match the `slicing`
@@ -19,6 +31,7 @@ clobbered hand-picked icon art. Keeping icons entirely outside this
 script's reach makes that class of bug impossible, not just avoided.
 """
 
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter
 
 # ---------------------------------------------------------------------------
@@ -32,17 +45,22 @@ SPACE_RADIUS = 30
 OUTLINE = 3  # ring thickness; inset = radius + outline
 
 # ---------------------------------------------------------------------------
-# Palette (from theme.txt [colors] / docs/GROOVY-CODE-THEME.md design system)
+# Palette -- Groovy Code's own 7-color "Warm-toned Groovy 70's" set
+# (theme.txt [colors] / docs/GROOVY-CODE-THEME.md). Every glow/tint below
+# is one of these seven; nothing outside this palette is used.
 # ---------------------------------------------------------------------------
 
-GOLD = (225, 157, 37)
-ORANGE = (225, 122, 37)
-ORANGE_RED = (225, 78, 37)
-RUST_BRIGHT = (200, 90, 58)  # brightened rust, not raw palette rust
-CLAY = (179, 117, 69)
+GOLD = (225, 157, 37)  # #e19d25
+ORANGE = (225, 122, 37)  # #e17a25
+ORANGE_RED = (225, 78, 37)  # #e14e25
+RUST_BRIGHT = (200, 90, 58)  # brightened #bd361e, see docs/GROOVY-CODE-THEME.md
+CLAY = (179, 117, 69)  # #b37545
+BROWN = (135, 71, 37)  # #874725
+NEAR_BLACK = (66, 33, 24)  # #422118
 
-# Fixed dark "keycap body" anchors for ring-style keys (default/functional/
-# row-banded) -- the dish darkens toward black regardless of ring color.
+# Dark charcoal keycap body, derived from the palette's own near-black
+# (#422118) rather than a neutral gray, so the "dark" keys still read as
+# part of this palette, not a generic gunmetal.
 DARK_TOP = (46, 26, 17)
 DARK_BOTTOM = (16, 8, 5)
 DARK_TOP_PRESSED = (100, 54, 28)
@@ -50,8 +68,6 @@ DARK_BOTTOM_PRESSED = (64, 34, 17)
 
 HIGHLIGHT = (245, 232, 208)  # crisp rim-highlight color (near on_background)
 SHADOW = (0, 0, 0)
-
-STICKYON_FILL = tuple(round(c * 0.53) for c in GOLD)
 
 
 def lerp(a, b, t):
@@ -79,17 +95,81 @@ def dish_gradient(size, top_color, bottom_color, gamma):
     used for top-row keys), gamma > 1 biases the falloff earlier/gentler
     (used for bottom-row keys) -- the row-profile cue from the mechanical
     guide, done as a brightness curve rather than moved geometry so 9-patch
-    scaling stays safe."""
+    scaling stays safe. Vectorized with numpy -- no per-pixel Python loop."""
     w, h = size
-    grad = Image.new("RGB", size)
-    px = grad.load()
-    for y in range(h):
-        t = y / max(h - 1, 1)
-        t = t ** gamma
-        col = lerp(top_color, bottom_color, t)
-        for x in range(w):
-            px[x, y] = col
-    return grad
+    t = (np.arange(h, dtype=np.float32) / max(h - 1, 1)) ** gamma
+    top = np.array(top_color, dtype=np.float32)
+    bottom = np.array(bottom_color, dtype=np.float32)
+    rows = top[None, :] + (bottom - top)[None, :] * t[:, None]  # (h, 3)
+    arr = np.repeat(rows[:, None, :], w, axis=1)  # (h, w, 3)
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), mode="RGB")
+
+
+# ---------------------------------------------------------------------------
+# Brushed-metal texture: directional (streaky) noise + fine grain, built
+# with numpy for speed and correctness (a pure-Python per-pixel version of
+# this was tried first and had a silent near-zero-variance bug -- vectorize
+# this kind of thing, don't hand-loop it).
+# ---------------------------------------------------------------------------
+
+
+def _box_blur_1d(arr, axis, k):
+    """Fast box blur along one axis via an integral image (cumulative sum) --
+    O(n) instead of O(n*k), and avoids reimplementing a slower manual
+    convolution."""
+    if k <= 0:
+        return arr
+    pad_width = [(0, 0), (0, 0)]
+    pad_width[axis] = (k, k)
+    a = np.pad(arr, pad_width, mode="edge")
+    c = np.cumsum(a, axis=axis)
+    zero_pad = [(0, 0), (0, 0)]
+    zero_pad[axis] = (1, 0)
+    c = np.pad(c, zero_pad, mode="constant")
+    n = arr.shape[axis]
+    idx_hi = [slice(None), slice(None)]
+    idx_lo = [slice(None), slice(None)]
+    idx_hi[axis] = slice(2 * k + 1, 2 * k + 1 + n)
+    idx_lo[axis] = slice(0, n)
+    window_sum = c[tuple(idx_hi)] - c[tuple(idx_lo)]
+    return window_sum / (2 * k + 1)
+
+
+def make_brushed_texture(w, h, seed, angle_deg=15):
+    """Returns an (h, w) float array of brightness-multiplier deviations,
+    roughly in [-2, 2], mixing a heavily-horizontal-blurred "streak" noise
+    (the brushed-metal grain direction) with a light fine-grain noise, then
+    rotated a few degrees off-axis so the brush direction isn't perfectly
+    aligned with the key edges."""
+    rng = np.random.default_rng(seed)
+    pad = int(max(w, h) * 0.6)
+    W, H = w + 2 * pad, h + 2 * pad
+
+    noise = rng.normal(0, 1, size=(H, W)).astype(np.float32)
+    streak = _box_blur_1d(noise, axis=1, k=40)
+    streak = _box_blur_1d(streak, axis=0, k=2)
+    streak = (streak - streak.mean()) / (streak.std() + 1e-6)
+
+    grain = rng.normal(0, 1, size=(H, W)).astype(np.float32)
+    grain = _box_blur_1d(grain, axis=1, k=1)
+    grain = (grain - grain.mean()) / (grain.std() + 1e-6)
+
+    combined = streak * 0.6 + grain * 0.4
+    img = Image.fromarray(np.clip(combined * 40 + 128, 0, 255).astype(np.uint8), mode="L")
+    img = img.rotate(angle_deg, resample=Image.BICUBIC, expand=False)
+    left = (W - w) // 2
+    top = (H - h) // 2
+    img = img.crop((left, top, left + w, top + h))
+    return (np.asarray(img, dtype=np.float32) - 128) / 40.0
+
+
+def apply_texture(img, texture, strength=0.05):
+    """Multiplicative brightness shading -- a whole-image numpy op, not a
+    per-pixel Python loop."""
+    arr = np.asarray(img, dtype=np.float32)
+    factor = 1.0 + np.clip(texture, -2, 2) * strength
+    arr = arr * factor[..., None]
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), mode="RGB")
 
 
 def draw_rim_and_shadow(base, inset_box, radius):
@@ -97,7 +177,6 @@ def draw_rim_and_shadow(base, inset_box, radius):
     along its bottom edge -- harder-edged than a soft ambient glow, per
     docs/MECHANICAL-KEYBOARD-GUIDE.md's PBT/ABS bevel note."""
     x0, y0, x1, y1 = inset_box
-    draw = ImageDraw.Draw(base, "RGBA")
     inner_margin = max(radius // 2, 6)
 
     highlight_layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
@@ -119,7 +198,25 @@ def draw_rim_and_shadow(base, inset_box, radius):
     )
     shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(1.2))
     base.alpha_composite(shadow_layer)
-    del draw
+
+
+def draw_bottom_glow(base, inset_box, color, alpha=130, blur=9, height_frac=0.45):
+    """Soft colored glow pooling in the bottom portion of the dish -- the
+    "light bleeding from under the keycap" cue from the reference mockup,
+    approximated within one key's own art since assets can't bleed light
+    onto neighboring keys or the shared background layer."""
+    x0, y0, x1, y1 = inset_box
+    h = y1 - y0
+    layer = Image.new("RGBA", base.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    glow_top = y1 - h * height_frac
+    d.rounded_rectangle(
+        [x0 + 4, glow_top, x1 - 4, y1 - 4],
+        radius=max((x1 - x0) // 6, 6),
+        fill=color + (alpha,),
+    )
+    layer = layer.filter(ImageFilter.GaussianBlur(blur))
+    base.alpha_composite(layer)
 
 
 def draw_stabilizer_dimples(base, inset_box):
@@ -142,28 +239,31 @@ def draw_stabilizer_dimples(base, inset_box):
 def render_key(
     size,
     radius,
-    ring_color,
-    dish_top,
-    dish_bottom,
+    tint,
     gamma,
-    filled=False,
-    flat_fill=None,
+    seed,
+    glow_color=None,
+    glow_alpha=130,
+    glow_height=0.45,
+    glow_blur=9,
+    tint_amount=0.14,
     stabilizers=False,
+    dish_dark_top=DARK_TOP,
+    dish_dark_bottom=DARK_BOTTOM,
 ):
-    """filled=True -> ring color and dish share one hue family (action key).
-    flat_fill -> stickyon: a single flat color, no dish/gradient/rim/shadow.
-    """
+    """Dark brushed-charcoal keycap: outer body + inset dish, both tinted a
+    little toward `tint` (the role's accent hue) and textured, with a
+    colored glow pooling at the bottom of the dish. `glow_color=None` skips
+    the glow entirely (not currently used, kept for a future fully-neutral
+    key if wanted)."""
     w, h = size
     canvas = Image.new("RGBA", size, (0, 0, 0, 0))
 
     outer_mask = rounded_mask(size, radius)
-    if flat_fill is not None:
-        # stickyon: bright gold ring, flat darker-olive fill, no dish/rim/
-        # shadow -- deliberately simple, see docstring below.
-        body = Image.new("RGB", size, ring_color)
-    else:
-        # subtle top-lit sidewall gradient on the ring itself
-        body = dish_gradient(size, blend_white(ring_color, 0.12), scale(ring_color, 0.85), 1.0)
+    body_top = lerp(dish_dark_top, tint, tint_amount * 1.3)
+    body_bottom = lerp(dish_dark_bottom, tint, tint_amount * 0.7)
+    body = dish_gradient(size, blend_white(body_top, 0.10), body_bottom, 1.0)
+    body = apply_texture(body, make_brushed_texture(w, h, seed))
     canvas.paste(body, (0, 0), outer_mask)
 
     inset = radius + OUTLINE
@@ -171,19 +271,18 @@ def render_key(
     inner_radius = max(radius - OUTLINE, 4)
     dish_size = (inset_box[2] - inset_box[0], inset_box[3] - inset_box[1])
 
-    if flat_fill is not None:
-        fill_mask = Image.new("L", size, 0)
-        fill_mask.paste(rounded_mask(dish_size, inner_radius), (inset_box[0], inset_box[1]))
-        fill_layer = Image.new("RGB", size, flat_fill)
-        canvas.paste(fill_layer, (0, 0), fill_mask)
-        return canvas
-
     dish_mask = Image.new("L", size, 0)
     dish_mask.paste(rounded_mask(dish_size, inner_radius), (inset_box[0], inset_box[1]))
-    grad = dish_gradient(dish_size, dish_top, dish_bottom, gamma)
+    grad = dish_gradient(dish_size, dish_dark_top, dish_dark_bottom, gamma)
+    grad = apply_texture(grad, make_brushed_texture(dish_size[0], dish_size[1], seed + 1))
     dish_layer = Image.new("RGB", size, (0, 0, 0))
     dish_layer.paste(grad, (inset_box[0], inset_box[1]))
     canvas.paste(dish_layer, (0, 0), dish_mask)
+
+    if glow_color is not None:
+        draw_bottom_glow(
+            canvas, inset_box, glow_color, alpha=glow_alpha, blur=glow_blur, height_frac=glow_height
+        )
 
     draw_rim_and_shadow(canvas, inset_box, radius)
     if stabilizers:
@@ -193,18 +292,19 @@ def render_key(
 
 
 # ---------------------------------------------------------------------------
-# Per-asset definitions: (filename, ring_color, dish_top, dish_bottom, gamma)
+# Per-asset definitions
 # gamma: <1 = top row (bright longer, steeper late falloff)
 #         1 = home row / default baseline
 #        >1 = bottom row (falls off earlier, gentler overall)
 # ---------------------------------------------------------------------------
 
 RING_KEYS = [
-    ("Button-default", CLAY, DARK_TOP, DARK_BOTTOM, 1.0),
-    ("Button-function", GOLD, DARK_TOP, DARK_BOTTOM, 1.0),
-    ("Button-row0", ORANGE_RED, DARK_TOP, DARK_BOTTOM, 0.72),
-    ("Button-row1", ORANGE, DARK_TOP, DARK_BOTTOM, 1.0),
-    ("Button-row2", RUST_BRIGHT, DARK_TOP, DARK_BOTTOM, 1.35),
+    # name, tint, gamma, seed, glow_color, glow_alpha
+    ("Button-default", CLAY, 1.0, 10, CLAY, 90),
+    ("Button-function", GOLD, 1.0, 20, GOLD, 120),
+    ("Button-row0", ORANGE_RED, 0.72, 30, ORANGE_RED, 130),
+    ("Button-row1", ORANGE, 1.0, 40, ORANGE, 130),
+    ("Button-row2", RUST_BRIGHT, 1.35, 50, RUST_BRIGHT, 130),
 ]
 
 PRESSED_SUFFIX = {
@@ -217,62 +317,73 @@ PRESSED_SUFFIX = {
 
 
 def main():
-    for name, ring, dtop, dbot, gamma in RING_KEYS:
-        normal = render_key(KEY_SIZE, KEY_RADIUS, ring, dtop, dbot, gamma)
+    for name, tint, gamma, seed, glow, glow_alpha in RING_KEYS:
+        normal = render_key(KEY_SIZE, KEY_RADIUS, tint, gamma, seed, glow_color=glow, glow_alpha=glow_alpha)
         normal.save(f"{name}.png")
 
-        pressed_ring = blend_white(ring, 0.3)
         pressed = render_key(
-            KEY_SIZE, KEY_RADIUS, pressed_ring, DARK_TOP_PRESSED, DARK_BOTTOM_PRESSED, gamma
+            KEY_SIZE,
+            KEY_RADIUS,
+            tint,
+            gamma,
+            seed + 100,
+            glow_color=glow,
+            glow_alpha=min(glow_alpha + 40, 220),
+            glow_height=0.55,
+            tint_amount=0.20,
+            dish_dark_top=DARK_TOP_PRESSED,
+            dish_dark_bottom=DARK_BOTTOM_PRESSED,
         )
         pressed.save(f"{name}{PRESSED_SUFFIX[name]}.png")
         print(f"wrote {name}.png / {name}{PRESSED_SUFFIX[name]}.png")
 
-    # Action (enter) key: filled with the orange hue family, home-row-like
-    # gamma, slightly wider top/bottom contrast for more pop on the primary
-    # accent key.
-    action_dish_top = scale(ORANGE, 0.70)
-    action_dish_bottom = scale(ORANGE, 0.40)
-    action = render_key(KEY_SIZE, KEY_RADIUS, ORANGE, action_dish_top, action_dish_bottom, 1.0)
+    # Action (enter) key: brighter, bigger orange glow than a normal key --
+    # still the "primary" cue, now expressed as light rather than solid fill.
+    action = render_key(
+        KEY_SIZE, KEY_RADIUS, ORANGE, 1.0, 60,
+        glow_color=ORANGE, glow_alpha=190, glow_height=0.75, glow_blur=11, tint_amount=0.22,
+    )
     action.save("Button-action.png")
 
-    action_press_ring = blend_white(ORANGE, 0.35)
-    action_press_top = blend_white(ORANGE, 0.15)
-    action_press_bottom = scale(ORANGE, 0.55)
     action_press = render_key(
-        KEY_SIZE, KEY_RADIUS, action_press_ring, action_press_top, action_press_bottom, 1.0
+        KEY_SIZE, KEY_RADIUS, ORANGE, 1.0, 160,
+        glow_color=ORANGE, glow_alpha=220, glow_height=0.85, glow_blur=11, tint_amount=0.28,
+        dish_dark_top=DARK_TOP_PRESSED, dish_dark_bottom=DARK_BOTTOM_PRESSED,
     )
     action_press.save("Button-action-press.png")
     print("wrote Button-action.png / Button-action-press.png")
 
-    # Spacebar: home-row-like gamma, plus stabilizer dimples.
+    # Spacebar: home-row-like gamma, subtle clay glow, plus stabilizer dimples.
     space = render_key(
-        SPACE_SIZE, SPACE_RADIUS, CLAY, DARK_TOP, DARK_BOTTOM, 1.0, stabilizers=True
+        SPACE_SIZE, SPACE_RADIUS, CLAY, 1.0, 70,
+        glow_color=CLAY, glow_alpha=90, stabilizers=True,
     )
     space.save("Button-space.png")
 
-    space_press_ring = blend_white(CLAY, 0.3)
     space_press = render_key(
-        SPACE_SIZE,
-        SPACE_RADIUS,
-        space_press_ring,
-        DARK_TOP_PRESSED,
-        DARK_BOTTOM_PRESSED,
-        1.0,
+        SPACE_SIZE, SPACE_RADIUS, CLAY, 1.0, 170,
+        glow_color=CLAY, glow_alpha=130, glow_height=0.55, tint_amount=0.20,
+        dish_dark_top=DARK_TOP_PRESSED, dish_dark_bottom=DARK_BOTTOM_PRESSED,
         stabilizers=True,
     )
     space_press.save("Button-space-press.png")
     print("wrote Button-space.png / Button-space-press.png")
 
-    # stickyon: deliberately flat, no dish -- see docs/GROOVY-CODE-THEME.md
-    # ("Solid gold fill = caps-lock engaged"), an unambiguous locked-state
-    # indicator, not a keycap dish.
-    stickyon = render_key(KEY_SIZE, KEY_RADIUS, GOLD, None, None, 1.0, flat_fill=STICKYON_FILL)
+    # stickyon (caps-lock engaged): the dramatically-lit key from the
+    # reference mockup -- same dark brushed keycap as everything else, but
+    # a big, bright gold glow filling most of the dish, unmistakably "on"
+    # rather than a flat solid fill. See docs/GROOVY-CODE-THEME.md for why
+    # this replaced the older flat-fill design.
+    stickyon = render_key(
+        KEY_SIZE, KEY_RADIUS, GOLD, 1.0, 80,
+        glow_color=GOLD, glow_alpha=225, glow_height=0.95, glow_blur=14, tint_amount=0.30,
+    )
     stickyon.save("Button-stickyon.png")
 
-    stickyon_press_ring = blend_white(GOLD, 0.3)
     stickyon_press = render_key(
-        KEY_SIZE, KEY_RADIUS, stickyon_press_ring, None, None, 1.0, flat_fill=STICKYON_FILL
+        KEY_SIZE, KEY_RADIUS, GOLD, 1.0, 180,
+        glow_color=GOLD, glow_alpha=245, glow_height=1.0, glow_blur=14, tint_amount=0.34,
+        dish_dark_top=DARK_TOP_PRESSED, dish_dark_bottom=DARK_BOTTOM_PRESSED,
     )
     stickyon_press.save("Button-stickyon-press.png")
     print("wrote Button-stickyon.png / Button-stickyon-press.png")

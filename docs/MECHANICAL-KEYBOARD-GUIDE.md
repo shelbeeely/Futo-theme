@@ -99,12 +99,38 @@ has that this format simply cannot do.
    map `morekey` to a fully transparent asset (`slicing = [0, 0, 1, 1]`,
    otherwise blank) the way Christmas 2025 does, and let `morekeysbox`
    alone define the popup's outline.
+10. **A colored glow instead of a colored border, if you want an
+    RGB-backlit-keyboard look rather than a keycap-color-set look.**
+    Groovy Code's v14 redesign replaced its entire v12/v13 approach (a
+    bold solid-color ring per row/role) with this: every key is a dark
+    brushed-charcoal body+dish (same neutral family for every key,
+    textured, with only a *small* per-role tint blended in), plus a soft
+    colored glow pooling in roughly the bottom third to half of the dish
+    (drawn as a blurred, rounded, semi-transparent shape and composited
+    after the dish but before the rim highlight/contact shadow, so those
+    stay crisp on top). The role color — row-band hue, gold for system
+    keys, a bigger/brighter glow for the primary action key, and a much
+    bigger/brighter one still for an "engaged" toggle state like
+    caps-lock — reads the same as it would have as a solid border, but
+    looks like backlighting bleeding out from under the keycap instead of
+    a colored plastic frame. This turned out to rival technique #1 for
+    impact: it's what actually made individual keys look like discrete,
+    lit keycaps rather than colored tiles, more than the `gap` increase
+    alone did. Prompted by a reference photo of a real RGB gaming
+    keyboard; adapt the technique, not necessarily the reference's exact
+    hues — Groovy Code kept every glow color within its own existing
+    palette rather than importing the reference's colors. See
+    `scripts/generate_assets.py`'s `draw_bottom_glow` and
+    `make_brushed_texture` (the latter built with numpy — a first,
+    pure-Pillow, per-pixel-loop attempt at directional noise had a silent
+    near-zero-variance bug, worth avoiding by vectorizing this kind of
+    image op from the start).
 
 ## Suggested build approach
 
-Reuse Groovy Code's generation approach (Python + Pillow, not hand-drawn
-pixels — see `docs/GROOVY-CODE-THEME.md`'s "Build workflow") with these
-parameter changes:
+Reuse Groovy Code's generation approach (Python + Pillow + numpy, not
+hand-drawn pixels — see `docs/GROOVY-CODE-THEME.md`'s "Build workflow")
+with these parameter changes:
 
 - Increase `gap` from `1` to something like `1.4–1.8` on all border assets
   so keys visually separate from each other.
