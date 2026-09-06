@@ -83,6 +83,22 @@ has that this format simply cannot do.
    (`normal row 0/1/2`) generalizes directly: pick 2–4 accent colors and
    assign them via `row`/`rowmod`/`label` matchrules the same way, rather
    than inventing a new mechanism.
+8. **Scattered novelty keycaps, if you want variety without a rule per
+   key.** A real custom-keycap set often has a handful of novelty/artisan
+   caps scattered around rather than uniform rows. `keyboard.futo.tech`'s
+   Christmas 2025 theme does exactly this by combining `rowmod` and
+   `colmod` in one selector (`normal rowmod 1 2 colmod 3 5`, see
+   `docs/THEME-FORMAT.md`) to place its "bitten cookie" variant at a
+   repeating-but-sparse set of positions instead of every key. The same
+   technique works for scattering a distinct "novelty keycap" art variant
+   (different legend style, an accent color, a printed icon) across a
+   mechanical theme without hand-listing every affected key.
+9. **A cleaner long-press popup.** If you want the popup accent keys to
+   read as one smooth surface rather than a row of separately-outlined
+   chips (closer to how a real keyboard has no equivalent UI at all),
+   map `morekey` to a fully transparent asset (`slicing = [0, 0, 1, 1]`,
+   otherwise blank) the way Christmas 2025 does, and let `morekeysbox`
+   alone define the popup's outline.
 
 ## Suggested build approach
 
@@ -108,12 +124,21 @@ parameter changes:
 
 ## Reference points
 
-- `keyboard.futo.tech/themes` (checked while writing this doc) currently
-  has no mechanical/keycap-styled theme in the gallery — this would be
-  original ground, not a copy of an existing FUTO theme.
+- `keyboard.futo.tech/themes` (checked while writing this doc, and again
+  when all four published/gallery themes — Pet Keys, Christmas 2025,
+  OpenDyslexic, plus our own Groovy Code — were downloaded and compared)
+  currently has no mechanical/keycap-styled theme in the gallery — this
+  would be original ground, not a copy of an existing FUTO theme.
 - Pet Keys (`p.trashkittyqueen.petkeys`, see `docs/THEME-FORMAT.md`) is the
   best real-world example of per-key one-off art layered over rule-based
   fallbacks, which is exactly the technique you'd use for
   novelty/accent keycaps in a mechanical theme (specific keys get distinct
   "keycap set" art via `label`/exact `row N col M` selectors, everything
   else falls through to the base row-banded asset).
+- Christmas 2025 (`art.zilluzion.xmas2025`) is the best real-world example
+  of a **sculpted, non-rectangular** key silhouette (its keys are rounded
+  gingerbread-cookie shapes with a literal bite taken out of some of them)
+  combined with a painterly illustrated background — proof that this
+  format's border assets don't have to be simple rounded rectangles at
+  all, which matters if you want a keycap silhouette with a distinct
+  physical edge profile rather than just a rounded square.

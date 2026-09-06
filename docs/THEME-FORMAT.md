@@ -5,20 +5,29 @@ This is a from-source reference for the `theme.txt` format used by
 reading the actual TypeScript source of
 [`futo-org/keyboard-theme-editor`](https://github.com/futo-org/keyboard-theme-editor)
 (`src/keyboard/render.ts`, `qualifiers.js`, `qualifiers-input.jsx`) and from
-comparing two real theme packages side by side:
+comparing every theme published at https://keyboard.futo.tech/themes plus
+our own, side by side:
 
 - **Groovy Code** (this repo, `theme.txt`) — a from-scratch dark theme with
   row-banded key colors and a generated keycap look.
 - **Pet Keys** by TrashKittyQueen (`p.trashkittyqueen.petkeys`) — a
   Material-3-generated light theme with per-column/per-letter border
-  overrides. Not included in this repo (different font/art, own license) —
-  it's referenced here only for what it demonstrates about the format.
+  overrides.
+- **Christmas 2025** by zilluzion (`art.zilluzion.xmas2025`, downloaded from
+  `dl.keyboard.futo.org/christmas-theme-2025.zip`) — a candy/gingerbread
+  theme with "bitten cookie" key variants scattered across the board.
+- **Theme with OpenDyslexic** by alex (`tech.futo.keyboard.OpenDyslexic`,
+  downloaded from `dl.keyboard.futo.org/dyslexic-theme.zip`) — the simplest
+  possible real-world theme: just a color scheme and a font swap, no image
+  assets or matchrules at all.
 
-Nothing here is guesswork: every field below was either confirmed in the
-editor source or observed working in one of the two real theme files. If you
-change the format assumptions in this doc, re-verify against a fresh clone of
-`keyboard-theme-editor` rather than trusting this file indefinitely — it's a
-snapshot.
+None of the last three are included in this repo (different fonts/art, own
+licenses) — they're referenced here only for what they demonstrate about the
+format. Nothing here is guesswork: every field below was either confirmed in
+the editor source or observed working in one of these real theme files. If
+you change the format assumptions in this doc, re-verify against a fresh
+clone of `keyboard-theme-editor` (and/or re-download the gallery themes)
+rather than trusting this file indefinitely — it's a snapshot.
 
 The official (sparser) docs and live editor are at
 https://docs.keyboard.futo.tech/theme/advanced and
@@ -106,7 +115,23 @@ themes use this consistently, including for translucent overlay colors like
 font = "SomeFont-Regular.ttf"
 ```
 
-Just a filename relative to the theme package root.
+Just a filename relative to the theme package root. Both `.ttf`
+(`FiraCode-Regular.ttf` in this repo, `SourGummy-Regular.ttf` in Christmas
+2025) and `.otf` (`OpenDyslexic-Regular.otf`) are confirmed working.
+
+## Minimal valid theme
+
+`[options.background]`, every `[[matchrules.*]]` block, and every
+`[[asset.*]]` block are **all optional**. The published "Theme with
+OpenDyslexic" theme is nothing more than metadata + `[options]` +
+`[colors]` + `[options.font]` — no background image, no border/icon
+overrides, no asset declarations at all. With no matchrules the renderer
+falls back entirely to its own auto-generated key borders (driven by
+`auto_borders` and the `[colors]` `keyboard_*` roles), so a theme that only
+needs to change the color scheme and/or font doesn't need to touch image
+assets at all. This is the right starting point if you're theming for
+something like accessibility (a dyslexia-friendly font, a high-contrast
+palette) rather than a visual key-face redesign.
 
 ## `[options.background]`
 
@@ -168,10 +193,10 @@ border matchrules with a bare `pressed` / `normal` catch-all pair.
 | `icon <name>` | Matches by icon id — see icon table below. Used only in `matchrules.icon`. |
 | `outputtext <text>` | Matches by the text the key actually outputs (useful when label ≠ output, e.g. some symbol keys). |
 | `layout <name>` | Matches by which keyboard layout/layer is active (e.g. main letters vs. symbols page). |
-| `row <n>` | Matches by row index, 0-based from the top. **Negative counts from the bottom of the *rendered* layout** — `row -1` is always the last row, however many rows that layout actually has. |
-| `col <n>` | Matches by column index, 0-based from the left; negative counts from the right. |
+| `row <n>` | Matches by row index, 0-based from the top. **Negative counts from the bottom of the *rendered* layout** — `row -1` is always the last row, however many rows that layout actually has. Christmas 2025 uses `functional row -1 col 0` for the bottom-row leftmost functional key (the emoji/settings-adjacent key), same pattern as this repo's use of `row -1`. |
+| `col <n>` | Matches by column index, 0-based from the left; negative counts from the right — confirmed in Christmas 2025 (`normal row 1 col -1`, `col -2`) for keys near the right edge, the same way `row -1` counts from the bottom. |
 | `rowmod <offset> <mod>` | `(key.row + offset) % mod == 0` — periodic row banding without one rule per row. |
-| `colmod <offset> <mod>` | Same, for columns. |
+| `colmod <offset> <mod>` | Same, for columns. **A single selector can combine one `rowmod` and one `colmod` together** — Christmas 2025 does this (`selector = "normal rowmod 1 2 colmod 3 5"`) to scatter a handful of "bitten cookie" key variants across the board in a repeating diagonal/checkerboard-like pattern, rather than banding whole rows or whole columns. Since selector tokens are pure AND-logic, this just narrows the match to keys satisfying both periodic conditions at once — useful any time you want a *sparse, deterministic* pattern instead of full-row or full-column theming. |
 | `ratio <name>` | Matches by the key's width\:height bucket. Named buckets confirmed in source: `Tallest`, `Tall`, `Squarish`, `Wide`, `ExtraWide`, `Widest` (numeric boundaries aren't in the qualifier-input file itself — treat as a coarse "how wide is this key" hint, e.g. distinguishing spacebar-wide keys from a normal letter key without hardcoding `col`). |
 | `layer <n>` | Not a filter — always matches, and instead **tags** the match with a layer value (`obj.layer = arg0`) for the renderer's own bookkeeping. Order it like any other token but don't expect it to narrow the match. |
 
@@ -288,7 +313,7 @@ Deliberately minimal — no tint/padding/slicing/gap fields exist here because
 none of them apply (see "Icons are always force-recolored" above; icons
 aren't 9-sliced, they're drawn at a fixed size).
 
-## Two real themes, side by side: what they demonstrate
+## Four real themes, side by side: what they demonstrate
 
 **Groovy Code** (this repo) leans on **periodic/positional** selectors —
 `row 0`/`row 1`/`row 2` banding plus the generic `functional`/`action`/
@@ -305,15 +330,46 @@ plus `-dark` variants of the same key for use on different backgrounds) so
 individual keys can get one-off decorative treatment (paw prints / animal
 motifs at specific letters) without a matchrule for every single key —
 just one rule per key that needs to be different, falling through to the
-generic asset otherwise. Its border matchrules also show the exact
-"specific-before-generic" ordering this format requires: per-position rules
+generic asset otherwise. Its border matchrules also show the "specific-
+before-generic" ordering this format expects by default: per-position rules
 first, then `spacebar`/`action`/`functional`, then `popup`, then the bare
 `pressed`/`normal` catch-alls last.
 
-Takeaway if you're designing a new theme: decide up front whether your
+**Christmas 2025** leans on **sparse scatter patterns** via combined
+`rowmod`/`colmod` selectors (see the selector table above) to place
+"bitten cookie" key variants across the board without hand-picking every
+position, plus a genuinely different matchrule *ordering strategy*: its
+list starts with `popup`, `morekeysbox`, then a **bare, type-agnostic
+`pressed`** rule third — before any `spacebar pressed`/`action pressed`/
+`functional pressed` variant even gets a chance to differ. The effect is
+deliberate, not a bug: every pressed key in this theme (letter, spacebar,
+functional, action alike) renders the same flat "pressed cookie" art,
+because nothing more specific for pressed states was ever placed before
+that catch-all. This is a legitimate alternative to Groovy Code's/Pet
+Keys' approach of differentiating pressed-state art per key type — **group
+your matchrules by "how much do I want this state to vary by key type"**,
+not just by literal specificity. If you want one uniform pressed look
+everywhere, put a bare `pressed` rule early, the same as Christmas 2025
+does; if you want pressed state to look different per key role (as this
+repo and Pet Keys do), keep the type-specific `pressed` variants ahead of
+the generic one instead. Christmas 2025 also demonstrates mapping `morekey`
+(the long-press popup accent key) to a fully transparent/blank asset
+(`blank.png`, `slicing = [0, 0, 1, 1]`) — a way to suppress individual
+accent-key chips so only the containing `morekeysbox` reads as one unified
+surface.
+
+**Theme with OpenDyslexic** demonstrates the minimal end of the spectrum —
+see "Minimal valid theme" above: no image assets or matchrules needed at
+all if you're only changing color/font.
+
+Takeaway if you're designing a new theme: decide up front (a) whether your
 per-key variation is **rule-based** (a formula like "row parity" or
 "function vs letter" — reach for `row`/`col`/`rowmod`/`colmod` and generic
-state tokens) or **one-off** (this specific key needs this specific art —
-reach for `label`/`code`/exact `row N col M`). Most real themes, including
-both examples here, mix both: broad rule-based fallbacks with a handful of
-exact-position overrides layered in front.
+state tokens), **one-off** (this specific key needs this specific art —
+reach for `label`/`code`/exact `row N col M`), or **sparse/scattered**
+(combine `rowmod`+`colmod` in one selector); and (b) whether pressed/sticky
+states should vary by key type or render uniformly, since that decision is
+what actually determines your matchrule ordering, not just "specific
+before generic" as a blanket rule. Most real themes mix techniques: broad
+rule-based fallbacks with a handful of exact-position or scatter-pattern
+overrides layered in front.
