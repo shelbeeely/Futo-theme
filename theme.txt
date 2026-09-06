@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 12
-description = "Warm-toned 70's-inspired dark theme styled as a mechanical keyboard: separated floating keycaps, a crisp top rim highlight and tight contact shadow per key, row-varying dish falloff, and spacebar stabilizer dimples, plus row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 13
+description = "Warm-toned 70's-inspired dark theme styled as a mechanical keyboard: separated floating keycaps with a properly-proportioned sculpted dish (not squeezed thin), a crisp top rim highlight and tight contact shadow per key, row-varying dish falloff, and spacebar stabilizer dimples, plus row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
@@ -236,7 +236,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-morekey.png"
@@ -245,7 +245,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-default.png"
@@ -254,7 +254,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-default-press.png"
@@ -263,7 +263,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-function.png"
@@ -272,7 +272,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-function-pressed.png"
@@ -281,7 +281,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-space.png"
@@ -290,7 +290,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-space-press.png"
@@ -299,7 +299,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-action.png"
@@ -308,7 +308,7 @@ foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-action-press.png"
@@ -317,7 +317,7 @@ foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row0.png"
@@ -326,7 +326,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row0-press.png"
@@ -335,7 +335,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row1.png"
@@ -344,7 +344,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row1-press.png"
@@ -353,7 +353,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row2.png"
@@ -362,7 +362,7 @@ foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-row2-press.png"
@@ -371,7 +371,7 @@ foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-stickyon.png"
@@ -380,7 +380,7 @@ foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.border]]
 name = "Button-stickyon-press.png"
@@ -389,44 +389,44 @@ foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.5, 1.5, 1.5, 1.5]
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-backspace.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-emoji.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-shift-press.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-shift.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-enter.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-globe.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-mic.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-tab.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-arrow-left.png"
-target_density = 480
+target_density = 640
 
 [[asset.icon]]
 name = "Icon-arrow-right.png"
-target_density = 480
+target_density = 640

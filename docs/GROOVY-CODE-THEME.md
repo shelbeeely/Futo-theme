@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v12**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v13**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -36,6 +36,12 @@ choices specific to this theme.
   cue, and the spacebar got two subtle stabilizer-stem dimples.
   `stickyon` stayed deliberately flat — see the caps-lock bullet above,
   that's intentional, not something the mechanical pass missed.
+- **v13 dish-squeeze fix:** the v12 keycap dish looked fine on every asset
+  PNG viewed in isolation but rendered as a thin vertical sliver once
+  actually imported and rendered as a real (non-square) key — see the bug
+  entry below. Fixed by raising `target_density` from `480` to `640` on
+  every border and icon asset (kept in sync, as before) — a pure
+  `theme.txt` edit, no art regeneration needed.
 
 ## Build workflow
 
@@ -77,6 +83,20 @@ theme ships under for third-party art/font.
   (72%→40% of base color) plus a brighter rim highlight (alpha 40→95), so
   it scales correctly across the whole palette instead of one flat number
   tuned for one color.
+- **Dish squeezed to a sliver on real (non-square) keys (fixed v13):** the
+  v12 border assets' `slicing` fractions (0.18 uniform) were computed
+  assuming a square 160×160 key. A real rendered key measured out to
+  roughly a 0.72 width:height ratio (noticeably taller than wide), and
+  since a 9-patch's fixed margin is an *absolute on-screen size* regardless
+  of the key's actual shape, that same margin ate a much bigger fraction of
+  the narrower width than the taller height — the dish read as a thin
+  vertical column instead of a proper keycap face. Invisible from any
+  single asset PNG (which only shows the asset at its own square native
+  resolution); only visible once actually imported and rendered as a real
+  key — caught using the `preview-theme` skill (`.claude/skills/
+  preview-theme/`), not a real device. See `docs/THEME-FORMAT.md`'s "The
+  9-patch margin is a fixed on-screen size" for the full mechanism and the
+  general fix.
 - **Icon-regression boundary is now enforced by code, not just discipline:**
   `scripts/generate_assets.py` structurally cannot touch `Icon-*.png` — it
   has no code path that writes those filenames at all, closing off the
@@ -99,10 +119,17 @@ theme ships under for third-party art/font.
 
 Every fix in this project was validated by (a) reading the actual
 `keyboard-theme-editor` TypeScript source rather than guessing at the
-format, and (b) testing on a real device and comparing a screenshot —
-several issues (icon overlap, dish contrast, icon regression) were only
-catchable that way, not from static analysis alone. **Don't declare a
-visual fix correct without one or the other.**
+format, (b) as of v13, rendering the theme for real with the
+`preview-theme` skill (`.claude/skills/preview-theme/`) — which runs
+`keyboard-theme-editor`'s actual rendering code locally via a headless
+browser, not a real device — and (c) testing on a real device and
+comparing a screenshot. (b) is what caught the v13 dish-squeeze bug that
+(a) alone had missed for two versions; (c) is still the only way to check
+real screen color/gamma, actual pressed/sticky-state interaction, and
+`morekeysbox`/`morekey` (the editor's own preview stubs long-press to
+always-false). **Don't declare a visual fix correct on the strength of (a)
+alone if (b) is available, and don't call it fully confirmed without (c)
+eventually happening.**
 
 ## Open items / not yet done
 
@@ -116,15 +143,15 @@ visual fix correct without one or the other.**
   never confirmed on a real device — the editor's own JS preview stubs
   these to always-false, so it can only be verified in the real Android
   app.
-- v11 (multiplicative dish shading) has not yet been screenshotted/confirmed
-  on-device — that's the immediate next verification step.
-- **v12 (mechanical-keyboard pass) also has not been screenshotted/
-  confirmed on-device.** Don't call the `gap` increase, per-row dish gamma,
-  crisper highlight, or spacebar dimples "done" without a real device
-  screenshot — same rule as every other visual change in this project's
-  history.
+- v11/v12/v13 have all been checked with the `preview-theme` skill's real
+  render (v13 specifically because that render is what caught and
+  motivated fixing the dish-squeeze bug) but **none of them have been
+  screenshotted/confirmed on a real device yet** — that's the immediate
+  next verification step. Real screen color/gamma and actual touch
+  interaction still can't be checked any other way.
 - The background (`GroovyCode-background.png`) was deliberately left
-  untouched in v12 — a plate/PCB-textured background (mechanical guide,
-  point 1: "visible plate between keys") is a bigger, harder-to-preview
-  change than the keycap rendering and was scoped out to keep v12
-  reviewable. Good next step once v12 is confirmed.
+  untouched through v13 — a plate/PCB-textured background (mechanical
+  guide, point 1: "visible plate between keys") is a bigger change than
+  the keycap rendering and was scoped out to keep each pass reviewable.
+  Good next step, and easy to check with `preview-theme` before ever
+  needing a device.

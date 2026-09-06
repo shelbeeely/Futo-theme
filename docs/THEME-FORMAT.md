@@ -288,7 +288,44 @@ target_density = 480
   `480` to match their border counterparts; Pet Keys uses `640`
   everywhere). Pick one value and use it consistently for every asset in a
   theme — don't mix without a reason, since it's a scaling reference, not a
-  cosmetic label.
+  cosmetic label. **It's also the cheapest lever for fixing a 9-patch
+  margin that renders too thick, with no art regeneration needed** — see
+  the aspect-ratio warning right below before you reach for it.
+
+### The 9-patch margin is a fixed on-screen size — it doesn't know your key's real aspect ratio
+
+The fixed (non-stretching) corner/edge region a `slicing` fraction defines
+translates to an **absolute on-screen size** (roughly
+`sourcePx × deviceDensity / targetDensity`), the same in device pixels no
+matter what shape the actual rendered key turns out to be. A slicing
+fraction computed from a **square** reference canvas (like this repo's
+160×160 key art) assumes the margin will end up a similar fraction of
+*both* width and height once rendered — but real keys on a real keyboard
+are usually noticeably taller than wide (confirmed by measuring an actual
+render at roughly a 0.72 width:height ratio, nowhere near the square 1:1
+the slicing math assumed). Since the margin's absolute size doesn't adapt
+per axis, that same fixed margin eats a much bigger fraction of the
+(narrower) width than the (taller) height — the visible symptom is an
+inset "dish" that reads as a thin vertical sliver instead of a properly
+proportioned keycap face. This is easy to miss because a single asset PNG
+viewed in isolation (at its own native square resolution) looks completely
+fine; it only shows up once the asset is actually stretched into a
+real, non-square key shape — see `docs/GROOVY-CODE-THEME.md`'s bug history
+for how this repo caught and fixed it (using the `preview-theme` skill's
+real render, not by inspecting assets in isolation).
+
+Two ways to fix it, in order of how much they cost:
+1. **Raise `target_density`** on the affected border (and matching icon)
+   assets. Since on-screen margin size scales with `1/target_density`,
+   raising it (e.g. `480 → 640`) shrinks the *whole* asset's fixed margins
+   proportionally, without touching the art or the `slicing` fractions at
+   all — a pure `theme.txt` edit. This was enough to fix the problem in
+   this repo.
+2. **Regenerate the art at a wider (non-square) canvas** if (1) isn't
+   enough on its own — see "Computing slicing values" below; widening the
+   canvas while keeping the corner radius's *absolute* pixel size the same
+   lets you express a smaller horizontal slicing fraction without
+   distorting the rounded corner, independent of density.
 
 ### Computing slicing values (worked example, from this repo)
 
@@ -300,6 +337,10 @@ spacebar with radius 30, the interior starts at 33px:
 [0.052, 0.206, 0.948, 0.794]`. **Compute this from your actual asset's pixel
 geometry — don't eyeball or copy another theme's numbers**, since they only
 make sense relative to that theme's specific corner radius and canvas size.
+A slicing fraction is only ever safe down to `(radius + outline) / canvasSize`
+for whichever axis you're computing it for — going smaller without also
+changing the canvas size or radius will make the 9-patch stretch region
+cut through the rounded corner's curve.
 
 ## `[[asset.icon]]` — icon art
 

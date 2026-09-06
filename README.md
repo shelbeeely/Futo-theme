@@ -36,3 +36,11 @@ You can also trigger a build on demand from the Actions tab
 
 See also `CLAUDE.md` for the working notes an AI assistant should read
 before continuing work on this repo.
+
+## Previewing changes without a device
+
+`.claude/skills/preview-theme/` renders a real preview of the theme using
+FUTO's own [`keyboard-theme-editor`](https://github.com/futo-org/keyboard-theme-editor)
+rendering code, run locally and driven headlessly — so a visual change to
+`theme.txt` or the generated assets can be checked before ever needing to
+sideload onto an Android device. See its `SKILL.md` for usage.

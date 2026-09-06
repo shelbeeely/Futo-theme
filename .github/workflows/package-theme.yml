@@ -56,7 +56,7 @@ jobs:
           # actual theme package (dev docs, generation tooling, VCS/CI meta).
           out_path="$RUNNER_TEMP/$zip_name"
           zip -r "$out_path" . \
-            -x '.git/*' '.github/*' 'docs/*' 'scripts/*' 'CLAUDE.md' 'README.md'
+            -x '.git/*' '.github/*' 'docs/*' 'scripts/*' '.claude/*' 'CLAUDE.md' 'README.md'
           echo "zip_name=$zip_name" >> "$GITHUB_OUTPUT"
           echo "zip_path=$out_path" >> "$GITHUB_OUTPUT"
 

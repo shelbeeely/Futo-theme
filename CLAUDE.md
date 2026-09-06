@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v12**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v13**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -19,9 +19,15 @@ Repo layout:
 - `scripts/generate_assets.py` — Pillow script that generates the
   `Button-*.png` border assets (not part of the theme package itself)
 - `.github/workflows/package-theme.yml` — zips the theme package (everything
-  above except `docs/`/`scripts/`/this file/`README.md`) and publishes it as
-  a GitHub release + build artifact on every push to `main` that touches
-  theme files, or on manual dispatch
+  above except `docs/`/`scripts/`/`.claude/`/this file/`README.md`) and
+  publishes it as a GitHub release + build artifact on every push to `main`
+  that touches theme files, or on manual dispatch
+- `.claude/skills/preview-theme/` — a Claude Code skill that renders a real
+  preview of the theme (using `keyboard-theme-editor`'s actual rendering
+  code, headlessly) without needing an Android device. Use it after any
+  visual change, before asking for an on-device screenshot — see its
+  `SKILL.md` and the "Verification method" section of
+  `docs/GROOVY-CODE-THEME.md`.
 
 ## Read `docs/` first — it's the current source of truth
 
@@ -38,9 +44,9 @@ where new findings get written up going forward:
   workflow, and fixed-bug history (a cleaner rewrite of the sections
   below — keep both in sync if you change one).
 - `docs/MECHANICAL-KEYBOARD-GUIDE.md` — the design direction being applied
-  to Groovy Code itself (not a separate theme — see v12 below): making it
-  read as a mechanical/desktop keyboard rather than a soft phone keyboard.
-  Read this before doing more design work in that direction.
+  to Groovy Code itself (not a separate theme — see v12/v13 below): making
+  it read as a mechanical/desktop keyboard rather than a soft phone
+  keyboard. Read this before doing more design work in that direction.
 
 ## Critical facts, verified from source (don't re-derive these — they're confirmed)
 
@@ -154,6 +160,25 @@ is sparsely documented anywhere else.
   correctly across the whole palette instead of one flat number tuned for
   one color.
 
+- **v13 (dish-squeeze fix, checked with `preview-theme`, not yet on a real
+  device):** v12's dish looked correct on every asset PNG viewed in
+  isolation but rendered as a thin vertical sliver once actually imported
+  and drawn as a real (non-square) key — a real render measured keys at
+  roughly a 0.72 width:height ratio, and since a 9-patch's fixed margin is
+  an absolute on-screen size regardless of the key's actual shape, that
+  margin ate a much bigger share of the narrower width than the taller
+  height. Fixed by raising `target_density` from `480` to `640` on every
+  border **and icon** asset (kept in sync, matching the existing
+  "icons match their border counterparts" convention) — no art
+  regeneration needed, purely a `theme.txt` edit. See
+  `docs/THEME-FORMAT.md`'s "The 9-patch margin is a fixed on-screen size"
+  for the mechanism, and `docs/GROOVY-CODE-THEME.md` for the full writeup.
+  This was found using the new `preview-theme` skill
+  (`.claude/skills/preview-theme/`), which imports the real theme zip into
+  a locally-run copy of `keyboard-theme-editor` and screenshots the actual
+  rendering code's output — the first time this repo could check a visual
+  change for real without an Android device.
+
 - **v12 (mechanical-keyboard pass, not yet screenshotted/confirmed):** the
   design goal changed from "generic keycap-shaped keys" to "reads as a
   mechanical/desktop keyboard," per `docs/MECHANICAL-KEYBOARD-GUIDE.md`.
@@ -217,12 +242,21 @@ are original, hand-drawn — no official SVG exists for either.
 
 ## Verification checklist before calling any change "done"
 
-Every fix in this project so far was validated by (a) reading the actual
-`keyboard-theme-editor` TypeScript source rather than guessing at the format,
-and (b) the user testing on a real device and sending a screenshot — several
-issues (icon overlap, dish contrast, icon regression) were only catchable
-that way, not from static analysis alone. Don't declare a visual fix correct
-without one or the other.
+Every fix in this project was validated by (a) reading the actual
+`keyboard-theme-editor` TypeScript source rather than guessing at the
+format, (b) as of v13, rendering the theme for real with the
+`preview-theme` skill (`.claude/skills/preview-theme/` — runs
+`keyboard-theme-editor`'s actual rendering code locally via a headless
+browser, no Android device needed), and (c) the user testing on a real
+device and sending a screenshot. Several issues (icon overlap, dish
+contrast, icon regression, the v13 dish-squeeze) were only catchable by (b)
+or (c), never from static analysis alone — and (b) is what actually caught
+v13's bug, so reach for it before asking for a device screenshot, not
+instead of one. (c) is still the only way to check real screen color/
+gamma, actual pressed/sticky-state interaction, and `morekeysbox`/`morekey`
+(the editor's own preview stubs long-press to always-false). Don't declare
+a visual fix correct without at least (b); don't call it fully confirmed
+without (c) eventually happening.
 
 ## Open items / not yet done
 
@@ -234,21 +268,21 @@ without one or the other.
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
-- v11 (multiplicative dish shading) has not yet been screenshotted/confirmed
-  on-device — that's the immediate next verification step.
-- **v12 (mechanical-keyboard pass) has not yet been screenshotted/confirmed
-  on-device either** — same rule applies (see "Verification checklist"
-  above): don't call the `gap` increase, the crisper rim highlight, the
-  per-row dish gamma curve, or the spacebar stabilizer dimples "done" on
-  the strength of the generated PNGs alone. This repo's own history (dish
-  contrast, icon regression) is exactly why.
+- v11/v12/v13 have all been checked with the `preview-theme` skill's real
+  render (v13 specifically is what caught the dish-squeeze bug) but
+  **none of them have been screenshotted/confirmed on a real device yet**
+  — that's the immediate next step. This repo's own history (dish
+  contrast, icon regression, the v13 dish-squeeze) is exactly why a
+  real-code render or a real device catches things static analysis can't
+  — but real screen color/gamma and actual touch interaction still need an
+  actual device.
 - The background (`GroovyCode-background.png`) was deliberately left
-  untouched this pass — the mechanical guide's "visible plate between
+  untouched through v13 — the mechanical guide's "visible plate between
   keys" idea (`docs/MECHANICAL-KEYBOARD-GUIDE.md`, point 1) calls for a
-  plate/PCB-textured background instead of the current soft dark
-  sparkle texture, but that's a bigger, harder-to-preview change than the
-  keycap rendering and was scoped out to keep this pass reviewable. Good
-  next step once v12 is confirmed on-device.
+  plate/PCB-textured background instead of the current soft dark sparkle
+  texture, but that's a bigger change than the keycap rendering and was
+  scoped out to keep each pass reviewable. Good next step, and cheap to
+  check with `preview-theme` before ever needing a device.
 - `scripts/generate_assets.py`'s per-row gamma values (`0.72`/`1.0`/`1.35`
   for row0/row1/row2) and the `gap = 1.5` value are first guesses, not
   device-measured — adjust them in the script (not by hand-editing the
