@@ -15,6 +15,26 @@ Repo layout:
 - `FiraCode-Regular.ttf` — the font (SIL OFL 1.1)
 - `GroovyCode-background.png` — keyboard background texture
 - `FONT-ATTRIBUTION.txt`, `ICON-ATTRIBUTION.txt` — required attributions
+- `docs/` — full written-up documentation, see below
+
+## Read `docs/` first — it's the current source of truth
+
+This file is working notes; `docs/` is the maintained reference and is
+where new findings get written up going forward:
+
+- `docs/THEME-FORMAT.md` — the complete `theme.txt` format reference,
+  verified from `keyboard-theme-editor` source AND cross-checked against
+  every theme published at https://keyboard.futo.tech/themes (Pet Keys,
+  Christmas 2025, Theme with OpenDyslexic) plus this one. More complete
+  than the "Critical facts" list below — that list is kept only for the
+  facts specific enough to this theme's own bug history to matter inline.
+- `docs/GROOVY-CODE-THEME.md` — this theme's design system, build
+  workflow, and fixed-bug history (a cleaner rewrite of the sections
+  below — keep both in sync if you change one).
+- `docs/MECHANICAL-KEYBOARD-GUIDE.md` — the design direction for the
+  *next* theme: making a FUTO theme read as a mechanical/desktop keyboard
+  rather than a soft phone keyboard. This is the user's current stated
+  goal — read this before starting new design work.
 
 ## Critical facts, verified from source (don't re-derive these — they're confirmed)
 
@@ -69,6 +89,41 @@ is sparsely documented anywhere else.
    (`visualStyle === "StickyOn"`). Give it its own border asset for a clear
    locked-state look — don't rely on the icon alone (see #3, icon color is
    futile there anyway).
+
+8. **Every section past top-level metadata + `[options]` + `[colors]` is
+   optional.** Confirmed by the published "Theme with OpenDyslexic" theme,
+   which ships no `[options.background]`, no matchrules, and no asset
+   blocks at all — just a color scheme and a font swap, relying entirely
+   on auto-generated borders. Don't add image assets/matchrules to a theme
+   that only needs a palette+font change.
+
+9. **Fonts: both `.ttf` and `.otf` work** (`FiraCode-Regular.ttf` here,
+   `OpenDyslexic-Regular.otf` in the gallery theme of the same name).
+
+10. **`row`/`col` negative indexing and combined `rowmod`+`colmod` are both
+    real, confirmed in the wild** (Christmas 2025 theme:
+    `normal row 1 col -1`, and `normal rowmod 1 2 colmod 3 5` to scatter a
+    decorative key variant across a repeating-but-sparse set of positions
+    instead of full rows/columns — useful for novelty-keycap placement).
+
+11. **Matchrule ordering doesn't have to go strict-specific-to-generic.**
+    Christmas 2025 places a bare, type-agnostic `pressed` rule third in its
+    list — before any `spacebar pressed`/`action pressed`/
+    `functional pressed` variant — so *every* pressed key renders identical
+    art regardless of type. That's a deliberate, valid alternative to this
+    theme's approach (vary pressed art per key type): order matchrules by
+    how much you want a *state* to vary by key type, not just by literal
+    selector specificity.
+
+12. **Border art isn't limited to rounded rectangles.** Christmas 2025's
+    keys are gingerbread-cookie silhouettes, several with a literal "bite"
+    cut out of the shape — the border asset PNG defines the actual
+    silhouette, not just a color fill inside a fixed rounded-rect frame.
+
+13. **A transparent `morekey` asset** (`slicing = [0,0,1,1]`, otherwise
+    blank/empty) suppresses individual long-press accent-key chips so only
+    the containing `morekeysbox` reads as a single surface — a real
+    technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
@@ -154,3 +209,11 @@ without one or the other.
   to always-false, so it could only be verified in the real Android app.
 - v11 (multiplicative dish shading) has not yet been screenshotted/confirmed
   on-device — that's the immediate next verification step.
+- **Next design direction: a mechanical-keyboard-look theme** (the user's
+  current stated goal, not yet started). Read
+  `docs/MECHANICAL-KEYBOARD-GUIDE.md` before beginning — it covers what
+  this format can and can't fake about a real mechanical keyboard
+  (exposed-plate gaps via `gap`, per-row dish/highlight variation, harder
+  rim highlights, spacebar stabilizer hints, scattered novelty keycaps via
+  combined `rowmod`+`colmod`), and is informed by all four gallery themes
+  now analyzed, not just this one.
