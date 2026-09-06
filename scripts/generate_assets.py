@@ -188,6 +188,58 @@ def draw_edge_light(base, size, color, alpha, width_frac, height_frac, blur):
     base.alpha_composite(layer)
 
 
+def apply_vignette(img, strength=0.16, center=(0.42, 0.30)):
+    """Darkens toward the edges/corners, brightest near `center` (biased
+    up-and-left of true center, like a product photo lit from above) --
+    the cue a flat gradient alone can't give: a surface that reads as
+    gently curved/catching light unevenly rather than a flat-shaded card.
+    Vectorized with numpy."""
+    w, h = img.size
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    cx, cy = w * center[0], h * center[1]
+    max_dist = np.sqrt(max(cx, w - cx) ** 2 + max(cy, h - cy) ** 2)
+    dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / max_dist
+    factor = 1.0 - np.clip(dist, 0, 1) ** 1.6 * strength
+    arr = np.asarray(img, dtype=np.float32) * factor[..., None]
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), mode="RGB")
+
+
+def draw_edge_ao(base, size, radius, mask, alpha=70, blur=2.5):
+    """A thin, soft, dark line just inside the key's silhouette -- the
+    contact-shadow cue for where a real keycap's flat top meets its side
+    bevel. Without this the whole surface reads as one flat plane; with
+    it, the top edge reads as a distinct surface catching light."""
+    w, h = size
+    inset = 3
+    ring = Image.new("L", size, 0)
+    rd = ImageDraw.Draw(ring)
+    rd.rounded_rectangle(
+        [inset, inset, w - 1 - inset, h - 1 - inset],
+        radius=max(radius - inset, 2),
+        outline=255,
+        width=3,
+    )
+    ring = ring.filter(ImageFilter.GaussianBlur(blur))
+    layer = Image.new("RGBA", size, SHADOW + (0,))
+    layer.putalpha(Image.eval(ring, lambda p: min(p, alpha)))
+    base.alpha_composite(layer)
+
+
+def draw_specular(base, size, alpha=55, pos=(0.38, 0.22), radius_frac=(0.30, 0.16), blur=10):
+    """A small, tight, bright highlight -- distinct from the broad top-lit
+    gradient sheen -- mimicking a real glossy/satin surface catching a
+    point light source, offset off-center like an actual photo rather
+    than a perfectly symmetric render."""
+    w, h = size
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    cx, cy = w * pos[0], h * pos[1]
+    rw, rh = w * radius_frac[0], h * radius_frac[1]
+    d.ellipse([cx - rw, cy - rh, cx + rw, cy + rh], fill=(255, 250, 240, alpha))
+    layer = layer.filter(ImageFilter.GaussianBlur(blur))
+    base.alpha_composite(layer)
+
+
 def draw_stabilizer_dimples(base, size):
     """Subtle stabilizer-stem hints at the 1/4 and 3/4 width marks, near the
     key's base -- a cheap, recognizable spacebar detail no phone keyboard
@@ -231,17 +283,24 @@ def render_key(
     bottom = lerp(surf_bottom, tint, tint_amount * 0.5) if tint else surf_bottom
     body = vertical_gradient(size, top, bottom, gamma)
     body = apply_texture(body, make_brushed_texture(w, h, seed))
+    body = apply_vignette(body)
     canvas.paste(body, (0, 0), mask)
+
+    draw_specular(canvas, size)
+    draw_edge_ao(canvas, size, radius, mask)
 
     if glow_color is not None:
         draw_edge_light(
             canvas, size, glow_color, glow_alpha, glow_width, glow_height, glow_blur
         )
-        canvas.putalpha(Image.composite(canvas.getchannel("A"), Image.new("L", size, 0), mask))
 
     if stabilizers:
         draw_stabilizer_dimples(canvas, size)
-        canvas.putalpha(Image.composite(canvas.getchannel("A"), Image.new("L", size, 0), mask))
+
+    # Every layer above was composited onto the full canvas rectangle, not
+    # clipped to the rounded silhouette -- clip once here rather than
+    # after each individual layer.
+    canvas.putalpha(Image.composite(canvas.getchannel("A"), Image.new("L", size, 0), mask))
 
     return canvas
 

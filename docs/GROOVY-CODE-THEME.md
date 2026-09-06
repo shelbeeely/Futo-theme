@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v15**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v16**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -40,6 +40,13 @@ choices specific to this theme.
   bottom) — no separate outer-ring/inset-dish regions, no crisp highlight
   line. This replaced the v10–v14 "outer body + inset dish + rim highlight
   + contact shadow" structure entirely; see the v15 entry below for why.
+- **Physical-object cues, v16:** a soft vignette (brighter up-and-left of
+  center, darker toward the corners), a thin edge ambient-occlusion line
+  just inside the silhouette, and a small tight specular highlight offset
+  off-center — none of these existed before v16; the surface was just a
+  flat gradient + brushed texture. Purely a request to make the
+  procedural render more photo-realistic, no new reference image this
+  round. See the v16 entry below for the specifics.
 - **v12 mechanical-keyboard pass:** `gap` raised from `1` to `1.5` on every
   border asset (uniformly, so spacing stays even) to expose more
   background between keys — the single highest-leverage move in the
@@ -74,6 +81,21 @@ choices specific to this theme.
   See `scripts/generate_assets.py` for the full technique
   (`make_brushed_texture`, `draw_bottom_glow`).
 
+- **v16 — three procedural realism cues added, no new reference image
+  this round.** The user asked to push the existing Pillow rendering
+  toward photo-realism rather than sourcing an actual keycap image
+  asset. Added in `render_key` (`scripts/generate_assets.py`):
+  `apply_vignette` (numpy radial falloff, brighter up-and-left of center
+  like a product photo lit from above, darker toward corners),
+  `draw_edge_ao` (a thin blurred stroke just inside the rounded
+  silhouette — the contact-shadow cue for where a keycap's flat top
+  meets its side bevel, missing entirely before this), and
+  `draw_specular` (a small tight bright ellipse, offset off-center,
+  distinct from the broad gradient sheen v15 already had). All three are
+  composited onto the full canvas rectangle (not clipped to the rounded
+  mask individually) and clipped once at the very end of `render_key` —
+  cheaper than re-clipping after every layer. Confirmed via
+  `preview-theme` that glyph legibility isn't hurt by the highlight.
 - **v15 redesign — the user said v14 "doesn't look like a mechanical
   keyboard," and a close-up photo of a real one they shared showed exactly
   why.** Three misses, in order of how much they mattered: (1) v14's glow
@@ -206,16 +228,16 @@ eventually happening.**
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs
   these to always-false, so it can only be verified in the real Android
-  app. They also weren't restyled for the v15 look (still the old
+  app. They also weren't restyled for the v15/v16 look (still the old
   gold-ring style from v11) since they can't be previewed to check the
   result — low priority, since they're only visible during a long-press.
-- v11 through v15 have all been checked with the `preview-theme` skill's
+- v11 through v16 have all been checked with the `preview-theme` skill's
   real render but **none of them have been screenshotted/confirmed on a
   real device yet** — that's the immediate next verification step. Real
   screen color/gamma and actual touch/pressed-state interaction still
   can't be checked any other way.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v15 — a first attempt at a brushed-plate
+  dark texture, untouched through v16 — a first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
   abandoned when the v14 mockup redirected effort toward the keycaps
   instead. Revisit only if the plain background still looks flat next to

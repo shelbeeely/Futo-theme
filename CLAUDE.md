@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v15**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v16**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -165,6 +165,22 @@ is sparsely documented anywhere else.
   correctly across the whole palette instead of one flat number tuned for
   one color.
 
+- **v16 (procedural realism cues, checked with `preview-theme`, not yet on
+  a real device):** the user asked to push the render toward
+  photo-realism without sourcing an actual keycap image asset — a pure
+  code/rendering-technique request, no new reference image. Added to
+  `render_key` in `scripts/generate_assets.py`: `apply_vignette` (numpy
+  radial falloff, brighter up-and-left of center like a product photo lit
+  from above, darker toward corners), `draw_edge_ao` (a thin blurred
+  stroke just inside the rounded silhouette — the contact-shadow cue for
+  where a keycap's flat top meets its side bevel, absent before this),
+  and `draw_specular` (a small tight bright ellipse offset off-center,
+  distinct from the broad gradient sheen v15 already had). All three
+  composite onto the full canvas rectangle and get clipped to the rounded
+  mask once at the end of `render_key`, rather than re-clipping after
+  each individual layer. Confirmed via `preview-theme` that the
+  specular highlight doesn't hurt letter-glyph legibility.
+
 - **v15 (single-surface brushed keycaps + tight edge-light, checked with
   `preview-theme`, not yet on a real device):** the user said v14 "doesn't
   look like a mechanical keyboard," then shared a close-up photo of a real
@@ -284,6 +300,10 @@ is sparsely documented anywhere else.
   regions, no crisp highlight line. Replaced the v10-v14 "outer body +
   inset dish + rim highlight + contact shadow" structure entirely; see
   the v15 changelog entry above for why.
+- **Physical-object cues, v16:** a soft vignette, a thin edge
+  ambient-occlusion line, and a small tight specular highlight — none of
+  these existed before v16, the surface was just a flat gradient +
+  brushed texture. See the v16 changelog entry above.
 
 ## Build workflow
 
@@ -337,10 +357,10 @@ without (c) eventually happening.
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
-  Not restyled for the v15 look either (still the old gold-ring style from
+  Not restyled for the v15/v16 look either (still the old gold-ring style from
   v11) for the same reason — low priority since it's only visible on
   long-press.
-- v11 through v15 have all been checked with the `preview-theme` skill's
+- v11 through v16 have all been checked with the `preview-theme` skill's
   real render (v13's caught the dish-squeeze bug; v15's fixed the "doesn't
   look mechanical" feedback) but **none of them have been screenshotted/
   confirmed on a real device yet** — that's the immediate next step. This
@@ -348,7 +368,7 @@ without (c) eventually happening.
   v14's overall miss) is exactly why a real-code render or a real device
   catches things static analysis can't.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v15. A first attempt at a brushed-plate
+  dark texture, untouched through v16. A first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
   abandoned when effort redirected to the keycaps instead. Revisit only if
   the plain background still looks flat against the now much more

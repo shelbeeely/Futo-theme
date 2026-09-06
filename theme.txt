@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 15
-description = "Warm-toned 70's-inspired dark theme styled as a real mechanical keyboard: single-surface brushed-charcoal keycaps with a subtle top-lit sheen, tight gaps, and a small bright point of light at the base of a few accent keys (enter, caps-lock) rather than a colored border or a glow filling the key — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 16
+description = "Warm-toned 70's-inspired dark theme styled as a real mechanical keyboard: single-surface brushed-charcoal keycaps with a tight specular highlight, soft edge ambient-occlusion, and a subtle vignette for a photo-real physical read, tight gaps, and a small bright point of light at the base of a few accent keys (enter, caps-lock) — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
