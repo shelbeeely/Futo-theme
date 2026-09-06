@@ -1,8 +1,8 @@
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# Macintosh Plus — a classic-keyboard color variant of Groovy Code, replicating
-# the Macintosh Plus's platinum keycaps, set in FiraCode.
+# Macintosh Plus — a color variant of Groovy Code, replicating the Macintosh Plus's platinum keycaps,
+# set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "Macintosh Plus"
@@ -84,8 +84,7 @@ action_bar_opacity = 0.3
 cropping = [0.0, 0.0, 1.0, 1.0]
 
 # -------------------------------------------------------------------
-# Matchrules — order-dependent, first match wins. No row-banding in
-# this variant (flat, per the real keyboard it replicates).
+# Matchrules — order-dependent, first match wins.
 # -------------------------------------------------------------------
 
 [[matchrules.border]]

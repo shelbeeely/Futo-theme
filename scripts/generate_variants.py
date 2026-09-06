@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
-"""Generate the classic-keyboard variant themes under variants/<slug>/.
+"""Generate the classic-hardware variant themes under variants/<slug>/.
 
 Each variant is a separate, self-contained FUTO Keyboard theme package
 (its own theme.txt + Button-*.png + Icon-*.png + font + background +
 attributions) using the same "brown well + bright inset face + rim"
 structure as Groovy Code v17 (scripts/keycap_render.py), just recolored to
-replicate a real classic keyboard's palette. FUTO's theme format has no
-in-app palette-switching within one theme (confirmed: one theme.txt = one
-fixed `[colors]`/asset set, see docs/THEME-FORMAT.md) -- so "alternative
-color options" means separate installable packages, not a mode switch
-inside Groovy Code itself.
+replicate a real device's palette. FUTO's theme format has no in-app
+palette-switching within one theme (confirmed: one theme.txt = one fixed
+`[colors]`/asset set, see docs/THEME-FORMAT.md) -- so "alternative color
+options" means separate installable packages, not a mode switch inside
+Groovy Code itself.
 
-Per the user's explicit choice, these are "mostly flat" like the real
-keyboards they reference -- most keys are one uniform color, with only
-the keyboards whose own hardware has a real accent (Commodore 64's
-blue-gray function keys and reddish-brown RETURN key) or an unavoidable
-UI need (the `stickyon`/caps-lock state, which has no on-key equivalent
-on any of these real keyboards but has to read as "locked" in a
-touchscreen theme) getting any color variation at all.
+Per the user's explicit choice for the first batch of variants (the
+classic keyboards), these default to "mostly flat" like the real hardware
+they reference -- most keys are one uniform color, with only the devices
+whose own hardware has a real accent (Commodore 64's blue-gray function
+keys and reddish-brown RETURN key) or an unavoidable UI need (the
+`stickyon`/caps-lock state, which has no on-key equivalent on any of these
+real keyboards but has to read as "locked" in a touchscreen theme) getting
+any color variation at all.
+
+The Game Boy / NES / SNES / Game Boy Color batch follows the same
+principle -- match the real hardware -- which is why SNES is the one
+exception that opts INTO row-banding (`"row_banded": True` in its
+profile): the SNES controller's whole visual identity IS its four-color
+face-button scheme (Y green / X blue / A red / B yellow), so a flat
+lavender variant would fail to evoke "SNES" at all, whereas Game Boy (DMG),
+NES, and Game Boy Color are all genuinely monochrome hardware (a colored
+shell/case at most, buttons all one color) and stay flat like the
+keyboards did.
 
 Run from the repo root: `python3 scripts/generate_variants.py`.
 """
@@ -45,12 +56,20 @@ def hexs(rgb):
     return "#%02x%02x%02x" % rgb
 
 
-THEME_TEMPLATE = """\
+# ---------------------------------------------------------------------------
+# theme.txt is assembled from parts rather than one flat template, so that
+# row-banded variants (currently just SNES) can splice in the row0/1/2
+# matchrules + asset blocks that Groovy Code's own root theme.txt uses,
+# while flat variants skip them entirely. All parts share one kwargs dict
+# and get formatted together at the end (see build_theme_txt()).
+# ---------------------------------------------------------------------------
+
+HEAD_TEMPLATE = """\
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# {name} — a classic-keyboard color variant of Groovy Code, replicating
-# {reference_note}, set in FiraCode.
+# {name} — a color variant of Groovy Code, replicating {reference_note},
+# set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "{name}"
@@ -132,8 +151,7 @@ action_bar_opacity = 0.3
 cropping = [0.0, 0.0, 1.0, 1.0]
 
 # -------------------------------------------------------------------
-# Matchrules — order-dependent, first match wins. No row-banding in
-# this variant (flat, per the real keyboard it replicates).
+# Matchrules — order-dependent, first match wins.
 # -------------------------------------------------------------------
 
 [[matchrules.border]]
@@ -179,7 +197,38 @@ asset = "Button-function-pressed.png"
 [[matchrules.border]]
 selector = "functional"
 asset = "Button-function.png"
+"""
 
+# Only spliced in for row_banded profiles (currently just SNES) -- must sit
+# after functional and before the generic pressed/normal fallback, same
+# ordering rule as Groovy Code's own root theme.txt.
+MATCHRULES_ROWBANDED = """
+[[matchrules.border]]
+selector = "normal row 0 pressed"
+asset = "Button-row0-press.png"
+
+[[matchrules.border]]
+selector = "normal row 0"
+asset = "Button-row0.png"
+
+[[matchrules.border]]
+selector = "normal row 1 pressed"
+asset = "Button-row1-press.png"
+
+[[matchrules.border]]
+selector = "normal row 1"
+asset = "Button-row1.png"
+
+[[matchrules.border]]
+selector = "normal row 2 pressed"
+asset = "Button-row2-press.png"
+
+[[matchrules.border]]
+selector = "normal row 2"
+asset = "Button-row2.png"
+"""
+
+TAIL_TEMPLATE = """
 [[matchrules.border]]
 selector = "normal popup"
 asset = "Button-default-press.png"
@@ -345,7 +394,67 @@ padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
+"""
 
+# Only spliced in for row_banded profiles -- asset blocks for the row0/1/2
+# border art the MATCHRULES_ROWBANDED rules above reference.
+ASSETS_ROWBANDED = """
+[[asset.border]]
+name = "Button-row0.png"
+background_tint = "#ffffff"
+foreground_tint = "{row0_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+
+[[asset.border]]
+name = "Button-row0-press.png"
+background_tint = "#ffffff"
+foreground_tint = "{row0_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+
+[[asset.border]]
+name = "Button-row1.png"
+background_tint = "#ffffff"
+foreground_tint = "{row1_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+
+[[asset.border]]
+name = "Button-row1-press.png"
+background_tint = "#ffffff"
+foreground_tint = "{row1_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+
+[[asset.border]]
+name = "Button-row2.png"
+background_tint = "#ffffff"
+foreground_tint = "{row2_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+
+[[asset.border]]
+name = "Button-row2-press.png"
+background_tint = "#ffffff"
+foreground_tint = "{row2_legend_hex}"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1.15, 1.15, 1.15, 1.15]
+target_density = 640
+"""
+
+ICON_ASSETS = """
 [[asset.icon]]
 name = "Icon-backspace.png"
 target_density = 640
@@ -388,17 +497,27 @@ target_density = 640
 """
 
 
+def build_theme_txt(row_banded, **kwargs):
+    parts = [HEAD_TEMPLATE]
+    if row_banded:
+        parts.append(MATCHRULES_ROWBANDED)
+    parts.append(TAIL_TEMPLATE)
+    if row_banded:
+        parts.append(ASSETS_ROWBANDED)
+    parts.append(ICON_ASSETS)
+    return "".join(parts).format(**kwargs)
+
+
 # ---------------------------------------------------------------------------
-# Variant profiles. Each face_* is an (R,G,B) tuple fed to render_key;
-# each *_hex/legend value is the same color pre-formatted for theme.txt.
-# "Mostly flat" per the user's choice: face_function/face_action/face_space
-# default to face_default (no color difference at all) unless a profile
-# overrides them -- only Commodore 64 (real hardware accent keys) and the
-# stickyon/caps-lock state (no on-key equivalent on any of these real
-# keyboards, but required for a legible "locked" cue) get real variation.
+# Classic-keyboard profiles (first batch). "Mostly flat" per the user's
+# choice: face_function/face_action/face_space default to face_default (no
+# color difference at all) unless a profile overrides them -- only
+# Commodore 64 (real hardware accent keys) and the stickyon/caps-lock
+# state (no on-key equivalent on any of these real keyboards, but required
+# for a legible "locked" cue) get real variation.
 # ---------------------------------------------------------------------------
 
-PROFILES = [
+KEYBOARD_PROFILES = [
     {
         "slug": "ibm-model-m",
         "name": "IBM Model M",
@@ -460,6 +579,84 @@ PROFILES = [
     },
 ]
 
+# ---------------------------------------------------------------------------
+# Classic-console profiles (second batch). Same "match the real hardware"
+# principle: Game Boy (DMG), NES, and Game Boy Color are genuinely
+# monochrome-button hardware (a colored case at most) so they stay flat,
+# each with one small colored accent nodding to a real detail that has no
+# on-key equivalent (DMG's red power LED, NES's red logotype, GBC's green
+# power LED). SNES is the one exception -- its face buttons ARE its
+# identity -- so it opts into row-banding via "row_banded": True, mapping
+# Y/X/B to the three letter rows and A (the confirm/action button) to the
+# action/enter key, which lines up naturally rather than being arbitrary.
+# ---------------------------------------------------------------------------
+
+CONSOLE_PROFILES = [
+    {
+        "slug": "gameboy-dmg",
+        "name": "Game Boy",
+        "theme_id": "com.shelbee.gameboydmg",
+        "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons",
+        "description": "Classic Game Boy (DMG) color variant: dark gray buttons in a putty-gray shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
+        "well": (196, 190, 164),
+        "face_default": (58, 58, 56),
+        "face_stickyon": (75, 75, 72),
+        "rim": (90, 88, 78),
+        "legend": (230, 224, 200),
+        "bloom_stickyon_color": (210, 30, 30),
+        "bloom_stickyon_alpha": 170,
+    },
+    {
+        "slug": "nes",
+        "name": "NES",
+        "theme_id": "com.shelbee.nes",
+        "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons",
+        "description": "Classic NES color variant: near-black D-pad and buttons in a light gray shell, no per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
+        "well": (184, 184, 178),
+        "face_default": (43, 43, 43),
+        "rim": (140, 140, 134),
+        "legend": (224, 224, 218),
+        "bloom_action_color": (224, 32, 32),
+        "bloom_action_alpha": 80,
+        "bloom_stickyon_color": (224, 32, 32),
+        "bloom_stickyon_alpha": 180,
+    },
+    {
+        "slug": "snes",
+        "name": "SNES",
+        "theme_id": "com.shelbee.snes",
+        "reference_note": "the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors",
+        "description": "Classic SNES color variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key, all set in a lavender-gray body matching the console's own shoulder-button color. Set in FiraCode.",
+        "row_banded": True,
+        "well": (87, 83, 107),
+        "face_default": (137, 131, 160),
+        "face_function": (114, 110, 130),
+        "face_action": (230, 0, 18),
+        "face_stickyon": (216, 210, 230),
+        "rim": (200, 196, 216),
+        "legend": (28, 26, 36),
+        "row_faces": {0: (0, 149, 76), 1: (0, 116, 191), 2: (245, 168, 0)},
+        "bloom_stickyon_color": (230, 0, 18),
+        "bloom_stickyon_alpha": 140,
+    },
+    {
+        "slug": "gameboy-color",
+        "name": "Game Boy Color",
+        "theme_id": "com.shelbee.gameboycolor",
+        "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons",
+        "description": "Classic Game Boy Color color variant: dark violet-gray buttons in a deep grape-purple shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
+        "well": (74, 47, 94),
+        "face_default": (58, 42, 74),
+        "face_stickyon": (78, 58, 98),
+        "rim": (138, 107, 168),
+        "legend": (232, 221, 240),
+        "bloom_stickyon_color": (40, 200, 90),
+        "bloom_stickyon_alpha": 170,
+    },
+]
+
+PROFILES = KEYBOARD_PROFILES + CONSOLE_PROFILES
+
 
 def build_background(well):
     top = tuple(min(255, c + 25) for c in well)
@@ -480,6 +677,8 @@ def generate_variant(profile):
     face_action = profile.get("face_action", face_default)
     face_space = profile.get("face_space", face_default)
     face_stickyon = profile.get("face_stickyon", face_default)
+    row_banded = profile.get("row_banded", False)
+    row_faces = profile.get("row_faces", {})
 
     action_bloom_color = profile.get("bloom_action_color")
     action_bloom_alpha = profile.get("bloom_action_alpha", 0)
@@ -512,6 +711,15 @@ def generate_variant(profile):
     ))
     save("Button-stickyon-press.png", render_key(KEY_SIZE, KEY_RADIUS, face_stickyon, well, rim, pressed=True))
 
+    row_legends = {}
+    if row_banded:
+        for row_idx, row_face in row_faces.items():
+            save(f"Button-row{row_idx}.png", render_key(KEY_SIZE, KEY_RADIUS, row_face, well, rim))
+            save(f"Button-row{row_idx}-press.png", render_key(
+                KEY_SIZE, KEY_RADIUS, row_face, well, rim, pressed=True
+            ))
+            row_legends[f"row{row_idx}_legend_hex"] = hexs(profile.get(f"row{row_idx}_legend", legend))
+
     background_file = f"{slug}-background.png"
     build_background(well).save(os.path.join(out_dir, background_file))
 
@@ -521,7 +729,8 @@ def generate_variant(profile):
     function_legend = profile.get("function_legend", legend)
     action_legend = profile.get("action_legend", legend)
 
-    theme_txt = THEME_TEMPLATE.format(
+    theme_txt = build_theme_txt(
+        row_banded,
         name=profile["name"],
         reference_note=profile["reference_note"],
         theme_id=profile["theme_id"],
@@ -537,6 +746,7 @@ def generate_variant(profile):
         on_primary=hexs(legend),
         secondary=hexs(face_function),
         on_secondary=hexs(function_legend),
+        **row_legends,
     )
     with open(os.path.join(out_dir, "theme.txt"), "w") as f:
         f.write(theme_txt)

@@ -1,15 +1,15 @@
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# Commodore 64 — a color variant of Groovy Code, replicating the Commodore 64's beige keycaps with its blue-gray function row and reddish-brown RETURN key,
+# Game Boy — a color variant of Groovy Code, replicating the original Game Boy (DMG)'s putty-gray shell and dark gray buttons,
 # set in FiraCode.
 # -------------------------------------------------------------------
 
-name = "Commodore 64"
+name = "Game Boy"
 author = "Shelbee"
-id = "com.shelbee.commodore64"
+id = "com.shelbee.gameboydmg"
 version = 1
-description = "Classic Commodore 64 color variant: warm beige keycaps in a brown well, blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode."
+description = "Classic Game Boy (DMG) color variant: dark gray buttons in a putty-gray shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -21,64 +21,64 @@ weight_text = 500
 weight_hints = 400
 
 [colors]
-primary = "#8b4432"
-on_primary = "#20160d"
-primary_container = "#6e5738"
-on_primary_container = "#20160d"
-inverse_primary = "#4a3b26"
+primary = "#3a3a38"
+on_primary = "#e6e0c8"
+primary_container = "#c4bea4"
+on_primary_container = "#e6e0c8"
+inverse_primary = "#5a584e"
 
-secondary = "#7c8a9c"
-on_secondary = "#20160d"
-secondary_container = "#6e5738"
-on_secondary_container = "#20160d"
+secondary = "#3a3a38"
+on_secondary = "#e6e0c8"
+secondary_container = "#c4bea4"
+on_secondary_container = "#e6e0c8"
 
-tertiary = "#4a3b26"
-on_tertiary = "#20160d"
-tertiary_container = "#6e5738"
-on_tertiary_container = "#20160d"
+tertiary = "#5a584e"
+on_tertiary = "#e6e0c8"
+tertiary_container = "#c4bea4"
+on_tertiary_container = "#e6e0c8"
 
-background = "#877051"
-on_background = "#20160d"
+background = "#ddd7bd"
+on_background = "#e6e0c8"
 
-surface = "#877051"
-on_surface = "#20160d"
-surface_variant = "#6e5738"
-on_surface_variant = "#20160d"
-surface_tint = "#8b4432"
-inverse_surface = "#20160d"
-inverse_on_surface = "#877051"
+surface = "#ddd7bd"
+on_surface = "#e6e0c8"
+surface_variant = "#c4bea4"
+on_surface_variant = "#e6e0c8"
+surface_tint = "#3a3a38"
+inverse_surface = "#e6e0c8"
+inverse_on_surface = "#ddd7bd"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#4a3b2699"
-outline_variant = "#4a3b2666"
+outline = "#5a584e99"
+outline_variant = "#5a584e66"
 scrim = "#000000"
 
-surface_bright = "#6e5738"
-surface_dim = "#877051"
-surface_container = "#877051"
-surface_container_high = "#6e5738"
-surface_container_highest = "#6e5738"
-surface_container_low = "#877051"
-surface_container_lowest = "#877051"
+surface_bright = "#c4bea4"
+surface_dim = "#ddd7bd"
+surface_container = "#ddd7bd"
+surface_container_high = "#c4bea4"
+surface_container_highest = "#c4bea4"
+surface_container_low = "#ddd7bd"
+surface_container_lowest = "#ddd7bd"
 
-keyboard_surface = "#877051"
-keyboard_surface_dim = "#877051"
-keyboard_container = "#6e5738"
-keyboard_container_variant = "#6e5738"
-on_keyboard_container = "#20160d"
-keyboard_press = "#6e5738"
-keyboard_container_pressed = "#4a3b2644"
-on_keyboard_container_pressed = "#20160d00"
+keyboard_surface = "#ddd7bd"
+keyboard_surface_dim = "#ddd7bd"
+keyboard_container = "#c4bea4"
+keyboard_container_variant = "#c4bea4"
+on_keyboard_container = "#e6e0c8"
+keyboard_press = "#c4bea4"
+keyboard_container_pressed = "#5a584e44"
+on_keyboard_container_pressed = "#e6e0c800"
 
 [options.font]
 font = "FiraCode-Regular.ttf"
 
 [options.background]
-image = "commodore-64-background.png"
+image = "gameboy-dmg-background.png"
 opacity = 1
 action_bar_opacity = 0.3
 cropping = [0.0, 0.0, 1.0, 1.0]
@@ -192,7 +192,7 @@ asset = "Icon-arrow-right.png"
 [[asset.border]]
 name = "Button-morekeysbox.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -201,7 +201,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-morekey.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -210,7 +210,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -219,7 +219,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -228,7 +228,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -237,7 +237,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function-pressed.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -246,7 +246,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -255,7 +255,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -264,7 +264,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-action.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -273,7 +273,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-action-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -282,7 +282,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-stickyon.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -291,7 +291,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#20160d"
+foreground_tint = "#e6e0c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
