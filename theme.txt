@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 11
-description = "Warm-toned 70's-inspired dark theme with sculpted keycap-shaped keys (dish now clearly visible on dark keys too, not just the bright action key), row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 12
+description = "Warm-toned 70's-inspired dark theme styled as a mechanical keyboard: separated floating keycaps, a crisp top rim highlight and tight contact shadow per key, row-varying dish falloff, and spacebar stabilizer dimples, plus row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
@@ -235,7 +235,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -244,7 +244,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -253,7 +253,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -262,7 +262,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -271,7 +271,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -280,7 +280,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -289,7 +289,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -298,7 +298,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -307,7 +307,7 @@ background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -316,7 +316,7 @@ background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -325,7 +325,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -334,7 +334,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -343,7 +343,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -352,7 +352,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -361,7 +361,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f0dfc0"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -370,7 +370,7 @@ background_tint = "#ffffff"
 foreground_tint = "#f5e6c8"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -379,7 +379,7 @@ background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.border]]
@@ -388,7 +388,7 @@ background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1, 1, 1, 1]
+gap = [1.5, 1.5, 1.5, 1.5]
 target_density = 480
 
 [[asset.icon]]

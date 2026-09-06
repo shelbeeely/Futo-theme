@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v11**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v12**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -148,6 +148,25 @@ is sparsely documented anywhere else.
   correctly across the whole palette instead of one flat number tuned for
   one color.
 
+- **v12 (mechanical-keyboard pass, not yet screenshotted/confirmed):** the
+  design goal changed from "generic keycap-shaped keys" to "reads as a
+  mechanical/desktop keyboard," per `docs/MECHANICAL-KEYBOARD-GUIDE.md`.
+  Changes: `gap` bumped from `[1,1,1,1]` to `[1.5,1.5,1.5,1.5]` on every
+  `[[asset.border]]` (uniformly, so key spacing stays even across the
+  board) to expose more background between keys for a "floating keycap"
+  look; the dish/rim-highlight/contact-shadow rendering was redone with a
+  crisper, less-blurred highlight line and a per-row gamma curve on the
+  dish gradient (steeper falloff on `row 0`, gentler on `row 2`) as a
+  row-profile cue; the spacebar got two subtle stabilizer-stem dimples.
+  `stickyon` was deliberately left flat (no dish) — that's an intentional
+  design choice (see "Design system" below), not an oversight. **This
+  finally gives the repo the generation script that was missing** —
+  `scripts/generate_assets.py` (Pillow) regenerates all 16 non-icon
+  `Button-*.png` border assets from constants; it intentionally never
+  touches `Icon-*.png`/`Button-morekey.png`/`Button-morekeysbox.png`, which
+  closes off the v10 icon-clobbering bug class at the source rather than
+  just avoiding it by discipline.
+
 - **Row-banding matchrule ordering:** row-specific border rules
   (`normal row 0`, `normal row 1`, `normal row 2`, plus their `pressed`
   variants) must sit AFTER the `action`/`spacebar`/`functional` rules and
@@ -173,14 +192,16 @@ is sparsely documented anywhere else.
 
 ## Build workflow
 
-Assets are generated with Python + Pillow (PIL), not hand-authored. The
-generation script does NOT currently exist in this repo — it lived in the
-prior session's scratch space. You'll likely want to rebuild it from scratch
-based on the descriptions above (rounded-rect key faces with gradient body +
-multiplicative-darkened inset dish + rim highlight + border color per key
-type), rather than trying to reverse-engineer exact pixel values from the
-PNGs. The important part is the *approach* (documented above), not
-reproducing byte-identical output.
+Assets are generated with Python + Pillow (PIL), not hand-authored, via
+`scripts/generate_assets.py` (run `python3 scripts/generate_assets.py` from
+the repo root — it writes the `Button-*.png` files in place). It covers all
+16 non-icon border assets: `default`, `function`, `row0`/`row1`/`row2`,
+`action`, `space`, `stickyon`, each with a `-press`/`-pressed` pair.
+Palette/geometry constants live at the top of the script — see its
+docstring before changing radius/canvas-size constants, since `theme.txt`'s
+`slicing` values are computed from them (`docs/THEME-FORMAT.md` has the
+math). It deliberately never touches `Icon-*.png`, `Button-morekey.png`, or
+`Button-morekeysbox.png` — see the v12 entry above for why.
 
 Icons: 8 of them (`Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`)
 are straight rasterizations of FUTO's own SVGs — if you need to regenerate,
@@ -209,11 +230,20 @@ without one or the other.
   to always-false, so it could only be verified in the real Android app.
 - v11 (multiplicative dish shading) has not yet been screenshotted/confirmed
   on-device — that's the immediate next verification step.
-- **Next design direction: a mechanical-keyboard-look theme** (the user's
-  current stated goal, not yet started). Read
-  `docs/MECHANICAL-KEYBOARD-GUIDE.md` before beginning — it covers what
-  this format can and can't fake about a real mechanical keyboard
-  (exposed-plate gaps via `gap`, per-row dish/highlight variation, harder
-  rim highlights, spacebar stabilizer hints, scattered novelty keycaps via
-  combined `rowmod`+`colmod`), and is informed by all four gallery themes
-  now analyzed, not just this one.
+- **v12 (mechanical-keyboard pass) has not yet been screenshotted/confirmed
+  on-device either** — same rule applies (see "Verification checklist"
+  above): don't call the `gap` increase, the crisper rim highlight, the
+  per-row dish gamma curve, or the spacebar stabilizer dimples "done" on
+  the strength of the generated PNGs alone. This repo's own history (dish
+  contrast, icon regression) is exactly why.
+- The background (`GroovyCode-background.png`) was deliberately left
+  untouched this pass — the mechanical guide's "visible plate between
+  keys" idea (`docs/MECHANICAL-KEYBOARD-GUIDE.md`, point 1) calls for a
+  plate/PCB-textured background instead of the current soft dark
+  sparkle texture, but that's a bigger, harder-to-preview change than the
+  keycap rendering and was scoped out to keep this pass reviewable. Good
+  next step once v12 is confirmed on-device.
+- `scripts/generate_assets.py`'s per-row gamma values (`0.72`/`1.0`/`1.35`
+  for row0/row1/row2) and the `gap = 1.5` value are first guesses, not
+  device-measured — adjust them in the script (not by hand-editing the
+  PNGs) if a real screenshot shows the effect is too subtle or too strong.
