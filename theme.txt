@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 16
-description = "Warm-toned 70's-inspired dark theme styled as a real mechanical keyboard: single-surface brushed-charcoal keycaps with a tight specular highlight, soft edge ambient-occlusion, and a subtle vignette for a photo-real physical read, tight gaps, and a small bright point of light at the base of a few accent keys (enter, caps-lock) — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 17
+description = "Warm-toned 70's-inspired theme styled as a real mechanical keyboard: solid colorful keycaps, each a brown outer well with a bright inset face and a thin gold rim, row-banded orange/orange-red/rust across the letter rows, gold system keys, a rust-red enter key, and a bright gold caps-lock — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
@@ -250,7 +250,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -259,7 +259,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -268,7 +268,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -277,7 +277,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function-pressed.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -286,7 +286,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -295,7 +295,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -322,7 +322,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row0.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -331,7 +331,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row0-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -340,7 +340,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row1.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -349,7 +349,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row1-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -358,7 +358,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row2.png"
 background_tint = "#ffffff"
-foreground_tint = "#f0dfc0"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -367,7 +367,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-row2-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#f5e6c8"
+foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]

@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v16**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v17**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -143,6 +143,43 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **v17 (solid colorful keys, reverting v15/v16's dark look, checked with
+  `preview-theme`, not yet on a real device):** the user shared a new
+  reference — an SVG illustration with solid orange keycaps, a gold rim,
+  a visible inset face on every key (not just system keys), and a rust-red
+  enter key — a fundamentally different direction from v15/v16's dark
+  charcoal + tiny edge-light look. Per this repo's own lesson about not
+  guessing repeatedly on a subjective visual target, asked directly: keep
+  v16's dark look, blend, or revert to solid colorful keys. **The user
+  chose reverting to solid colorful keys.** Rewrote `render_key` in
+  `scripts/generate_assets.py` around a new structure: a brown (`#874725`)
+  outer "well" body, a bright inset face offset in from the edges
+  (asymmetric margins — less at the sides/top, more at the bottom,
+  matching the reference), and a thin gold (`#e19d25`) rim stroke right at
+  that boundary, on every key. Row-banding was brought back as a *solid*
+  color per row (top=orange-red, home=orange, bottom=brightened rust) —
+  closer to the old v10-v13 look than the reference's uniform orange,
+  which is what the user's chosen option explicitly referenced, and
+  restores the row/system-key color cue that v15/v16 had flagged as
+  traded away. The action/enter key uses true rust (`#bd361e`, distinct
+  from row2's *brightened* rust) matching the reference's enter key
+  exactly; `stickyon` keeps the brightest gold face plus the biggest
+  bloom (a soft color bleed past the rim, replacing v14-v16's glow-in-
+  the-dish technique) for the "gold = locked" convention. **Every v14-v16
+  photo-realism technique — brushed-metal texture, vignette, edge
+  ambient-occlusion, specular highlight — was dropped, not layered onto
+  the new structure**: those were built for a dark, textured,
+  photographic read and fight against a flat, saturated, vector-style
+  solid-color look. This wasn't explicitly decided by the user's answer
+  (which was about color/structure, not the realism techniques
+  specifically) — flagged in "Open items" as a judgment call, not a
+  certainty, in case a future round wants some realism layered back on
+  top of the new solid faces. numpy is no longer needed by the script as
+  a result — back to plain Pillow gradients and rounded-rect compositing.
+  Confirmed via `preview-theme` on QWERTY, the `?123` Symbols layout, and
+  Numpad — row-banding, the gold rim, and the rust enter key all read
+  correctly on all three.
 
 - **Icon regression (fixed in v10, verify it stuck):** the asset-generation
   script (see below) originally hand-drew icons with PIL, then I later
@@ -283,33 +320,35 @@ is sparsely documented anywhere else.
   `#bd361e`, clay `#b37545`, brown `#874725`, near-black `#422118`-derived —
   originally pulled from a "Warm-toned Groovy 70's" palette image the user
   uploaded.
-- **Row-banded letter keys:** top row = orange-red tint, home row = orange
-  tint, bottom row = brightened rust tint — mirrors the source palette's
-  stacked swatch order. As of v15 this is a *very subtle* tint, not a
-  visible glow — see the v15 changelog entry above, and "Open items"
-  below (this traded away a usability cue, flagged for the user).
-- **Gold tint** = "system key" signal (shift, backspace, 123, gear,
-  comma/period) — also toned down to near-imperceptible as of v15.
-- **Dramatic gold point of light** (`stickyon` asset) = caps-lock engaged
-  — much bigger/brighter than any other key's accent, deliberately, so
-  the locked state is unmistakable at a glance.
-- **A small, tight point of orange light at the base** = the enter/action
-  key — the only other key with a visible glow at rest, per v15.
-- **Keycap silhouette, v15:** one continuous brushed-charcoal surface per
-  key with a subtle top-lit sheen — no separate outer-ring/inset-dish
-  regions, no crisp highlight line. Replaced the v10-v14 "outer body +
-  inset dish + rim highlight + contact shadow" structure entirely; see
-  the v15 changelog entry above for why.
-- **Physical-object cues, v16:** a soft vignette, a thin edge
-  ambient-occlusion line, and a small tight specular highlight — none of
-  these existed before v16, the surface was just a flat gradient +
-  brushed texture. See the v16 changelog entry above.
+- **Keycap structure, v17:** a brown (`#874725`) outer "well" body, a
+  bright inset face per key role, and a thin gold (`#e19d25`) rim stroke
+  right at the boundary between them, on every key — replacing v15/v16's
+  dark-charcoal-single-surface look entirely. See the v17 changelog entry
+  above for why.
+- **Row-banded letter keys:** top row = orange-red face, home row = orange
+  face, bottom row = brightened rust face — mirrors the source palette's
+  stacked swatch order. As of v17 this is a solid, clearly visible color
+  again (v15/v16's near-imperceptible tint was reverted) — see the v17
+  changelog entry above.
+- **Gold inset face** = "system key" signal (shift, backspace, 123, gear,
+  comma/period) — solid and clearly visible again as of v17, restoring
+  the cue v15/v16 had traded away.
+- **Brightest gold face + a soft bloom** (`stickyon` asset) = caps-lock
+  engaged — brighter than every other key's face and the only key with a
+  colored bloom bleeding past its rim, deliberately, so the locked state
+  is unmistakable at a glance.
+- **True rust face + a modest bloom** = the enter/action key — distinct
+  from every other key's orange/gold, matching the v17 reference SVG's
+  rust-red enter key.
 
 ## Build workflow
 
-Assets are generated with Python + Pillow (PIL) + numpy, not hand-authored,
-via `scripts/generate_assets.py` (run `python3 scripts/generate_assets.py`
-from the repo root — it writes the `Button-*.png` files in place). It covers all
+Assets are generated with Python + Pillow (PIL), not hand-authored, via
+`scripts/generate_assets.py` (run `python3 scripts/generate_assets.py`
+from the repo root — it writes the `Button-*.png` files in place). As of
+v17 the script no longer needs numpy — the v14-v16 brushed-texture/
+vignette/specular machinery was dropped along with the dark charcoal look
+it served. It covers all
 16 non-icon border assets: `default`, `function`, `row0`/`row1`/`row2`,
 `action`, `space`, `stickyon`, each with a `-press`/`-pressed` pair.
 Palette/geometry constants live at the top of the script — see its
@@ -344,36 +383,34 @@ without (c) eventually happening.
 
 ## Open items / not yet done
 
-- **Row-banding and the gold system-key tint are now nearly imperceptible
-  by color alone (v15)** — a deliberate trade to match the reference
-  photo (which shows no color-coding on those keys either), but it gives
-  up a usability cue the theme used to have. Ask the user whether they
-  want a faint version of that cue restored (bump `tint_amount` for
-  `function`/row keys in `scripts/generate_assets.py`) rather than
-  deciding unilaterally — this is a real trade-off, not a bug.
+- **Whether to layer the v14-v16 photo-realism techniques (brushed
+  texture, vignette, edge ambient-occlusion, specular highlight) back onto
+  v17's solid-color faces is an open judgment call, not something the
+  user explicitly decided.** v17 dropped them entirely because they fought
+  against a flat, saturated look, but the user's chosen option was about
+  color/structure ("solid colorful keys"), not explicitly about the
+  realism techniques. Ask before assuming either way if this comes up
+  again.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, zwnj, previous_key, etc.) — only added the ones with a clear
   coding-relevant use case (tab, cursor arrows, globe, mic).
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
-  Not restyled for the v15/v16 look either (still the old gold-ring style from
+  Not restyled for the v17 look either (still the old gold-ring style from
   v11) for the same reason — low priority since it's only visible on
   long-press.
-- v11 through v16 have all been checked with the `preview-theme` skill's
+- v11 through v17 have all been checked with the `preview-theme` skill's
   real render (v13's caught the dish-squeeze bug; v15's fixed the "doesn't
-  look mechanical" feedback) but **none of them have been screenshotted/
-  confirmed on a real device yet** — that's the immediate next step. This
-  repo's own history (dish contrast, icon regression, the v13 dish-squeeze,
-  v14's overall miss) is exactly why a real-code render or a real device
-  catches things static analysis can't.
+  look mechanical" feedback; v17 reverted the whole color direction) but
+  **none of them have been screenshotted/confirmed on a real device
+  yet** — that's the immediate next step. This repo's own history (dish
+  contrast, icon regression, the v13 dish-squeeze, v14's overall miss) is
+  exactly why a real-code render or a real device catches things static
+  analysis can't.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v16. A first attempt at a brushed-plate
+  dark texture, untouched through v17. A first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
   abandoned when effort redirected to the keycaps instead. Revisit only if
   the plain background still looks flat against the now much more
-  realistic keycaps once seen on a real device.
-- `scripts/generate_assets.py`'s per-row gamma values (`0.72`/`1.0`/`1.35`
-  for row0/row1/row2) and the `gap = 1.15` value are first guesses, not
-  device-measured — adjust them in the script (not by hand-editing the
-  PNGs) if a real screenshot shows the effect is too subtle or too strong.
+  colorful keycaps once seen on a real device.
