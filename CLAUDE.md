@@ -32,7 +32,12 @@ Repo layout:
   `[colors]`/asset set) — these are separate installable packages, not a
   mode inside Groovy Code itself. SNES is the one variant that revives
   row-banding (its four-color face buttons ARE its identity); every other
-  variant is flat, matching its real hardware. See `docs/VARIANTS.md`.
+  variant is flat, matching its real hardware. Each variant also has its
+  own geometry (corner radius, bezel thickness, rim weight, key spacing,
+  gradient contrast) reflecting its real hardware's physical character —
+  after an initial color-only pass looked like Groovy Code's own shape
+  with new paint, the user asked for them to actually be unique themes,
+  not recolors. See `docs/VARIANTS.md`.
 - `.github/workflows/package-theme.yml` — zips the root theme package
   (everything above except `docs/`/`scripts/`/`variants/`/`.claude/`/this
   file/`README.md`) AND, in a separate matrix job, each `variants/<slug>/`

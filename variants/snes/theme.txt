@@ -14,7 +14,7 @@ description = "Classic SNES color variant -- the one exception to this variant f
 [options]
 auto_borders = true
 center_hints = false
-roundedness = 0.6
+roundedness = 0.9
 scale_text = 1.0
 scale_hints = 0.85
 weight_text = 500
@@ -208,9 +208,11 @@ selector = "icon action_right"
 asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
-# Asset configs — one entry per image used above. Slicing fractions
-# match scripts/keycap_render.py's shared KEY_SIZE/KEY_RADIUS geometry
-# (see docs/THEME-FORMAT.md "Computing slicing values").
+# Asset configs — one entry per image used above. {key_slicing}/
+# {space_slicing} are computed per profile from its own radius via
+# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
+# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
+# each variant now draws its own corner radius.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -219,7 +221,7 @@ background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
-gap = [1.15, 1.15, 1.15, 1.15]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -228,7 +230,7 @@ background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
-gap = [1.15, 1.15, 1.15, 1.15]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -236,8 +238,8 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -245,8 +247,8 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -254,8 +256,8 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -263,8 +265,8 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -272,8 +274,8 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.0641, 0.2562, 0.9359, 0.7438]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -281,8 +283,8 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.0641, 0.2562, 0.9359, 0.7438]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -290,8 +292,8 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -299,8 +301,8 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -308,8 +310,8 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -317,8 +319,8 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -326,8 +328,8 @@ name = "Button-row0.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -335,8 +337,8 @@ name = "Button-row0-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -344,8 +346,8 @@ name = "Button-row1.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -353,8 +355,8 @@ name = "Button-row1-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -362,8 +364,8 @@ name = "Button-row2.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.border]]
@@ -371,8 +373,8 @@ name = "Button-row2-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
 [[asset.icon]]

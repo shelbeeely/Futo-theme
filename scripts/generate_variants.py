@@ -36,7 +36,11 @@ Run from the repo root: `python3 scripts/generate_variants.py`.
 import os
 import shutil
 
-from keycap_render import KEY_SIZE, KEY_RADIUS, SPACE_SIZE, SPACE_RADIUS, render_key, vertical_gradient, scale
+from keycap_render import (
+    KEY_SIZE, KEY_RADIUS, SPACE_SIZE, SPACE_RADIUS,
+    MARGIN_TOP, MARGIN_SIDE, MARGIN_BOTTOM, RIM_WIDTH,
+    render_key, vertical_gradient, scale, compute_slicing,
+)
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VARIANTS_DIR = os.path.join(REPO_ROOT, "variants")
@@ -81,7 +85,7 @@ description = "{description}"
 [options]
 auto_borders = true
 center_hints = false
-roundedness = 0.6
+roundedness = {roundedness}
 scale_text = 1.0
 scale_hints = 0.85
 weight_text = 500
@@ -282,9 +286,11 @@ selector = "icon action_right"
 asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
-# Asset configs — one entry per image used above. Slicing fractions
-# match scripts/keycap_render.py's shared KEY_SIZE/KEY_RADIUS geometry
-# (see docs/THEME-FORMAT.md "Computing slicing values").
+# Asset configs — one entry per image used above. {{key_slicing}}/
+# {{space_slicing}} are computed per profile from its own radius via
+# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
+# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
+# each variant now draws its own corner radius.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -293,7 +299,7 @@ background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
-gap = [1.15, 1.15, 1.15, 1.15]
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -302,7 +308,7 @@ background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
-gap = [1.15, 1.15, 1.15, 1.15]
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -310,8 +316,8 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -319,8 +325,8 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -328,8 +334,8 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "{function_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -337,8 +343,8 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "{function_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -346,8 +352,8 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {space_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -355,8 +361,8 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {space_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -364,8 +370,8 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "{action_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -373,8 +379,8 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{action_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -382,8 +388,8 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -391,8 +397,8 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 """
 
@@ -404,8 +410,8 @@ name = "Button-row0.png"
 background_tint = "#ffffff"
 foreground_tint = "{row0_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -413,8 +419,8 @@ name = "Button-row0-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{row0_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -422,8 +428,8 @@ name = "Button-row1.png"
 background_tint = "#ffffff"
 foreground_tint = "{row1_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -431,8 +437,8 @@ name = "Button-row1-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{row1_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -440,8 +446,8 @@ name = "Button-row2.png"
 background_tint = "#ffffff"
 foreground_tint = "{row2_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 
 [[asset.border]]
@@ -449,8 +455,8 @@ name = "Button-row2-press.png"
 background_tint = "#ffffff"
 foreground_tint = "{row2_legend_hex}"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
+slicing = {key_slicing}
+gap = {gap_list}
 target_density = 640
 """
 
@@ -524,6 +530,14 @@ KEYBOARD_PROFILES = [
         "theme_id": "com.shelbee.ibmmodelm",
         "reference_note": "the IBM Model M's monochrome putty-beige keycaps",
         "description": "Classic IBM Model M color variant: monochrome putty-beige keycaps in a warm gray well, no per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
+        # Chunky boxy PBT keycaps: sharp corners, a thick bezel (that
+        # buckling-spring housing is deep), tight-set keys, and a deeper,
+        # more matte dish than Groovy Code's own -- heavy and mechanical
+        # rather than glossy.
+        "radius": 14, "space_radius": 16,
+        "margin_top": 16, "margin_side": 16, "margin_bottom": 26,
+        "rim_width": 4, "gap": 1.05,
+        "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (140, 132, 109),
         "face_default": (232, 224, 196),
         "face_stickyon": (245, 238, 214),
@@ -538,6 +552,14 @@ KEYBOARD_PROFILES = [
         "theme_id": "com.shelbee.macplus",
         "reference_note": "the Macintosh Plus's platinum keycaps",
         "description": "Classic Macintosh Plus color variant: monochrome warm platinum-gray keycaps, no per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
+        # Low-profile, rounded, minimal: a thin bezel (keys nearly fill
+        # the housing) and a nearly-flat face -- Groovy Code's dish
+        # gradient exists to fake keycap depth, but Mac Plus keys read as
+        # smooth and pillowy, not deeply sculpted.
+        "radius": 32, "space_radius": 34,
+        "margin_top": 7, "margin_side": 7, "margin_bottom": 12,
+        "rim_width": 2, "gap": 1.1,
+        "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (139, 134, 128),
         "face_default": (212, 208, 200),
         "face_stickyon": (237, 234, 226),
@@ -552,6 +574,14 @@ KEYBOARD_PROFILES = [
         "theme_id": "com.shelbee.commodore64",
         "reference_note": "the Commodore 64's beige keycaps with its blue-gray function row and reddish-brown RETURN key",
         "description": "Classic Commodore 64 color variant: warm beige keycaps in a brown well, blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode.",
+        # Chunky sculpted home-computer keys -- moderate rounding, a
+        # visible bezel, a fairly pronounced dish. Kept close to a
+        # generic "retro computer key" baseline since this is the
+        # reference point the other geometries deliberately depart from.
+        "radius": 20, "space_radius": 24,
+        "margin_top": 12, "margin_side": 12, "margin_bottom": 22,
+        "rim_width": 3, "gap": 1.15,
+        "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (110, 87, 56),
         "face_default": (214, 190, 148),
         "face_function": (124, 138, 156),
@@ -568,6 +598,14 @@ KEYBOARD_PROFILES = [
         "theme_id": "com.shelbee.amberterminal",
         "reference_note": "a VT100-style amber phosphor terminal's monochrome black keys with amber trim",
         "description": "Amber phosphor terminal color variant: uniform near-black keycaps, no per-row or per-role face color at all -- the only color is a thin amber rim and amber legends on every key, with the enter key and caps-lock picking up a soft amber glow like a lit terminal cursor block. Set in FiraCode.",
+        # Blocky and nearly flat -- a terminal function key is a slab
+        # behind a wireframe outline, not a sculpted physical cap. Sharp
+        # corners, a thin bright rim (the only real detailing), a wider
+        # gap for a grid/schematic feel instead of tightly-packed keys.
+        "radius": 6, "space_radius": 8,
+        "margin_top": 10, "margin_side": 10, "margin_bottom": 16,
+        "rim_width": 2, "gap": 1.3,
+        "face_top_blend": 0.04, "face_bottom_scale": 0.94,
         "well": (10, 10, 10),
         "face_default": (22, 22, 22),
         "rim": (255, 176, 0),
@@ -598,6 +636,13 @@ CONSOLE_PROFILES = [
         "theme_id": "com.shelbee.gameboydmg",
         "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons",
         "description": "Classic Game Boy (DMG) color variant: dark gray buttons in a putty-gray shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
+        # Chunky molded plastic buttons sitting in a thick shell bezel --
+        # the DMG's brick-like housing is the most visible "well" of any
+        # variant here.
+        "radius": 22, "space_radius": 24,
+        "margin_top": 15, "margin_side": 15, "margin_bottom": 24,
+        "rim_width": 3, "gap": 1.2,
+        "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
         "face_default": (58, 58, 56),
         "face_stickyon": (75, 75, 72),
@@ -612,6 +657,13 @@ CONSOLE_PROFILES = [
         "theme_id": "com.shelbee.nes",
         "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons",
         "description": "Classic NES color variant: near-black D-pad and buttons in a light gray shell, no per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
+        # The NES controller's buttons are famously rectangular, not
+        # round -- minimal corner rounding here (the smallest radius of
+        # the three consoles besides the terminal), a moderate bezel.
+        "radius": 8, "space_radius": 10,
+        "margin_top": 13, "margin_side": 13, "margin_bottom": 22,
+        "rim_width": 3, "gap": 1.15,
+        "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
         "face_default": (43, 43, 43),
         "rim": (140, 140, 134),
@@ -628,6 +680,14 @@ CONSOLE_PROFILES = [
         "reference_note": "the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors",
         "description": "Classic SNES color variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key, all set in a lavender-gray body matching the console's own shoulder-button color. Set in FiraCode.",
         "row_banded": True,
+        # Rounded, glossy, concave buttons sitting almost flush in the
+        # housing -- the roundest radius and thinnest bezel of any
+        # variant, plus a brighter top-blend for a glossier sheen than
+        # the plastic-matte look everything else here goes for.
+        "radius": 36, "space_radius": 38,
+        "margin_top": 8, "margin_side": 8, "margin_bottom": 14,
+        "rim_width": 2, "gap": 1.05,
+        "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (87, 83, 107),
         "face_default": (137, 131, 160),
         "face_function": (114, 110, 130),
@@ -645,6 +705,13 @@ CONSOLE_PROFILES = [
         "theme_id": "com.shelbee.gameboycolor",
         "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons",
         "description": "Classic Game Boy Color color variant: dark violet-gray buttons in a deep grape-purple shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
+        # More rounded and curved than the boxy original DMG (the GBC's
+        # shell is a noticeably softer, more ergonomic redesign) but not
+        # as thick-bezeled -- a middle ground between DMG and SNES.
+        "radius": 28, "space_radius": 30,
+        "margin_top": 13, "margin_side": 13, "margin_bottom": 22,
+        "rim_width": 3, "gap": 1.15,
+        "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
         "face_default": (58, 42, 74),
         "face_stickyon": (78, 58, 98),
@@ -685,39 +752,58 @@ def generate_variant(profile):
     stickyon_bloom_color = profile.get("bloom_stickyon_color")
     stickyon_bloom_alpha = profile.get("bloom_stickyon_alpha", 0)
 
+    # Geometry/material knobs -- this is what makes each variant an actual
+    # distinct theme (shape, bezel thickness, gloss/dish depth) rather than
+    # Groovy Code's own silhouette with a new palette painted on. Every
+    # default below matches Groovy Code v17's own hardcoded values, so a
+    # profile that sets none of these renders exactly like the old
+    # one-size-fits-all look did.
+    radius = profile.get("radius", KEY_RADIUS)
+    space_radius = profile.get("space_radius", SPACE_RADIUS)
+    geo = dict(
+        margin_top=profile.get("margin_top", MARGIN_TOP),
+        margin_side=profile.get("margin_side", MARGIN_SIDE),
+        margin_bottom=profile.get("margin_bottom", MARGIN_BOTTOM),
+        rim_width=profile.get("rim_width", RIM_WIDTH),
+        well_top_blend=profile.get("well_top_blend", 0.10),
+        well_bottom_scale=profile.get("well_bottom_scale", 0.72),
+        face_top_blend=profile.get("face_top_blend", 0.14),
+        face_bottom_scale=profile.get("face_bottom_scale", 0.82),
+    )
+    gap = profile.get("gap", 1.15)
+
+    def rk(size, r, face, **kw):
+        return render_key(size, r, face, well, rim, **geo, **kw)
+
     def save(name, img):
         img.save(os.path.join(out_dir, name))
 
-    save("Button-default.png", render_key(KEY_SIZE, KEY_RADIUS, face_default, well, rim))
-    save("Button-default-press.png", render_key(KEY_SIZE, KEY_RADIUS, face_default, well, rim, pressed=True))
+    save("Button-default.png", rk(KEY_SIZE, radius, face_default))
+    save("Button-default-press.png", rk(KEY_SIZE, radius, face_default, pressed=True))
 
-    save("Button-function.png", render_key(KEY_SIZE, KEY_RADIUS, face_function, well, rim))
-    save("Button-function-pressed.png", render_key(KEY_SIZE, KEY_RADIUS, face_function, well, rim, pressed=True))
+    save("Button-function.png", rk(KEY_SIZE, radius, face_function))
+    save("Button-function-pressed.png", rk(KEY_SIZE, radius, face_function, pressed=True))
 
-    save("Button-action.png", render_key(
-        KEY_SIZE, KEY_RADIUS, face_action, well, rim,
+    save("Button-action.png", rk(
+        KEY_SIZE, radius, face_action,
         bloom_alpha=action_bloom_alpha, bloom_color=action_bloom_color, bloom_pad=7,
     ))
-    save("Button-action-press.png", render_key(KEY_SIZE, KEY_RADIUS, face_action, well, rim, pressed=True))
+    save("Button-action-press.png", rk(KEY_SIZE, radius, face_action, pressed=True))
 
-    save("Button-space.png", render_key(SPACE_SIZE, SPACE_RADIUS, face_space, well, rim, stabilizers=True))
-    save("Button-space-press.png", render_key(
-        SPACE_SIZE, SPACE_RADIUS, face_space, well, rim, pressed=True, stabilizers=True
-    ))
+    save("Button-space.png", rk(SPACE_SIZE, space_radius, face_space, stabilizers=True))
+    save("Button-space-press.png", rk(SPACE_SIZE, space_radius, face_space, pressed=True, stabilizers=True))
 
-    save("Button-stickyon.png", render_key(
-        KEY_SIZE, KEY_RADIUS, face_stickyon, well, rim,
+    save("Button-stickyon.png", rk(
+        KEY_SIZE, radius, face_stickyon,
         bloom_alpha=stickyon_bloom_alpha, bloom_color=stickyon_bloom_color, bloom_pad=9,
     ))
-    save("Button-stickyon-press.png", render_key(KEY_SIZE, KEY_RADIUS, face_stickyon, well, rim, pressed=True))
+    save("Button-stickyon-press.png", rk(KEY_SIZE, radius, face_stickyon, pressed=True))
 
     row_legends = {}
     if row_banded:
         for row_idx, row_face in row_faces.items():
-            save(f"Button-row{row_idx}.png", render_key(KEY_SIZE, KEY_RADIUS, row_face, well, rim))
-            save(f"Button-row{row_idx}-press.png", render_key(
-                KEY_SIZE, KEY_RADIUS, row_face, well, rim, pressed=True
-            ))
+            save(f"Button-row{row_idx}.png", rk(KEY_SIZE, radius, row_face))
+            save(f"Button-row{row_idx}-press.png", rk(KEY_SIZE, radius, row_face, pressed=True))
             row_legends[f"row{row_idx}_legend_hex"] = hexs(profile.get(f"row{row_idx}_legend", legend))
 
     background_file = f"{slug}-background.png"
@@ -728,6 +814,10 @@ def generate_variant(profile):
 
     function_legend = profile.get("function_legend", legend)
     action_legend = profile.get("action_legend", legend)
+
+    key_slicing = compute_slicing(radius, KEY_SIZE)
+    space_slicing = compute_slicing(space_radius, SPACE_SIZE)
+    roundedness = round(min(0.95, max(0.15, radius / 40)), 2)
 
     theme_txt = build_theme_txt(
         row_banded,
@@ -746,6 +836,10 @@ def generate_variant(profile):
         on_primary=hexs(legend),
         secondary=hexs(face_function),
         on_secondary=hexs(function_legend),
+        key_slicing=key_slicing,
+        space_slicing=space_slicing,
+        gap_list=[gap, gap, gap, gap],
+        roundedness=roundedness,
         **row_legends,
     )
     with open(os.path.join(out_dir, "theme.txt"), "w") as f:
