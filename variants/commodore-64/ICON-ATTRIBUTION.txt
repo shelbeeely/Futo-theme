@@ -1,0 +1,16 @@
+Icon-backspace.png, Icon-shift.png, Icon-enter.png, Icon-emoji.png, Icon-globe.png,
+Icon-mic.png, Icon-arrow-left.png, and Icon-arrow-right.png are converted from the
+default icon set bundled with FUTO's keyboard-theme-editor
+(github.com/futo-org/keyboard-theme-editor, www/icons/*.svg), rasterized from SVG
+to PNG with no shape changes.
+
+Copyright 2026 FUTO Holdings, Inc. Redistributed under the terms of that project's
+BSD-3-Clause-style license (see LICENSE.md at the same repo) — redistribution in
+binary (PNG) form is permitted with this attribution retained.
+
+Icon-shift-press.png (solid caps-lock arrow) and Icon-tab.png are original,
+hand-drawn for this theme — no official FUTO SVG exists for either.
+
+Note: the app recolors every icon at render time using the theme's foreground
+color for that key state (canvas source-in compositing) — only each icon's
+alpha-channel shape matters, not any RGB baked into the PNG.

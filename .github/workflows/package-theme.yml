@@ -18,6 +18,7 @@ on:
       - "**.jpg"
       - "**.jpeg"
       - "*-ATTRIBUTION.txt"
+      - "variants/**"
       - ".github/workflows/package-theme.yml"
   workflow_dispatch: {}
 
@@ -72,6 +73,88 @@ jobs:
         run: |
           set -euo pipefail
           tag="v${{ steps.theme.outputs.version }}"
+          title="${{ steps.theme.outputs.name }} v${{ steps.theme.outputs.version }}"
+          notes="Packaged from commit ${{ github.sha }}. Download the .zip below and import it in FUTO Keyboard's theme importer."
+          if gh release view "$tag" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "$tag" "${{ steps.zip.outputs.zip_path }}" --repo "${{ github.repository }}" --clobber
+          else
+            gh release create "$tag" "${{ steps.zip.outputs.zip_path }}" \
+              --repo "${{ github.repository }}" --title "$title" --notes "$notes"
+          fi
+
+  # Each variants/<slug>/ directory is a separate, self-contained theme
+  # package (see scripts/generate_variants.py) -- a classic-keyboard color
+  # option that isn't a mode inside Groovy Code itself (FUTO's theme format
+  # has no in-app palette switching), just another importable theme.
+  # Packaged the same way as the root theme above, one release per variant
+  # so tags never collide with the root package's "v<version>" tags.
+  discover-variants:
+    runs-on: ubuntu-latest
+    outputs:
+      slugs: ${{ steps.list.outputs.slugs }}
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: List variant directories
+        id: list
+        run: |
+          set -euo pipefail
+          if [ -d variants ]; then
+            slugs=$(find variants -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | jq -R -s -c 'split("\n")[:-1]')
+          else
+            slugs='[]'
+          fi
+          echo "slugs=$slugs" >> "$GITHUB_OUTPUT"
+
+  package-variant:
+    needs: discover-variants
+    if: needs.discover-variants.outputs.slugs != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        slug: ${{ fromJson(needs.discover-variants.outputs.slugs) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Read variant metadata from theme.txt
+        id: theme
+        run: |
+          set -euo pipefail
+          dir="variants/${{ matrix.slug }}"
+          name=$(grep -m1 '^name = ' "$dir/theme.txt" | sed -E 's/^name = "(.*)"$/\1/')
+          version=$(grep -m1 '^version = ' "$dir/theme.txt" | sed -E 's/^version = ([0-9]+)$/\1/')
+          if [ -z "$name" ] || [ -z "$version" ]; then
+            echo "::error::Could not parse name/version out of $dir/theme.txt" >&2
+            exit 1
+          fi
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build variant package zip
+        id: zip
+        run: |
+          set -euo pipefail
+          zip_name="${{ matrix.slug }}-v${{ steps.theme.outputs.version }}.zip"
+          out_path="$RUNNER_TEMP/$zip_name"
+          (cd "variants/${{ matrix.slug }}" && zip -r "$out_path" .)
+          echo "zip_name=$zip_name" >> "$GITHUB_OUTPUT"
+          echo "zip_path=$out_path" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.zip.outputs.zip_name }}
+          path: ${{ steps.zip.outputs.zip_path }}
+
+      - name: Publish/update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${{ matrix.slug }}-v${{ steps.theme.outputs.version }}"
           title="${{ steps.theme.outputs.name }} v${{ steps.theme.outputs.version }}"
           notes="Packaged from commit ${{ github.sha }}. Download the .zip below and import it in FUTO Keyboard's theme importer."
           if gh release view "$tag" --repo "${{ github.repository }}" >/dev/null 2>&1; then

@@ -160,10 +160,13 @@ constants live at the top of the script; the geometry constants
 As of v17 the script no longer needs numpy — the v14–v16 brushed-texture/
 vignette/specular/edge-AO machinery was dropped along with the dark
 charcoal look it served (see the v17 changelog entry below); rendering is
-back to plain Pillow gradients and rounded-rect compositing. It
-deliberately never touches `Icon-*.png`, `Button-morekey.png`, or
-`Button-morekeysbox.png` — see the icon-regression bug below for why that
-boundary is load-bearing, not incidental.
+back to plain Pillow gradients and rounded-rect compositing. The actual
+`render_key` function now lives in `scripts/keycap_render.py`, shared with
+the classic-keyboard variant themes in `variants/` (see
+`docs/VARIANTS.md`) — this script just supplies Groovy Code's own palette
+and per-asset role mapping. It deliberately never touches `Icon-*.png`,
+`Button-morekey.png`, or `Button-morekeysbox.png` — see the icon-regression
+bug below for why that boundary is load-bearing, not incidental.
 
 Icons: `Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`
 are straight rasterizations of FUTO's own SVGs — if you regenerate, re-clone

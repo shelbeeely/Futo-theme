@@ -1,0 +1,3 @@
+FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
+Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
+as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
