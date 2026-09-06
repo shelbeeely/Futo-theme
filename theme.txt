@@ -1,0 +1,432 @@
+# -------------------------------------------------------------------
+#                  FUTO Keyboard Theme Configuration
+#                        Format version: 1.0
+# Groovy Code — warm-toned 70's palette, orange accent, set in FiraCode.
+# -------------------------------------------------------------------
+
+name = "Groovy Code"
+author = "Shelbee"
+id = "com.shelbee.groovycode"
+version = 11
+description = "Warm-toned 70's-inspired dark theme with sculpted keycap-shaped keys (dish now clearly visible on dark keys too, not just the bright action key), row-banded letter keys, a gold caps-lock state, official FUTO icon shapes, and a styled long-press popup — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+
+[options]
+auto_borders = true
+center_hints = false
+roundedness = 0.6
+scale_text = 1.0
+scale_hints = 0.85
+weight_text = 500
+weight_hints = 400
+
+# -------------------------------------------------------------------
+# Colors — warm 70's palette (gold / orange / rust / brown)
+# -------------------------------------------------------------------
+
+[colors]
+primary = "#e17a25"
+on_primary = "#2a1508"
+primary_container = "#874725"
+on_primary_container = "#f5dfc0"
+inverse_primary = "#e19d25"
+
+secondary = "#e19d25"
+on_secondary = "#241209"
+secondary_container = "#5c3319"
+on_secondary_container = "#f5e6c8"
+
+tertiary = "#bd361e"
+on_tertiary = "#f5e6c8"
+tertiary_container = "#422118"
+on_tertiary_container = "#f0c9a0"
+
+background = "#1a0e08"
+on_background = "#f0dfc0"
+
+surface = "#1a0e08"
+on_surface = "#f0dfc0"
+surface_variant = "#3a2015"
+on_surface_variant = "#d8b98f"
+surface_tint = "#e17a25"
+inverse_surface = "#f0dfc0"
+inverse_on_surface = "#241209"
+
+error = "#bd361e"
+on_error = "#f5e6c8"
+error_container = "#422118"
+on_error_container = "#f0c9a0"
+
+outline = "#87472599"
+outline_variant = "#87472566"
+scrim = "#000000"
+
+surface_bright = "#3a2015"
+surface_dim = "#1a0e08"
+surface_container = "#241209"
+surface_container_high = "#2c1810"
+surface_container_highest = "#3a2015"
+surface_container_low = "#1e1009"
+surface_container_lowest = "#120a05"
+
+keyboard_surface = "#1a0e08"
+keyboard_surface_dim = "#1a0e08"
+keyboard_container = "#241209"
+keyboard_container_variant = "#3a2015"
+on_keyboard_container = "#f0dfc0"
+keyboard_press = "#874725"
+keyboard_container_pressed = "#e19d2544"
+on_keyboard_container_pressed = "#f0dfc000"
+
+[options.font]
+font = "FiraCode-Regular.ttf"
+
+[options.background]
+image = "GroovyCode-background.png"
+opacity = 1
+action_bar_opacity = 0.3
+cropping = [0.0, 0.0, 1.0, 1.0]
+
+# -------------------------------------------------------------------
+# Matchrules — order-dependent, first match wins
+# -------------------------------------------------------------------
+
+[[matchrules.border]]
+selector = "morekeysbox"
+asset = "Button-morekeysbox.png"
+
+[[matchrules.border]]
+selector = "morekey"
+asset = "Button-morekey.png"
+
+[[matchrules.border]]
+selector = "action pressed"
+asset = "Button-action-press.png"
+
+[[matchrules.border]]
+selector = "action"
+asset = "Button-action.png"
+
+[[matchrules.border]]
+selector = "spacebar pressed"
+asset = "Button-space-press.png"
+
+[[matchrules.border]]
+selector = "spacebar"
+asset = "Button-space.png"
+
+[[matchrules.border]]
+selector = "stickyon pressed"
+asset = "Button-stickyon-press.png"
+
+[[matchrules.border]]
+selector = "stickyon"
+asset = "Button-stickyon.png"
+
+[[matchrules.border]]
+selector = "functional pressed"
+asset = "Button-function-pressed.png"
+
+[[matchrules.border]]
+selector = "functional popup"
+asset = "Button-function-pressed.png"
+
+[[matchrules.border]]
+selector = "functional"
+asset = "Button-function.png"
+
+# Row-banded letter keys: mirrors the palette's stacked swatch order
+# top row -> orange-red, home row -> orange, bottom row -> brightened rust.
+# These sit after action/spacebar/functional so they only ever catch
+# plain letter keys, and before the generic pressed/normal fallback.
+
+[[matchrules.border]]
+selector = "normal row 0 pressed"
+asset = "Button-row0-press.png"
+
+[[matchrules.border]]
+selector = "normal row 0"
+asset = "Button-row0.png"
+
+[[matchrules.border]]
+selector = "normal row 1 pressed"
+asset = "Button-row1-press.png"
+
+[[matchrules.border]]
+selector = "normal row 1"
+asset = "Button-row1.png"
+
+[[matchrules.border]]
+selector = "normal row 2 pressed"
+asset = "Button-row2-press.png"
+
+[[matchrules.border]]
+selector = "normal row 2"
+asset = "Button-row2.png"
+
+[[matchrules.border]]
+selector = "normal popup"
+asset = "Button-default-press.png"
+
+[[matchrules.border]]
+selector = "pressed"
+asset = "Button-default-press.png"
+
+[[matchrules.border]]
+selector = "normal"
+asset = "Button-default.png"
+
+[[matchrules.icon]]
+selector = "icon delete_key"
+asset = "Icon-backspace.png"
+
+[[matchrules.icon]]
+selector = "icon action_emoji"
+asset = "Icon-emoji.png"
+
+[[matchrules.icon]]
+selector = "icon shift_key_shifted"
+asset = "Icon-shift-press.png"
+
+[[matchrules.icon]]
+selector = "icon shift_key"
+asset = "Icon-shift.png"
+
+[[matchrules.icon]]
+selector = "icon enter_key"
+asset = "Icon-enter.png"
+
+# Confirmed real icon IDs (verified against futo-org/keyboard-theme-editor
+# source: src/keyboard/qualifiers-input.jsx ICON_NAMES + render.ts
+# DEFAULT_ICONS — not guessed).
+
+[[matchrules.icon]]
+selector = "icon action_switch_language"
+asset = "Icon-globe.png"
+
+[[matchrules.icon]]
+selector = "icon mic_fill"
+asset = "Icon-mic.png"
+
+[[matchrules.icon]]
+selector = "icon tab_key"
+asset = "Icon-tab.png"
+
+[[matchrules.icon]]
+selector = "icon action_left"
+asset = "Icon-arrow-left.png"
+
+[[matchrules.icon]]
+selector = "icon action_right"
+asset = "Icon-arrow-right.png"
+
+# -------------------------------------------------------------------
+# Asset configs — one entry per image used above
+# -------------------------------------------------------------------
+
+# Slicing values below are computed, not eyeballed: for a 160x160 key
+# with corner radius 26 and a 3px outline, the safe (non-curved) interior
+# starts at radius+outline = 29px -> 29/160 = 0.18. The spacebar is
+# 640x160 with radius 30, so its interior starts at 33px -> 33/640 = 0.052
+# horizontally and 33/160 = 0.206 vertically.
+
+[[asset.border]]
+name = "Button-morekeysbox.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.05, 0.28, 0.95, 0.72]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-morekey.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0, 0, 1, 1]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-default.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-default-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-function.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-function-pressed.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-space.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.052, 0.206, 0.948, 0.794]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-space-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.052, 0.206, 0.948, 0.794]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-action.png"
+background_tint = "#ffffff"
+foreground_tint = "#2a1508"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-action-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#2a1508"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row0.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row0-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row1.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row1-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row2.png"
+background_tint = "#ffffff"
+foreground_tint = "#f0dfc0"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-row2-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#f5e6c8"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-stickyon.png"
+background_tint = "#ffffff"
+foreground_tint = "#2a1508"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.border]]
+name = "Button-stickyon-press.png"
+background_tint = "#ffffff"
+foreground_tint = "#2a1508"
+padding = [0, 0, 0, 0]
+slicing = [0.18, 0.18, 0.82, 0.82]
+gap = [1, 1, 1, 1]
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-backspace.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-emoji.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-shift-press.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-shift.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-enter.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-globe.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-mic.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-tab.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-arrow-left.png"
+target_density = 480
+
+[[asset.icon]]
+name = "Icon-arrow-right.png"
+target_density = 480
