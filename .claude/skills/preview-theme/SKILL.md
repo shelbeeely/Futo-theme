@@ -24,6 +24,20 @@ color/gamma, actual pressed-state touch interaction, and `morekeysbox`/
 only be confirmed on a real device. Use this to catch everything else first
 so on-device rounds are spent confirming, not discovering.
 
+## This also runs automatically
+
+`.claude/settings.json` wires `scripts/on_stop_preview.sh` into the **Stop**
+hook: whenever an assistant turn ends with `theme.txt` or a
+`Button-*.png`/`Icon-*.png` asset changed since the last render (tracked by
+a content hash at `.claude/skills/preview-theme/.last-preview-hash`,
+gitignored), it re-runs the full pipeline and blocks the stop with a reason
+pointing at the fresh screenshot -- so a visual change gets looked at
+without anyone having to remember to invoke this skill by hand. It's a
+no-op (a single hash compare, no dev server/zip/browser work) on every turn
+where nothing theme-related changed, so it doesn't slow down unrelated
+work. Run the steps below yourself only when you want a preview mid-turn,
+want to control the output location, or are debugging the hook itself.
+
 ## Usage
 
 Run from the theme repo root (the directory with `theme.txt` in it):

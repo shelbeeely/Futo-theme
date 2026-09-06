@@ -27,7 +27,12 @@ Repo layout:
   code, headlessly) without needing an Android device. Use it after any
   visual change, before asking for an on-device screenshot — see its
   `SKILL.md` and the "Verification method" section of
-  `docs/GROOVY-CODE-THEME.md`.
+  `docs/GROOVY-CODE-THEME.md`. **This also runs automatically**: a `Stop`
+  hook in `.claude/settings.json` re-renders whenever `theme.txt`/assets
+  changed since the last render and blocks the turn from ending with a
+  reason pointing at the new screenshot — so don't be surprised if a turn
+  doesn't end immediately after a visual edit; that's the hook, read the
+  image it points at.
 
 ## Read `docs/` first — it's the current source of truth
 

@@ -1,0 +1,2 @@
+# Local state for the preview-theme skill's Stop hook (per-checkout render marker)
+.claude/skills/preview-theme/.last-preview-hash

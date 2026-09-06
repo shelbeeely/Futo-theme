@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/skills/preview-theme/scripts/on_stop_preview.sh",
+            "timeout": 90,
+            "statusMessage": "Checking whether the theme needs a fresh preview render..."
+          }
+        ]
+      }
+    ]
+  }
+}
