@@ -16,6 +16,12 @@ Repo layout:
 - `GroovyCode-background.png` — keyboard background texture
 - `FONT-ATTRIBUTION.txt`, `ICON-ATTRIBUTION.txt` — required attributions
 - `docs/` — full written-up documentation, see below
+- `scripts/generate_assets.py` — Pillow script that generates the
+  `Button-*.png` border assets (not part of the theme package itself)
+- `.github/workflows/package-theme.yml` — zips the theme package (everything
+  above except `docs/`/`scripts/`/this file/`README.md`) and publishes it as
+  a GitHub release + build artifact on every push to `main` that touches
+  theme files, or on manual dispatch
 
 ## Read `docs/` first — it's the current source of truth
 
@@ -31,10 +37,10 @@ where new findings get written up going forward:
 - `docs/GROOVY-CODE-THEME.md` — this theme's design system, build
   workflow, and fixed-bug history (a cleaner rewrite of the sections
   below — keep both in sync if you change one).
-- `docs/MECHANICAL-KEYBOARD-GUIDE.md` — the design direction for the
-  *next* theme: making a FUTO theme read as a mechanical/desktop keyboard
-  rather than a soft phone keyboard. This is the user's current stated
-  goal — read this before starting new design work.
+- `docs/MECHANICAL-KEYBOARD-GUIDE.md` — the design direction being applied
+  to Groovy Code itself (not a separate theme — see v12 below): making it
+  read as a mechanical/desktop keyboard rather than a soft phone keyboard.
+  Read this before doing more design work in that direction.
 
 ## Critical facts, verified from source (don't re-derive these — they're confirmed)
 

@@ -6,6 +6,22 @@ accent, set in FiraCode. The repo root is the theme package itself —
 `theme.txt` plus PNG assets plus the font, ready to zip and sideload into the
 FUTO Keyboard app's theme importer.
 
+## Getting the importable zip
+
+Every push to `main` that touches theme files runs
+[`.github/workflows/package-theme.yml`](.github/workflows/package-theme.yml),
+which zips up just the theme package (leaving out `docs/`, `scripts/`, and
+this repo's own dev docs) and publishes it two ways:
+
+- **Releases** (recommended) — a permanent link at this repo's Releases
+  page, tagged `vN` to match `theme.txt`'s `version`. Download the `.zip`
+  from there and import it in FUTO Keyboard's theme importer.
+- **Actions artifact** — attached to the workflow run itself, if you'd
+  rather grab a specific commit's build without waiting for a release.
+
+You can also trigger a build on demand from the Actions tab
+("Package theme" → "Run workflow") without pushing a new commit.
+
 ## Docs
 
 - [`docs/THEME-FORMAT.md`](docs/THEME-FORMAT.md) — reference for the FUTO

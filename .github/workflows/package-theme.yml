@@ -1,0 +1,82 @@
+name: Package theme
+
+# The repo root IS the FUTO Keyboard theme package (see CLAUDE.md) --
+# theme.txt plus the image/font assets it references. This workflow zips
+# up just that package (leaving out dev-only docs/tooling) and publishes
+# it as a GitHub release + build artifact, ready to sideload into FUTO
+# Keyboard's theme importer.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "theme.txt"
+      - "**.png"
+      - "**.ttf"
+      - "**.otf"
+      - "**.webp"
+      - "**.jpg"
+      - "**.jpeg"
+      - "*-ATTRIBUTION.txt"
+      - ".github/workflows/package-theme.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Read theme metadata from theme.txt
+        id: theme
+        run: |
+          set -euo pipefail
+          name=$(grep -m1 '^name = ' theme.txt | sed -E 's/^name = "(.*)"$/\1/')
+          version=$(grep -m1 '^version = ' theme.txt | sed -E 's/^version = ([0-9]+)$/\1/')
+          if [ -z "$name" ] || [ -z "$version" ]; then
+            echo "::error::Could not parse name/version out of theme.txt" >&2
+            exit 1
+          fi
+          slug=$(echo "$name" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed -E 's/^-+//; s/-+$//')
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Build theme package zip
+        id: zip
+        run: |
+          set -euo pipefail
+          zip_name="${{ steps.theme.outputs.slug }}-v${{ steps.theme.outputs.version }}.zip"
+          # Write the zip outside the checkout so it can't accidentally
+          # include itself, then exclude everything that isn't part of the
+          # actual theme package (dev docs, generation tooling, VCS/CI meta).
+          out_path="$RUNNER_TEMP/$zip_name"
+          zip -r "$out_path" . \
+            -x '.git/*' '.github/*' 'docs/*' 'scripts/*' 'CLAUDE.md' 'README.md'
+          echo "zip_name=$zip_name" >> "$GITHUB_OUTPUT"
+          echo "zip_path=$out_path" >> "$GITHUB_OUTPUT"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.zip.outputs.zip_name }}
+          path: ${{ steps.zip.outputs.zip_path }}
+
+      - name: Publish/update GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="v${{ steps.theme.outputs.version }}"
+          title="${{ steps.theme.outputs.name }} v${{ steps.theme.outputs.version }}"
+          notes="Packaged from commit ${{ github.sha }}. Download the .zip below and import it in FUTO Keyboard's theme importer."
+          if gh release view "$tag" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "$tag" "${{ steps.zip.outputs.zip_path }}" --repo "${{ github.repository }}" --clobber
+          else
+            gh release create "$tag" "${{ steps.zip.outputs.zip_path }}" \
+              --repo "${{ github.repository }}" --title "$title" --notes "$notes"
+          fi
