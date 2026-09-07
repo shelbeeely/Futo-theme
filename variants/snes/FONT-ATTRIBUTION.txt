@@ -1,3 +1,4 @@
-FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
-Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
-as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
+Jersey10-Regular.ttf is Jersey 10, by The Soft Type Project Authors.
+Licensed under the SIL Open Font License 1.1 -- free to use, modify, and
+redistribute as part of this theme. Source: https://github.com/scfried/soft-type-jersey
+A clean pixel-grid display face, used here to distinguish SNES's 16-bit era from NES's more primitive 8-bit arcade look.

@@ -1,3 +1,4 @@
-FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
-Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
-as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
+VT323-Regular.ttf is VT323, by The VT323 Project Authors (Peter Hull).
+Licensed under the SIL Open Font License 1.1 -- free to use, modify, and
+redistribute as part of this theme. Source: https://github.com/google/fonts/tree/main/ofl/vt323
+Modeled on the DEC VT320 terminal's own glyphs -- a close cousin of the VT100 this variant is themed around, same DEC terminal lineage. (Its own OFL.txt gives no separate upstream repo, only an author email -- this is the actual verified source, not a guessed project URL.)

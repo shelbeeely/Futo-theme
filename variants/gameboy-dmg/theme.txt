@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Game Boy — a color-and-shape variant of Groovy Code, replicating
-# the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found), set in FiraCode.
+# the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found), set in DotGothic16.
 # -------------------------------------------------------------------
 
 name = "Game Boy"
 author = "Shelbee"
 id = "com.shelbee.gameboydmg"
-version = 5
-description = "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode."
+version = 6
+description = "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#5a584e44"
 on_keyboard_container_pressed = "#e6e0c800"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "DotGothic16-Regular.ttf"
 
 [options.background]
 image = "gameboy-dmg-background.png"

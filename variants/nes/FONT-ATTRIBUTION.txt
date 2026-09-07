@@ -1,3 +1,4 @@
-FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
-Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
-as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
+PressStart2P-Regular.ttf is Press Start 2P, by The Press Start 2P Project Authors (Cody Boisclair).
+Licensed under the SIL Open Font License 1.1 -- free to use, modify, and
+redistribute as part of this theme. Source: https://github.com/google/fonts/tree/main/ofl/pressstart2p
+Modeled on 1980s Namco arcade bitmap fonts -- the NES's own era.

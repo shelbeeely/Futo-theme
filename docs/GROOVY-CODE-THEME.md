@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v19**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v20**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -15,6 +15,16 @@ confirmed on a real device.
 
 ## Design system
 
+- **Real keycap depth, v20** — every key now has a genuine concave dish
+  (darker at the deepest/center point, brighter toward the rim), a soft
+  specular sheen, and a blurred edge-shadow where the flat top meets the
+  bevel, via `keycap_render.py`'s `depth_style="dish"` +
+  `specular_alpha`/`edge_ao_alpha`. Prompted by the user's direct
+  question ("the keys need to look like keycaps?") after a run of purely
+  color/font-accuracy work — this is the answer: procedural depth cues on
+  top of the accurate colors, not a return to v14-v16's since-abandoned
+  photo-texture techniques (brushed metal, vignette), which this round
+  deliberately did NOT bring back. See the v20 changelog entry below.
 - **Palette:** gold `#e19d25`, orange `#e17a25`, orange-red `#e14e25`, rust
   `#bd361e`, clay `#b37545`, brown `#874725`, near-black `#422118`-derived —
   pulled from a "Warm-toned Groovy 70's" reference palette image. This
@@ -353,6 +363,42 @@ theme ships under for third-party art/font.
   units will crowd hint glyphs into the main letter. This theme keeps
   `padding = [0,0,0,0]` on every asset that has a letter/hint for this
   reason.
+- **v20 (real keycap depth, checked with `preview-theme`, not yet on a
+  real device):** after a long run of hardware-accuracy work on the 8
+  `variants/` themes (colors, then real archival photos, then fonts), the
+  user looked at a render and asked directly: "the keys need to look like
+  keycaps?" — a fair callout, since v17-v19's well+face+rim structure is
+  flat solid color with only a linear top-to-bottom gradient, no actual
+  concavity or sheen. This repo had been here before: v14-v16 added real
+  depth cues (brushed-metal texture, vignette, edge ambient-occlusion,
+  specular highlight), but v17 stripped all of it back out because it
+  fought against a flat, saturated, vector-style look the user wanted at
+  the time — `CLAUDE.md` had carried "should photo-realism ever come
+  back?" as an explicit open question ever since, unresolved because
+  nobody had asked again. This round answers it: yes, but as depth cues
+  layered onto the existing accurate colors/structure, not a wholesale
+  return to v14-16's dark charcoal-texture look. Added to
+  `scripts/keycap_render.py`: `_radial_shade_map()` (a radial darken-
+  toward-center/lighten-toward-rim falloff for concave "dish" keycaps,
+  or the inverse falloff for convex "dome" buttons — see
+  `docs/VARIANTS.md`'s v23 entry for the console/button side of this),
+  `draw_specular()` (a small soft catch-light blob offset toward the
+  light source), and `draw_edge_ao()` (a thin blurred contact-shadow ring
+  where the flat top meets the bevel, built by comparing the face mask
+  against a blurred-and-rethresholded copy of itself rather than a true
+  morphological erosion, since Pillow has no organic-mask-aware erode).
+  `render_organic_key()` gained `depth_style`/`specular_alpha`/
+  `edge_ao_alpha` parameters, applied to every Groovy Code asset via a
+  shared `DEPTH` dict in `scripts/generate_assets.py`
+  (`depth_style="dish", specular_alpha=30, edge_ao_alpha=85`) so the
+  whole board reads consistently. Tuned via a smoke-test comparison
+  (baseline vs. dish vs. dome) before rolling out anywhere — an early
+  attempt at the "dish" radial math actually came out *convex* (bright
+  center, dark edges, indistinguishable from "dome") because the sign of
+  the radial term was backwards; caught by rendering the smoke test
+  image directly rather than trusting the formula by inspection.
+  Confirmed via `preview-theme` on QWERTY — the dish depth and specular
+  sheen read clearly without hurting letter-glyph legibility.
 
 ## Verification method
 
@@ -372,14 +418,15 @@ eventually happening.**
 
 ## Open items / not yet done
 
-- **Whether to layer the v14–v16 photo-realism techniques back onto the
-  current solid-color faces is an open judgment call, not something the
-  user has decided.** Dropped in v17 because they fought against a flat,
-  saturated look, and v18 didn't revisit this question — it only fixed
-  the color-per-key-role mismatch, not the flat-vs-textured question. If a
-  future round wants some photo-realism back (e.g. just a subtle texture
-  on the inset face, keeping the flat gold rim crisp), ask rather than
-  assume either way.
+- **Resolved in v20**: the long-standing "should photo-realism ever come
+  back?" question (open since v17) was answered — yes, as procedural
+  depth cues (concave dish shading, a soft specular sheen, an edge
+  ambient-occlusion ring) layered onto the existing accurate colors, not
+  a return to v14-v16's dark brushed-texture look. See the v20 changelog
+  entry above. Still open: whether an actual surface *texture* (grain,
+  brushed noise) should ever come back on top of this — the v20 pass was
+  about shape/lighting depth only, no texture, and nobody has asked for
+  texture specifically.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, previous_key, etc. — full list in
   `docs/THEME-FORMAT.md`) — only the ones with a clear coding-relevant use

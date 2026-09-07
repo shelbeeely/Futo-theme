@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Amber Terminal — a color-and-shape variant of Groovy Code, replicating
-# a VT100-style terminal's real beige-tan deck with genuinely dark near-black keycaps -- verified against a real archival photo (Wikimedia Commons, Living Computer Museum), which contradicts BOTH earlier versions of this profile in this repo, set in FiraCode.
+# a VT100-style terminal's real beige-tan deck with genuinely dark near-black keycaps -- verified against a real archival photo (Wikimedia Commons, Living Computer Museum), which contradicts BOTH earlier versions of this profile in this repo, set in VT323.
 # -------------------------------------------------------------------
 
 name = "Amber Terminal"
 author = "Shelbee"
 id = "com.shelbee.amberterminal"
-version = 5
-description = "Amber phosphor terminal variant: dark near-black keycaps (the real VT100-era keyboard color) sitting in a beige-tan deck, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color (the real keyboard has none) -- the amber accent (rim and the enter/caps-lock glow) represents the terminal's own amber-phosphor CRT screen, not a literal keyboard feature. Set in FiraCode."
+version = 6
+description = "Amber phosphor terminal variant: dark near-black keycaps (the real VT100-era keyboard color) sitting in a beige-tan deck, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color (the real keyboard has none) -- the amber accent (rim and the enter/caps-lock glow) represents the terminal's own amber-phosphor CRT screen, not a literal keyboard feature. Set in VT323."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#ffb00044"
 on_keyboard_container_pressed = "#ded8c800"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "VT323-Regular.ttf"
 
 [options.background]
 image = "amber-terminal-background.png"

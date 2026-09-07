@@ -67,11 +67,72 @@ VARIANTS_DIR = os.path.join(REPO_ROOT, "variants")
 
 BACKGROUND_SIZE = (1080, 1080)
 
+FONTS_DIR = os.path.join(REPO_ROOT, "scripts", "fonts")
+
+# v23: each variant gets its own real, era/hardware-appropriate font instead
+# of sharing Groovy Code's FiraCode -- part of the user's explicit "every
+# single futo theme unique" direction. Every font here is verified SIL Open
+# Font License 1.1, sourced directly from the Google Fonts GitHub repo
+# (github.com/google/fonts, ofl/<name>/) -- not guessed at or pulled from an
+# unverified dafont-style source, same discipline as the color research.
+FONT_INFO = {
+    "IBMPlexMono-Regular.ttf": (
+        "IBM Plex Mono", "IBM Corp.",
+        "https://github.com/IBM/plex",
+        "A real IBM typeface -- literally made by IBM, not just IBM-adjacent.",
+    ),
+    "Silkscreen-Regular.ttf": (
+        "Silkscreen", "The Silkscreen Project Authors (Jason Kottke)",
+        "https://github.com/googlefonts/silkscreen",
+        "A pixel typeface evoking early personal-computer bitmap fonts -- "
+        "not a literal clone of the Mac's own Chicago/Geneva system fonts "
+        "(those are Apple's, not freely licensed), but the same visual era.",
+    ),
+    "Sixtyfour-Regular.ttf": (
+        "Sixtyfour", "The Sixtyfour Project Authors (Jens Kutilek)",
+        "https://github.com/jenskutilek/homecomputer-fonts",
+        "Modeled directly on the real Commodore 64 character set.",
+    ),
+    "VT323-Regular.ttf": (
+        "VT323", "The VT323 Project Authors (Peter Hull)",
+        "https://github.com/google/fonts/tree/main/ofl/vt323",
+        "Modeled on the DEC VT320 terminal's own glyphs -- a close cousin "
+        "of the VT100 this variant is themed around, same DEC terminal "
+        "lineage. (Its own OFL.txt gives no separate upstream repo, only "
+        "an author email -- this is the actual verified source, not a "
+        "guessed project URL.)",
+    ),
+    "DotGothic16-Regular.ttf": (
+        "DotGothic16", "The DotGothic16 Project Authors (Fontworks)",
+        "https://github.com/fontworks-fonts/DotGothic16",
+        "A dot-matrix/LCD-style face evoking the Game Boy's own segmented "
+        "display, not a literal clone of Nintendo's cartridge-label font.",
+    ),
+    "PressStart2P-Regular.ttf": (
+        "Press Start 2P", "The Press Start 2P Project Authors (Cody Boisclair)",
+        "https://github.com/google/fonts/tree/main/ofl/pressstart2p",
+        "Modeled on 1980s Namco arcade bitmap fonts -- the NES's own era.",
+    ),
+    "Jersey10-Regular.ttf": (
+        "Jersey 10", "The Soft Type Project Authors",
+        "https://github.com/scfried/soft-type-jersey",
+        "A clean pixel-grid display face, used here to distinguish SNES's "
+        "16-bit era from NES's more primitive 8-bit arcade look.",
+    ),
+    "PixelifySans-Regular.ttf": (
+        "Pixelify Sans", "The Pixelify Sans Project Authors (eifetx)",
+        "https://github.com/eifetx/Pixelify-Sans",
+        "A softer, more rounded pixel face, distinguishing Game Boy "
+        "Color's friendlier identity from the original DMG's utilitarian "
+        "DotGothic16.",
+    ),
+}
+
 SHARED_FILES = [
     "Icon-backspace.png", "Icon-emoji.png", "Icon-shift-press.png", "Icon-shift.png",
     "Icon-enter.png", "Icon-globe.png", "Icon-mic.png", "Icon-tab.png",
     "Icon-arrow-left.png", "Icon-arrow-right.png",
-    "FiraCode-Regular.ttf", "FONT-ATTRIBUTION.txt", "ICON-ATTRIBUTION.txt",
+    "ICON-ATTRIBUTION.txt",
     "Button-morekey.png", "Button-morekeysbox.png",
 ]
 
@@ -93,13 +154,13 @@ HEAD_TEMPLATE = """\
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # {name} — a color-and-shape variant of Groovy Code, replicating
-# {reference_note}, set in FiraCode.
+# {reference_note}, set in {font_name}.
 # -------------------------------------------------------------------
 
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 5
+version = 6
 description = "{description}"
 
 [options]
@@ -166,7 +227,7 @@ keyboard_container_pressed = "{rim_hex}44"
 on_keyboard_container_pressed = "{legend_hex}00"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "{font_file}"
 
 [options.background]
 image = "{background_file}"
@@ -568,12 +629,14 @@ KEYBOARD_PROFILES = [
         # had previously sourced, just correctly scoped to the modifier
         # keys instead of the whole keyboard), and `well`/background are
         # light again, matching the real case.
-        "description": "Classic IBM Model M variant: a light putty-gray case, near-white alphanumeric/F-keys, and genuinely gray modifier/navigation keys (Tab, Shift, Ctrl, Alt, arrows) -- all verified against a real archival photo, not assumed. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. Only caps-lock brightens and picks up a small amber LED-style glow, since the real keyboard has no on-key caps-lock indicator. Set in FiraCode.",
+        "description": "Classic IBM Model M variant: a light putty-gray case, near-white alphanumeric/F-keys, and genuinely gray modifier/navigation keys (Tab, Shift, Ctrl, Alt, arrows) -- all verified against a real archival photo, not assumed. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. Only caps-lock brightens and picks up a small amber LED-style glow, since the real keyboard has no on-key caps-lock indicator. Set in IBM Plex Mono.",
         # Sharp, boxy, thick-bezeled -- heavy mechanical PBT caps, not
         # glossy plastic. Low wobble: a precision-molded keycap, not a
         # hand-thrown ceramic one.
         "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
         "gap": 1.05,
+        "font_file": "IBMPlexMono-Regular.ttf",
+        "depth_style": "dish", "specular_alpha": 20, "edge_ao_alpha": 110,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (198, 194, 180),
         "face_default": (222, 218, 204),
@@ -604,12 +667,14 @@ KEYBOARD_PROFILES = [
         # the same Apple Beige family, mildly contrasting, no dark gap
         # anywhere. Reverted `well`/`rim` back to their original v20
         # values, which were already correct.
-        "description": "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
+        "description": "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in Silkscreen.",
         # Low-profile, rounded, minimal: a thin bezel (keys nearly fill
         # the housing) and a nearly-flat face -- smooth and pillowy, not
         # deeply sculpted.
         "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.1,
+        "font_file": "Silkscreen-Regular.ttf",
+        "depth_style": "dish", "specular_alpha": 40, "edge_ao_alpha": 55,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (138, 134, 110),
         "face_default": (191, 187, 152),
@@ -646,13 +711,15 @@ KEYBOARD_PROFILES = [
         # `stickyon` bloom (an artistic necessity, same as every other
         # variant here, since no real Commodore keyboard has an on-key
         # caps-lock indicator either).
-        "description": "Classic Commodore 64 variant: dark brown/near-black keycaps sitting in the real beige breadbin case (RAL 1019 family) -- corrected from an earlier, backwards version that had beige keycaps with invented tan/rust accent keys neither of which appear on the real hardware. Chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background and a bright blue-screen glow marking caps-lock. Set in FiraCode.",
+        "description": "Classic Commodore 64 variant: dark brown/near-black keycaps sitting in the real beige breadbin case (RAL 1019 family) -- corrected from an earlier, backwards version that had beige keycaps with invented tan/rust accent keys neither of which appear on the real hardware. Chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background and a bright blue-screen glow marking caps-lock. Set in Sixtyfour.",
         # Chunky sculpted home-computer keys -- moderate rounding, a
         # visible bezel, a fairly pronounced dish. Kept close to a
         # generic "retro computer key" baseline since this is the
         # reference point the other geometries deliberately depart from.
         "radius_frac": 0.26, "wobble": 0.10, "margin_frac": 0.09, "rim_frac": 0.020,
         "gap": 1.15,
+        "font_file": "Sixtyfour-Regular.ttf",
+        "depth_style": "dish", "specular_alpha": 30, "edge_ao_alpha": 90,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (164, 143, 122),
         "face_default": (42, 36, 30),
@@ -684,13 +751,15 @@ KEYBOARD_PROFILES = [
         # `rim`/bloom stay bright amber as a deliberate, disclosed stylistic
         # choice representing the amber-phosphor CRT aesthetic this variant
         # is themed around -- not a literal keyboard-hardware feature.
-        "description": "Amber phosphor terminal variant: dark near-black keycaps (the real VT100-era keyboard color) sitting in a beige-tan deck, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color (the real keyboard has none) -- the amber accent (rim and the enter/caps-lock glow) represents the terminal's own amber-phosphor CRT screen, not a literal keyboard feature. Set in FiraCode.",
+        "description": "Amber phosphor terminal variant: dark near-black keycaps (the real VT100-era keyboard color) sitting in a beige-tan deck, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color (the real keyboard has none) -- the amber accent (rim and the enter/caps-lock glow) represents the terminal's own amber-phosphor CRT screen, not a literal keyboard feature. Set in VT323.",
         # Blocky and nearly flat -- a terminal function key is a slab
         # behind a wireframe outline, not a sculpted physical cap. Sharp
         # corners, a thin bright rim (the only real detailing), a wider
         # gap for a grid/schematic feel instead of tightly-packed keys.
         "radius_frac": 0.10, "wobble": 0.04, "margin_frac": 0.05, "rim_frac": 0.014,
         "gap": 1.3,
+        "font_file": "VT323-Regular.ttf",
+        "depth_style": "dish", "specular_alpha": 8, "edge_ao_alpha": 35,
         "face_top_blend": 0.05, "face_bottom_scale": 0.92,
         "well": (196, 178, 138),
         "face_default": (34, 30, 26),
@@ -731,12 +800,14 @@ CONSOLE_PROFILES = [
         "name": "Game Boy",
         "theme_id": "com.shelbee.gameboydmg",
         "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found)",
-        "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
+        "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16.",
         # Chunky molded plastic buttons sitting in a thick shell bezel --
         # the DMG's brick-like housing is the most visible "well" of any
         # variant here.
         "radius_frac": 0.30, "wobble": 0.09, "margin_frac": 0.14, "rim_frac": 0.020,
         "gap": 1.2,
+        "font_file": "DotGothic16-Regular.ttf",
+        "depth_style": "dome", "specular_alpha": 90, "edge_ao_alpha": 70,
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
         "face_default": (58, 58, 56),
@@ -752,11 +823,13 @@ CONSOLE_PROFILES = [
         "name": "NES",
         "theme_id": "com.shelbee.nes",
         "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found)",
-        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
+        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in Press Start 2P.",
         # The NES controller's buttons are famously rectangular, not
         # round -- minimal corner rounding here, a moderate bezel.
         "radius_frac": 0.13, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
         "gap": 1.15,
+        "font_file": "PressStart2P-Regular.ttf",
+        "depth_style": "dome", "specular_alpha": 75, "edge_ao_alpha": 70,
         "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
         "face_default": (43, 43, 43),
@@ -786,13 +859,15 @@ CONSOLE_PROFILES = [
         # "row_banded" entirely as a result -- two button colors don't
         # map onto three letter-rows, so this is now flat-with-an-accent-
         # key like the other console variants, not a special case.
-        "description": "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in FiraCode.",
+        "description": "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in Jersey 10.",
         # Rounded, glossy, concave buttons sitting almost flush in the
         # housing -- the roundest radius and thinnest bezel of any
         # variant, plus a brighter top-blend for a glossier sheen than
         # the plastic-matte look everything else here goes for.
         "radius_frac": 0.44, "wobble": 0.09, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.05,
+        "font_file": "Jersey10-Regular.ttf",
+        "depth_style": "dome", "specular_alpha": 130, "edge_ao_alpha": 45,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (206, 201, 204),
         "face_default": (167, 164, 224),
@@ -810,12 +885,14 @@ CONSOLE_PROFILES = [
         "name": "Game Boy Color",
         "theme_id": "com.shelbee.gameboycolor",
         "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons (approximated -- no sourced hex found; \"Grape\" was also a specific real GBC colorway name, not just a generic description, worth double-checking against a reference photo before calling this confirmed)",
-        "description": "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
+        "description": "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in Pixelify Sans.",
         # More rounded and curved than the boxy original DMG (the GBC's
         # shell is a noticeably softer, more ergonomic redesign) but not
         # as thick-bezeled -- a middle ground between DMG and SNES.
         "radius_frac": 0.34, "wobble": 0.10, "margin_frac": 0.13, "rim_frac": 0.020,
         "gap": 1.15,
+        "font_file": "PixelifySans-Regular.ttf",
+        "depth_style": "dome", "specular_alpha": 95, "edge_ao_alpha": 65,
         "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
         "face_default": (58, 42, 74),
@@ -890,6 +967,9 @@ def generate_variant(profile):
         well_bottom_scale=profile.get("well_bottom_scale", 0.72),
         face_top_blend=profile.get("face_top_blend", 0.14),
         face_bottom_scale=profile.get("face_bottom_scale", 0.82),
+        depth_style=profile.get("depth_style"),
+        specular_alpha=profile.get("specular_alpha", 0),
+        edge_ao_alpha=profile.get("edge_ao_alpha", 0),
     )
     gap = profile.get("gap", 1.15)
 
@@ -934,6 +1014,17 @@ def generate_variant(profile):
     for fname in SHARED_FILES:
         shutil.copy(os.path.join(REPO_ROOT, fname), os.path.join(out_dir, fname))
 
+    font_file = profile["font_file"]
+    font_name, font_author, font_source, font_note = FONT_INFO[font_file]
+    shutil.copy(os.path.join(FONTS_DIR, font_file), os.path.join(out_dir, font_file))
+    with open(os.path.join(out_dir, "FONT-ATTRIBUTION.txt"), "w") as f:
+        f.write(
+            f"{font_file} is {font_name}, by {font_author}.\n"
+            f"Licensed under the SIL Open Font License 1.1 -- free to use, modify, and\n"
+            f"redistribute as part of this theme. Source: {font_source}\n"
+            f"{font_note}\n"
+        )
+
     function_legend = profile.get("function_legend", legend)
     action_legend = profile.get("action_legend", legend)
 
@@ -948,6 +1039,8 @@ def generate_variant(profile):
         theme_id=profile["theme_id"],
         description=profile["description"],
         background_file=background_file,
+        font_file=font_file,
+        font_name=font_name,
         well_hex=hexs(well),
         rim_hex=hexs(rim),
         legend_hex=hexs(legend),

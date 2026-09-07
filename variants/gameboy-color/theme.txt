@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Game Boy Color — a color-and-shape variant of Groovy Code, replicating
-# the Game Boy Color's grape-purple shell and dark violet buttons (approximated -- no sourced hex found; "Grape" was also a specific real GBC colorway name, not just a generic description, worth double-checking against a reference photo before calling this confirmed), set in FiraCode.
+# the Game Boy Color's grape-purple shell and dark violet buttons (approximated -- no sourced hex found; "Grape" was also a specific real GBC colorway name, not just a generic description, worth double-checking against a reference photo before calling this confirmed), set in Pixelify Sans.
 # -------------------------------------------------------------------
 
 name = "Game Boy Color"
 author = "Shelbee"
 id = "com.shelbee.gameboycolor"
-version = 5
-description = "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode."
+version = 6
+description = "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in Pixelify Sans."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#8a6ba844"
 on_keyboard_container_pressed = "#e8ddf000"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "PixelifySans-Regular.ttf"
 
 [options.background]
 image = "gameboy-color-background.png"

@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # NES — a color-and-shape variant of Groovy Code, replicating
-# the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found), set in FiraCode.
+# the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found), set in Press Start 2P.
 # -------------------------------------------------------------------
 
 name = "NES"
 author = "Shelbee"
 id = "com.shelbee.nes"
-version = 5
-description = "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode."
+version = 6
+description = "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in Press Start 2P."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#8c8c8644"
 on_keyboard_container_pressed = "#e0e0da00"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "PressStart2P-Regular.ttf"
 
 [options.background]
 image = "nes-background.png"

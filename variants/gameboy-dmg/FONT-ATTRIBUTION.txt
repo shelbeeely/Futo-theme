@@ -1,3 +1,4 @@
-FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
-Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
-as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
+DotGothic16-Regular.ttf is DotGothic16, by The DotGothic16 Project Authors (Fontworks).
+Licensed under the SIL Open Font License 1.1 -- free to use, modify, and
+redistribute as part of this theme. Source: https://github.com/fontworks-fonts/DotGothic16
+A dot-matrix/LCD-style face evoking the Game Boy's own segmented display, not a literal clone of Nintendo's cartridge-label font.

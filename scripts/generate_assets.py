@@ -48,6 +48,11 @@ ORANGE = (225, 122, 37)  # #e17a25 -- every key on the board except action/stick
 RUST = (189, 54, 30)  # #bd361e -- the action/enter key, matching the reference exactly
 BROWN = (135, 71, 37)  # #874725 -- the outer "well" body color for every key
 
+# v23: real keycap depth (concave dish + soft sheen + edge shadow), part of
+# the user's explicit "look like real hardware, not flat color" direction --
+# see keycap_render.py's _radial_shade_map/draw_specular/draw_edge_ao.
+DEPTH = dict(depth_style="dish", specular_alpha=30, edge_ao_alpha=85)
+
 FLAT_KEYS = ["Button-default", "Button-space", "Button-function"]
 PRESSED_SUFFIX = {"Button-default": "-press", "Button-space": "-press", "Button-function": "-pressed"}
 SEEDS = {"Button-default": 10, "Button-space": 70, "Button-function": 40}
@@ -59,7 +64,7 @@ def main():
         stabilizers = name == "Button-space"
         seed = SEEDS[name]
 
-        normal = render_organic_key(size, seed, ORANGE, BROWN, GOLD, stabilizers=stabilizers)
+        normal = render_organic_key(size, seed, ORANGE, BROWN, GOLD, stabilizers=stabilizers, **DEPTH)
         normal.save(f"{name}.png")
 
         pressed = render_organic_key(size, seed + 1000, ORANGE, BROWN, GOLD, pressed=True, stabilizers=stabilizers)
@@ -69,7 +74,7 @@ def main():
     # Action (enter): rust face, matching the reference's rust-red enter
     # key against everything else's orange -- plus a modest bloom so it
     # still reads as the primary accent key at rest.
-    action = render_organic_key(KEY_SIZE, 60, RUST, BROWN, GOLD, bloom_alpha=90, bloom_pad_frac=0.04)
+    action = render_organic_key(KEY_SIZE, 60, RUST, BROWN, GOLD, bloom_alpha=90, bloom_pad_frac=0.04, **DEPTH)
     action.save("Button-action.png")
 
     action_press = render_organic_key(KEY_SIZE, 1060, RUST, BROWN, GOLD, pressed=True)
@@ -86,6 +91,7 @@ def main():
         KEY_SIZE, 80, blend_white(GOLD, 0.10), BROWN, GOLD,
         bloom_alpha=150, bloom_pad_frac=0.05,
         motif_fn=motif_sunburst, motif_color=BROWN, motif_alpha=130,
+        **DEPTH,
     )
     stickyon.save("Button-stickyon.png")
 

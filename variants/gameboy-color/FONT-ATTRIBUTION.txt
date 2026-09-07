@@ -1,3 +1,4 @@
-FiraCode-Regular.ttf is by Nikita Prokopov, based on Fira Mono by Mozilla/Carrois Type Design.
-Licensed under the SIL Open Font License 1.1 — free to use, modify, and redistribute
-as part of this theme. Full license text and source: https://github.com/tonsky/FiraCode
+PixelifySans-Regular.ttf is Pixelify Sans, by The Pixelify Sans Project Authors (eifetx).
+Licensed under the SIL Open Font License 1.1 -- free to use, modify, and
+redistribute as part of this theme. Source: https://github.com/eifetx/Pixelify-Sans
+A softer, more rounded pixel face, distinguishing Game Boy Color's friendlier identity from the original DMG's utilitarian DotGothic16.

@@ -298,6 +298,77 @@ the four still-unsourced variants (Game Boy DMG, NES, Game Boy Color, and
 now the "Mustard" hue specifically) already do. All 8 variants' `version`
 bumped 4→5.
 
+## v23: real depth (dish/dome) + a distinct real font per variant
+
+After the color/photo accuracy passes (v20-v22), the user's direction
+widened: *"My vision is for them to look like the real hardware so
+keycaps on keyboards, buttons on NES controllers and stuff like that. We
+can use custom fonts on the different keyboards as well. I want every
+single futo theme to be unique."* Two additions, both applied to all 8
+variants (and Groovy Code itself — see its own v20 changelog entry in
+`docs/GROOVY-CODE-THEME.md` for the depth-rendering half):
+
+**1. Real depth, differentiated by hardware type.** `render_organic_key`
+gained `depth_style` (`"dish"` or `"dome"`), `specular_alpha`, and
+`edge_ao_alpha`. `"dish"` shades a key darkest at its center, brightening
+toward the rim — a concave keycap. `"dome"` does the reverse — brightest
+near a light-source offset, darker toward the edges — a convex controller
+button. This distinction matters: a keyboard key and a game-controller
+button are physically different shapes, not just different colors, and
+conflating them (using the same concave "dish" for a SNES button as for
+an IBM Model M key) would have been inaccurate in exactly the way this
+whole hardware-accuracy effort has been trying to fix. All 4 keyboard
+variants use `"dish"`; all 4 console variants use `"dome"`. A specular
+highlight (`draw_specular`) and an edge ambient-occlusion ring
+(`draw_edge_ao`) layer on top of the radial shading for the actual "catch
+the light" and "contact shadow where the flat top meets the bevel" cues a
+flat gradient alone can't give. Tuning per variant reflects something
+real about the hardware's finish, not an arbitrary number: Amber
+Terminal's specular/AO are the lowest of any variant
+(`specular_alpha=8, edge_ao_alpha=35`), matching its established "blocky,
+near-flat, wireframe slab" design intent; SNES's specular is the highest
+(`specular_alpha=130`), matching its already-documented "roundest,
+glossiest" character.
+
+**2. A real, distinct, properly-licensed font per variant** — instead of
+every variant sharing Groovy Code's FiraCode. Every font was verified the
+same way the colors were: don't guess, check a real source. All 8 are
+confirmed **SIL Open Font License 1.1**, downloaded directly from the
+`google/fonts` GitHub repo (`github.com/google/fonts/tree/main/ofl/<name>/`)
+rather than an unverified dafont-style source with unclear redistribution
+rights:
+
+| Variant | Font | Why |
+|---|---|---|
+| IBM Model M | **IBM Plex Mono** | A real IBM typeface — literally made by IBM. |
+| Macintosh Plus | **Silkscreen** | A pixel face evoking early personal-computer bitmap fonts. *Not* a Chicago/Geneva clone — those are Apple's own system fonts and aren't freely licensed; this is the same visual era, honestly labeled as an homage, not a replica. |
+| Commodore 64 | **Sixtyfour** | Modeled directly on the real C64 character set (`jenskutilek/homecomputer-fonts`). |
+| Amber Terminal | **VT323** | Modeled on the DEC VT320 terminal's own glyphs — a close cousin of the VT100 this variant is themed around. |
+| Game Boy (DMG) | **DotGothic16** | A dot-matrix/LCD-style face evoking the Game Boy's segmented display — not a clone of Nintendo's own cartridge-label font. |
+| NES | **Press Start 2P** | Modeled on 1980s Namco arcade bitmap fonts — the NES's own era. |
+| SNES | **Jersey 10** | A clean pixel-grid face, chosen to read as a distinct, later (16-bit) era than NES's more primitive Press Start 2P. |
+| Game Boy Color | **Pixelify Sans** | A softer, rounder pixel face, distinguishing GBC's friendlier identity from the original DMG's more utilitarian DotGothic16. |
+
+Each variant now carries its own font file (in `variants/<slug>/`, copied
+from the checked-in `scripts/fonts/` at generation time) and its own
+`FONT-ATTRIBUTION.txt` (author, license, source, and a one-line note on
+why that font — see `FONT_INFO` in `scripts/generate_variants.py`).
+`SHARED_FILES` no longer includes a font or its attribution — those are
+generated per-variant now, not copied from the repo root.
+
+**One mistake caught before it shipped**: an early draft of this doc
+cited an invented GitHub URL for VT323's upstream project
+(`github.com/phosphene/VT323`) instead of the source actually verified
+(VT323's own `OFL.txt` names only an author email, no project repo) — the
+same "don't state something as verified that wasn't actually checked"
+discipline that drove the whole v20-v22 color-accuracy work almost
+slipped on a font citation. Fixed to cite the actual verified source (the
+`google/fonts` repo path) instead.
+
+All 8 variants' `theme.txt` `version` bumped 5→6. Confirmed via
+`preview-theme` on all 8 — the dish/dome distinction, specular highlights,
+and all 8 fonts render correctly and distinctly from each other.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -504,16 +575,21 @@ Geometry/material — the organic-shape knobs (see "Geometry" above) that
 make each one an actual unique silhouette rather than a recolor, plus each
 variant's own motif glyph:
 
-| Variant | radius_frac | wobble | margin_frac | rim_frac | gap | face gradient | motif | character |
-|---|---|---|---|---|---|---|---|---|
-| IBM Model M | 0.16 | 0.06 | 0.15 | 0.030 | 1.05 | 0.10 → 0.76 | switch-cross | boxy, thick bezel, low wobble (precision-molded PBT) |
-| Macintosh Plus | 0.42 | 0.07 | 0.05 | 0.012 | 1.1 | 0.08 → 0.90 | CRT | rounded, thin bezel, nearly flat |
-| Commodore 64 | 0.26 | 0.10 | 0.09 | 0.020 | 1.15 | 0.16 → 0.80 | IC chip | baseline chunky sculpted retro key |
-| Amber terminal | 0.10 | 0.04 | 0.05 | 0.014 | 1.3 | 0.04 → 0.94 | cursor prompt | blocky, near-flat, wide grid spacing |
-| Game Boy (DMG) | 0.30 | 0.09 | 0.14 | 0.020 | 1.2 | 0.12 → 0.80 | D-pad cross | chunky plastic, thick shell bezel |
-| NES | 0.13 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | button pair | rectangular, minimal rounding |
-| SNES | 0.44 | 0.09 | 0.05 | 0.012 | 1.05 | 0.22 → 0.78 | diamond cluster (4-color) | roundest, thinnest bezel, glossiest |
-| Game Boy Color | 0.34 | 0.10 | 0.13 | 0.020 | 1.15 | 0.14 → 0.80 | D-pad cross | rounder/softer than DMG, moderate bezel |
+| Variant | radius_frac | wobble | margin_frac | rim_frac | gap | face gradient | depth (spec/AO) | font | motif | character |
+|---|---|---|---|---|---|---|---|---|---|---|
+| IBM Model M | 0.16 | 0.06 | 0.15 | 0.030 | 1.05 | 0.10 → 0.76 | dish, 20/110 | IBM Plex Mono | switch-cross | boxy, thick bezel, low wobble (precision-molded PBT) |
+| Macintosh Plus | 0.42 | 0.07 | 0.05 | 0.012 | 1.1 | 0.08 → 0.90 | dish, 40/55 | Silkscreen | CRT | rounded, thin bezel, nearly flat |
+| Commodore 64 | 0.26 | 0.10 | 0.09 | 0.020 | 1.15 | 0.16 → 0.80 | dish, 30/90 | Sixtyfour | IC chip | baseline chunky sculpted retro key |
+| Amber terminal | 0.10 | 0.04 | 0.05 | 0.014 | 1.3 | 0.04 → 0.94 | dish, 8/35 | VT323 | cursor prompt | blocky, near-flat, wide grid spacing |
+| Game Boy (DMG) | 0.30 | 0.09 | 0.14 | 0.020 | 1.2 | 0.12 → 0.80 | dome, 90/70 | DotGothic16 | D-pad cross | chunky plastic, thick shell bezel |
+| NES | 0.13 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | dome, 75/70 | Press Start 2P | button pair | rectangular, minimal rounding |
+| SNES | 0.44 | 0.09 | 0.05 | 0.012 | 1.05 | 0.22 → 0.78 | dome, 130/45 | Jersey 10 | diamond cluster (4-color) | roundest, thinnest bezel, glossiest |
+| Game Boy Color | 0.34 | 0.10 | 0.13 | 0.020 | 1.15 | 0.14 → 0.80 | dome, 95/65 | Pixelify Sans | D-pad cross | rounder/softer than DMG, moderate bezel |
+
+"depth (spec/AO)" is `depth_style, specular_alpha/edge_ao_alpha` (see the
+v23 changelog entry above) — `"dish"` for every keyboard (concave keycap),
+`"dome"` for every console (convex button), matching what each hardware
+type actually is.
 
 (Groovy Code itself, for comparison, uses `radius_frac=0.30, wobble=0.09,
 margin_frac=0.09, rim_frac=0.018`, gap 1.15, gradient 0.14 → 0.82, and a
@@ -529,17 +605,20 @@ import needs everything present, not references back to the repo root):
   `[colors]`/matchrules), border assets (`default`/`function`/`action`/
   `space`/`stickyon`, each with a `-press`/`-pressed` pair — plus
   `row0`/`row1`/`row2` pairs for any future `row_banded` profile; none
-  currently use this, see "Row-banded variants" above), and a gradient
-  background PNG matching the variant's case tone, scattered with its own
-  motif glyph.
+  currently use this, see "Row-banded variants" above), a gradient
+  background PNG matching the variant's case tone scattered with its own
+  motif glyph, and (since v23) its own `FONT-ATTRIBUTION.txt` naming its
+  own font's author/license/source.
+- **Copied from `scripts/fonts/` (since v23, not the repo root)**: each
+  variant's own font file (see the v23 table above) — no longer
+  FiraCode, and no longer shared across variants at all.
 - **Copied unchanged from the repo root**: `Icon-*.png` (icons are always
   force-recolored at runtime via canvas `source-in` compositing — see
   `CLAUDE.md` fact #3 — so the same alpha-shape PNGs work for every
-  variant's `foreground_tint`), `FiraCode-Regular.ttf`, `FONT-
-  ATTRIBUTION.txt`, `ICON-ATTRIBUTION.txt`, and `Button-morekey.png`/
-  `Button-morekeysbox.png` (the long-press popup styling — still the
-  original gold-ring look from Groovy Code v11, not restyled per variant
-  or per the organic-shape pass; see "Open items" in
+  variant's `foreground_tint`), `ICON-ATTRIBUTION.txt`, and
+  `Button-morekey.png`/`Button-morekeysbox.png` (the long-press popup
+  styling — still the original gold-ring look from Groovy Code v11, not
+  restyled per variant or per the organic-shape pass; see "Open items" in
   `docs/GROOVY-CODE-THEME.md`, same low-priority reasoning applies here).
 
 ## Packaging and releases
@@ -624,13 +703,33 @@ outstanding gap as Groovy Code itself.
    `motif_fn` from `scripts/keycap_render.py` if it fits, or write a new
    one (a small Pillow primitive glyph, same pattern as the existing eight)
    if the hardware calls for its own signature shape.
-4. Run `python3 scripts/generate_variants.py` (this also recomputes that
+4. **Pick `depth_style`** — `"dish"` if the real hardware has keyboard-
+   style keycaps, `"dome"` if it's a game-controller-style convex button
+   (see the v23 changelog entry above for why this distinction is real,
+   not cosmetic). Tune `specular_alpha`/`edge_ao_alpha` to the real
+   finish — low for a matte/flat surface (Amber Terminal's 8/35), high
+   for a glossy one (SNES's 130/45) — see the geometry table above for
+   the current range.
+5. **Pick a real, properly-licensed font** — search for one that fits the
+   hardware's actual era/character, then verify its exact license before
+   using it (SIL OFL 1.1 fonts from the `google/fonts` GitHub repo,
+   `github.com/google/fonts/tree/main/ofl/<name>/`, are the safe default;
+   don't pull an unverified font from a dafont-style source with unclear
+   redistribution rights). Download the `.ttf` into `scripts/fonts/`, add
+   an entry to `FONT_INFO` in `scripts/generate_variants.py` (font name,
+   author, source URL, a one-line rationale), and set `"font_file"` in the
+   new profile to match. Don't cite a source you haven't actually
+   fetched and read yourself — see the v23 changelog entry above for a
+   real instance of this almost slipping through (an invented GitHub URL
+   for VT323's upstream project).
+6. Run `python3 scripts/generate_variants.py` (this also recomputes that
    profile's `slicing`/`gap`/`roundedness` in its `theme.txt` — never hand-
    copy Groovy Code's or another variant's values — and, since v20, wipes
    the variant's output directory first so a removed asset can't linger).
-5. Verify with `preview-theme` the same way as the others (see above) --
+7. Verify with `preview-theme` the same way as the others (see above) --
    specifically confirm the new variant reads as visually distinct from
-   its nearest neighbor in the table, not just differently colored, and
-   that its motif is legible on `stickyon` and the background.
-6. The packaging workflow picks up the new `variants/<slug>/` directory
+   its nearest neighbor in the table (shape AND depth style AND font, not
+   just color), and that its motif is legible on `stickyon` and the
+   background.
+8. The packaging workflow picks up the new `variants/<slug>/` directory
    automatically on the next push to `main` — no workflow changes needed.

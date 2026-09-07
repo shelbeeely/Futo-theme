@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # IBM Model M — a color-and-shape variant of Groovy Code, replicating
-# the IBM Model M's real light putty-gray case with near-white alpha keys and genuinely gray modifier/nav keys -- verified against an actual archival photo (Wikimedia Commons), not an AI-generated approximation, set in FiraCode.
+# the IBM Model M's real light putty-gray case with near-white alpha keys and genuinely gray modifier/nav keys -- verified against an actual archival photo (Wikimedia Commons), not an AI-generated approximation, set in IBM Plex Mono.
 # -------------------------------------------------------------------
 
 name = "IBM Model M"
 author = "Shelbee"
 id = "com.shelbee.ibmmodelm"
-version = 5
-description = "Classic IBM Model M variant: a light putty-gray case, near-white alphanumeric/F-keys, and genuinely gray modifier/navigation keys (Tab, Shift, Ctrl, Alt, arrows) -- all verified against a real archival photo, not assumed. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. Only caps-lock brightens and picks up a small amber LED-style glow, since the real keyboard has no on-key caps-lock indicator. Set in FiraCode."
+version = 6
+description = "Classic IBM Model M variant: a light putty-gray case, near-white alphanumeric/F-keys, and genuinely gray modifier/navigation keys (Tab, Shift, Ctrl, Alt, arrows) -- all verified against a real archival photo, not assumed. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. Only caps-lock brightens and picks up a small amber LED-style glow, since the real keyboard has no on-key caps-lock indicator. Set in IBM Plex Mono."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#aaa59444"
 on_keyboard_container_pressed = "#2b282000"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "IBMPlexMono-Regular.ttf"
 
 [options.background]
 image = "ibm-model-m-background.png"

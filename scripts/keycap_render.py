@@ -106,6 +106,86 @@ def organic_mask(size, seed, radius_frac=0.30, wobble=0.09, harmonics=(2, 3, 5),
     return img.resize((w, h), Image.LANCZOS)
 
 
+def _radial_shade_map(size, light_dir=(-0.55, -0.7), mode="dish"):
+    """A float shading map (-1..1ish) over `size`: for 'dish' (concave
+    keycap), darkest at the center where the dish is deepest, with a
+    directional lean so one side of the rim catches more light than the
+    other -- for 'dome' (convex controller button), the inverse: brightest
+    near the light source, darker toward the edges, like a sphere. This is
+    combined with the existing vertical top/bottom gradient, not a
+    replacement for it -- the vertical gradient gives overall "lit from
+    above" bias, this adds the actual concave/convex falloff a flat
+    top-to-bottom blend can't."""
+    w, h = size
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    cx, cy = w / 2, h / 2
+    nx = (xx - cx) / (w / 2)
+    ny = (yy - cy) / (h / 2)
+    r2 = np.clip(nx ** 2 + ny ** 2, 0, 1.4)
+    lean = nx * light_dir[0] + ny * light_dir[1]
+    if mode == "dome":
+        # convex: brightest near the light source, falling off toward the
+        # rim in every direction, like a sphere.
+        return lean * 0.22 - r2 * 0.30
+    # concave dish: darkest at the deepest (center) point, brightening
+    # toward the rim all around -- the opposite radial sense from "dome".
+    # The vertical top/bottom gradient (face_top_blend/face_bottom_scale)
+    # already carries the overall "lit from above" bias, so this only adds
+    # a mild directional lean on top of the soft rim brightening.
+    return r2 * 0.16 - 0.08 + lean * 0.05
+
+
+def _apply_shade_map(rgb_img, mask_img, shade_map):
+    """Multiplies `rgb_img` by (1 + shade_map), masked to `mask_img`,
+    returning a new RGBA layer ready to alpha_composite onto a canvas."""
+    arr = np.asarray(rgb_img, dtype=np.float32)
+    factor = np.clip(1.0 + shade_map, 0.35, 1.5)[..., None]
+    shaded = np.clip(arr * factor, 0, 255).astype(np.uint8)
+    out = Image.fromarray(shaded, mode="RGB").convert("RGBA")
+    out.putalpha(mask_img)
+    return out
+
+
+def draw_specular(size, mask_img, cx_frac, cy_frac, radius_frac, alpha, blur_frac=0.06):
+    """A small soft bright highlight, offset toward the light source --
+    the "glossy catch-light" cue a flat gradient alone doesn't give.
+    Stronger/tighter for glossy dome buttons, softer/dimmer for matte
+    keycap dishes (controlled via `alpha`/`radius_frac` per call site)."""
+    w, h = size
+    layer = Image.new("L", size, 0)
+    d = ImageDraw.Draw(layer)
+    r = min(w, h) * radius_frac
+    cx, cy = w * cx_frac, h * cy_frac
+    d.ellipse([cx - r, cy - r * 0.7, cx + r, cy + r * 0.7], fill=alpha)
+    layer = layer.filter(ImageFilter.GaussianBlur(min(w, h) * blur_frac))
+    out = Image.new("RGBA", size, (255, 255, 255, 0))
+    out.putalpha(Image.composite(layer, Image.new("L", size, 0), mask_img))
+    return out
+
+
+def draw_edge_ao(size, mask_img, width_frac, alpha, blur_frac=0.02):
+    """A thin, blurred dark ring just inside the given mask's silhouette --
+    the contact-shadow cue for where a keycap's top surface meets its
+    beveled side wall (or a button meets its housing). Built by eroding
+    the mask via a blurred-and-rethresholded copy, so the ring thickness
+    scales with `width_frac` regardless of the organic shape's silhouette."""
+    w, h = size
+    arr = np.asarray(mask_img, dtype=np.float32) / 255.0
+    # Approximate erosion via a Gaussian blur + threshold: pixels that stay
+    # bright after blurring by `width_frac` are the "interior," so the ring
+    # is mask MINUS interior.
+    blurred = mask_img.filter(ImageFilter.GaussianBlur(min(w, h) * width_frac))
+    interior = np.asarray(blurred, dtype=np.float32) / 255.0
+    interior = np.clip((interior - 0.5) * 4, 0, 1)  # re-sharpen the threshold
+    ring = np.clip(arr - interior, 0, 1)
+    ring_img = Image.fromarray((ring * 255).astype(np.uint8), mode="L")
+    ring_img = ring_img.filter(ImageFilter.GaussianBlur(min(w, h) * blur_frac))
+    layer = Image.new("RGBA", size, (0, 0, 0, 0))
+    alpha_arr = (np.asarray(ring_img, dtype=np.float32) * (alpha / 255.0)).astype(np.uint8)
+    layer.putalpha(Image.fromarray(alpha_arr, mode="L"))
+    return layer
+
+
 def render_organic_key(
     size,
     seed,
@@ -135,6 +215,9 @@ def render_organic_key(
     motif_scale_frac=0.15,
     motif_pos=(0.5, 0.36),
     motif_kwargs=None,
+    depth_style=None,
+    specular_alpha=0,
+    edge_ao_alpha=0,
 ):
     """Well + inset face + rim, all organically-shaped nested blobs sharing
     the same `seed` (so the face/rim nest self-similarly inside the well,
@@ -183,6 +266,20 @@ def render_organic_key(
     face_layer = Image.new("RGBA", size, (0, 0, 0, 0))
     face_layer.paste(face_grad, (0, 0), face_mask)
     canvas.alpha_composite(face_layer)
+
+    if depth_style and not pressed:
+        shade_map = _radial_shade_map(size, mode=depth_style)
+        canvas.alpha_composite(_apply_shade_map(face_grad, face_mask, shade_map))
+
+    if specular_alpha and not pressed:
+        # Dish keycaps: highlight sits high, toward the light. Dome buttons:
+        # highlight sits nearer center, since the whole surface curves
+        # toward the viewer rather than just the rim catching light.
+        cy_frac = 0.30 if depth_style == "dome" else 0.22
+        canvas.alpha_composite(draw_specular(size, face_mask, 0.36, cy_frac, 0.22, specular_alpha))
+
+    if edge_ao_alpha and not pressed:
+        canvas.alpha_composite(draw_edge_ao(size, face_mask, 0.05, edge_ao_alpha))
 
     if motif_fn is not None:
         motif_layer = Image.new("RGBA", size, (0, 0, 0, 0))

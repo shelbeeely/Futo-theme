@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # SNES — a color-and-shape variant of Groovy Code, replicating
-# the real North American SNES controller (SNS-005)'s warm gray-lavender body and its actual purple A/B + lavender X/Y buttons, set in FiraCode.
+# the real North American SNES controller (SNS-005)'s warm gray-lavender body and its actual purple A/B + lavender X/Y buttons, set in Jersey 10.
 # -------------------------------------------------------------------
 
 name = "SNES"
 author = "Shelbee"
 id = "com.shelbee.snes"
-version = 5
-description = "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in FiraCode."
+version = 6
+description = "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in Jersey 10."
 
 [options]
 auto_borders = true
@@ -75,7 +75,7 @@ keyboard_container_pressed = "#908a9944"
 on_keyboard_container_pressed = "#1c1a2400"
 
 [options.font]
-font = "FiraCode-Regular.ttf"
+font = "Jersey10-Regular.ttf"
 
 [options.background]
 image = "snes-background.png"
