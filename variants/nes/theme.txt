@@ -8,7 +8,7 @@
 name = "NES"
 author = "Shelbee"
 id = "com.shelbee.nes"
-version = 3
+version = 4
 description = "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode."
 
 [options]

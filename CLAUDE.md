@@ -177,6 +177,38 @@ is sparsely documented anywhere else.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
+- **Variants hardware-accuracy pass, round 2 (v21 of the variants; Groovy
+  Code itself untouched, still v19):** the user pushed further on the
+  "keyboards" specifically (IBM Model M, Macintosh Plus, Commodore 64,
+  Amber Terminal), asking to actually replicate the hardware, not just
+  approximate colors. Used the `openrouter-images` skill
+  (`google/gemini-3-pro-image`) to generate a photorealistic reference
+  image of each real keyboard and designed against it directly, the same
+  role a downloaded theme or user-shared photo has played elsewhere in
+  this repo. **Caveat stated plainly in the docs**: these are AI-generated
+  images, not archival photos — one of them (Commodore 64) rendered a
+  hallucinated key label ("BELLAGE," not real), a concrete reminder that
+  only broad structural content (case vs. keycap color, shared materials)
+  is trustworthy from a generated image, not fine text/detail. Found one
+  real structural mistake on two variants: IBM Model M's and Macintosh
+  Plus's `well` color (the recess/gap around each key, which also drives
+  the generated background) had been set to a darker shade of the SAME
+  beige as the keycaps -- both reference images showed the real keyboards
+  have a distinctly dark charcoal case/switch-plate showing through the
+  gaps, not more beige. This was a bigger miss than a wrong hex: it made
+  both variants read as flat monochrome instead of the real high-contrast
+  "light keys, dark case" look that's core to their actual identity. Fixed
+  by making `well` genuinely dark on both and `rim` a neutral bevel
+  instead of another beige tone. Commodore 64's reference image confirmed
+  its existing beige-family `well` was already correct -- its keys sit
+  close enough together that no dark gap shows, a real hardware
+  difference, not an inconsistency. Also found a missing real feature:
+  Amber Terminal's reference image showed a distinct dark brown/gray
+  function-key row (the same "one row gets its own material color"
+  pattern C64 already has), which this repo's profile had missed
+  entirely -- added `face_function` to match. All 8 variants' `theme.txt`
+  `version` bumped 3→4. Full writeup: `docs/VARIANTS.md`'s "v21" section.
+
 - **Variants hardware-accuracy pass (v20 of the variants, screenshots
   already published; Groovy Code itself untouched, still v19):** after
   screenshots went into the docs, the user asked directly whether the 8

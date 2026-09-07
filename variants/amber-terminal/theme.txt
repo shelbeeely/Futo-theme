@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Amber Terminal — a color-and-shape variant of Groovy Code, replicating
-# a VT100-style terminal's real beige-putty keyboard, with the amber phosphor screen glow carried as its accent color, set in FiraCode.
+# a VT100-style terminal's real beige-putty keyboard, with a distinct dark brown/gray function-key row (confirmed via a generated reference photo) and the amber phosphor screen glow carried as its accent color, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "Amber Terminal"
 author = "Shelbee"
 id = "com.shelbee.amberterminal"
-version = 3
-description = "Amber phosphor terminal variant: uniform beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color at all; the amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode."
+version = 4
+description = "Amber phosphor terminal variant: beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- with a distinct dark taupe function-key row (a real feature of these keyboards, confirmed against a reference photo, not invented), blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. The amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -27,7 +27,7 @@ primary_container = "#b4ae9c"
 on_primary_container = "#8c4a00"
 inverse_primary = "#ffb000"
 
-secondary = "#cec8b4"
+secondary = "#48423a"
 on_secondary = "#8c4a00"
 secondary_container = "#b4ae9c"
 on_secondary_container = "#8c4a00"

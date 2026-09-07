@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # IBM Model M — a color-and-shape variant of Groovy Code, replicating
-# the IBM Model M's putty-beige PBT keycaps, approximated via Pantone 452C -- the closest sourced reference found, though not confirmed Model-M-specific, set in FiraCode.
+# the IBM Model M's putty-beige PBT keycaps (Pantone 452C, closest sourced reference) sitting in the keyboard's actual dark charcoal/near-black case -- corrected after a generated reference photo showed the case is NOT a darker shade of the same beige, as this repo had rendered it, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "IBM Model M"
 author = "Shelbee"
 id = "com.shelbee.ibmmodelm"
-version = 3
-description = "Classic IBM Model M variant: monochrome putty-beige keycaps (approximated from Pantone 452C, the closest sourced reference -- not confirmed Model-M-specific) in a darker shade of the same beige, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
+version = 4
+description = "Classic IBM Model M variant: putty-beige PBT keycaps (Pantone 452C) sitting in the keyboard's real dark charcoal case -- corrected from an earlier version that wrongly rendered the case as a darker beige instead of the high-contrast dark plastic real Model M units actually have. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -23,55 +23,55 @@ weight_hints = 400
 [colors]
 primary = "#b0aa7e"
 on_primary = "#2b2820"
-primary_container = "#726f52"
+primary_container = "#202023"
 on_primary_container = "#2b2820"
-inverse_primary = "#4f4d39"
+inverse_primary = "#44423e"
 
 secondary = "#b0aa7e"
 on_secondary = "#2b2820"
-secondary_container = "#726f52"
+secondary_container = "#202023"
 on_secondary_container = "#2b2820"
 
-tertiary = "#4f4d39"
+tertiary = "#44423e"
 on_tertiary = "#2b2820"
-tertiary_container = "#726f52"
+tertiary_container = "#202023"
 on_tertiary_container = "#2b2820"
 
-background = "#8b886b"
+background = "#39393c"
 on_background = "#2b2820"
 
-surface = "#8b886b"
+surface = "#39393c"
 on_surface = "#2b2820"
-surface_variant = "#726f52"
+surface_variant = "#202023"
 on_surface_variant = "#2b2820"
 surface_tint = "#b0aa7e"
 inverse_surface = "#2b2820"
-inverse_on_surface = "#8b886b"
+inverse_on_surface = "#39393c"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#4f4d3999"
-outline_variant = "#4f4d3966"
+outline = "#44423e99"
+outline_variant = "#44423e66"
 scrim = "#000000"
 
-surface_bright = "#726f52"
-surface_dim = "#8b886b"
-surface_container = "#8b886b"
-surface_container_high = "#726f52"
-surface_container_highest = "#726f52"
-surface_container_low = "#8b886b"
-surface_container_lowest = "#8b886b"
+surface_bright = "#202023"
+surface_dim = "#39393c"
+surface_container = "#39393c"
+surface_container_high = "#202023"
+surface_container_highest = "#202023"
+surface_container_low = "#39393c"
+surface_container_lowest = "#39393c"
 
-keyboard_surface = "#8b886b"
-keyboard_surface_dim = "#8b886b"
-keyboard_container = "#726f52"
-keyboard_container_variant = "#726f52"
+keyboard_surface = "#39393c"
+keyboard_surface_dim = "#39393c"
+keyboard_container = "#202023"
+keyboard_container_variant = "#202023"
 on_keyboard_container = "#2b2820"
-keyboard_press = "#726f52"
-keyboard_container_pressed = "#4f4d3944"
+keyboard_press = "#202023"
+keyboard_container_pressed = "#44423e44"
 on_keyboard_container_pressed = "#2b282000"
 
 [options.font]

@@ -8,7 +8,7 @@
 name = "Commodore 64"
 author = "Shelbee"
 id = "com.shelbee.commodore64"
-version = 3
+version = 4
 description = "Classic Commodore 64 variant: RAL 1019 Grey Beige keycaps (the real, documented breadbin case color) in a darker shade of the same beige, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Brown/tan function-key row (Commodore's own real part color, nicknamed Mustard), a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode."
 
 [options]

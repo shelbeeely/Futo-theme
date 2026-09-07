@@ -92,7 +92,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 3
+version = 4
 description = "{description}"
 
 [options]
@@ -544,28 +544,33 @@ KEYBOARD_PROFILES = [
         "slug": "ibm-model-m",
         "name": "IBM Model M",
         "theme_id": "com.shelbee.ibmmodelm",
-        "reference_note": "the IBM Model M's putty-beige PBT keycaps, approximated via Pantone 452C -- the closest sourced reference found, though not confirmed Model-M-specific",
+        "reference_note": "the IBM Model M's putty-beige PBT keycaps (Pantone 452C, closest sourced reference) sitting in the keyboard's actual dark charcoal/near-black case -- corrected after a generated reference photo showed the case is NOT a darker shade of the same beige, as this repo had rendered it",
         # NOTE ON CONFIDENCE: unlike Commodore 64 (RAL 1019, well-documented)
         # and Macintosh Plus (Pantone 453C, sourced to Apple's own
         # designer), no search turned up a color spec confirmed specific
-        # to the Model M. Pantone 452C (hex ~#b0aa7e) is the best
-        # available reference -- widely cited as "commonly associated
-        # with classic computer equipment," one shade more muted/grayish
-        # than Apple's warmer 453C, matching general recollection of
-        # IBM's duller, more institutional beige vs. Apple's warmer
-        # cream. Treat this as an informed approximation, not a
-        # confirmed match, until a better source turns up.
-        "description": "Classic IBM Model M variant: monochrome putty-beige keycaps (approximated from Pantone 452C, the closest sourced reference -- not confirmed Model-M-specific) in a darker shade of the same beige, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
+        # to the Model M's keycaps. Pantone 452C (hex ~#b0aa7e) remains
+        # the best available reference for the beige. The CASE color,
+        # however, is unambiguous from any real photo of a Model M
+        # (including a generated reference image checked directly): dark
+        # charcoal/near-black plastic, not beige at all. This repo's
+        # `well` (the visible bezel/recess around each key) had wrongly
+        # used a darker shade of the SAME beige family, which reads as a
+        # dull monochrome keyboard -- the real thing's defining visual
+        # trait is the high-contrast dark case against light keycaps.
+        # Fixed by making `well` (and therefore the background, which
+        # derives from `well`) actually dark, and `rim` a subtle mid-gray
+        # bevel rather than another beige tone.
+        "description": "Classic IBM Model M variant: putty-beige PBT keycaps (Pantone 452C) sitting in the keyboard's real dark charcoal case -- corrected from an earlier version that wrongly rendered the case as a darker beige instead of the high-contrast dark plastic real Model M units actually have. Sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
         # Sharp, boxy, thick-bezeled -- heavy mechanical PBT caps, not
         # glossy plastic. Low wobble: a precision-molded keycap, not a
         # hand-thrown ceramic one.
         "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
         "gap": 1.05,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
-        "well": (114, 111, 82),
+        "well": (32, 32, 35),
         "face_default": (176, 170, 126),
         "face_stickyon": (202, 197, 158),
-        "rim": (79, 77, 57),
+        "rim": (68, 66, 62),
         "legend": (43, 40, 32),
         "bloom_stickyon_color": (255, 153, 0),
         "bloom_stickyon_alpha": 150,
@@ -575,26 +580,33 @@ KEYBOARD_PROFILES = [
         "slug": "mac-plus",
         "name": "Macintosh Plus",
         "theme_id": "com.shelbee.macplus",
-        "reference_note": "the original Macintosh's actual \"Apple Beige\" (Pantone 453C) case/keyboard color -- not the cooler gray \"Platinum\" this repo originally guessed, which is a later Apple color (Mac SE/II era, ~1987) the Plus didn't ship in",
-        # CORRECTED: the earlier version of this profile used a cool
-        # gray ("Platinum"), Apple's *later* case color introduced with
-        # the Macintosh SE/II circa 1987. The Mac Plus (1986) continued
-        # the warmer beige of the 128k/512k Macs -- Apple's own designer
-        # confirmed the reference color was Pantone 453C (hex ~#bfbb98),
-        # widely documented as "Apple Beige." Corrected via web research
-        # after being asked to replicate real hardware, not just a
-        # similar-looking palette.
-        "description": "Classic Macintosh Plus variant: monochrome Apple Beige keycaps (Pantone 453C, the real original Mac case color -- not the later gray Platinum), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
+        "reference_note": "the original Macintosh's actual \"Apple Beige\" (Pantone 453C) case/keyboard color -- not the cooler gray \"Platinum\" this repo originally guessed (a later Apple color the Plus didn't ship in) -- with the keys' real dark switch-plate gaps, not another shade of beige",
+        # CORRECTED (round 1): the earlier version of this profile used a
+        # cool gray ("Platinum"), Apple's *later* case color introduced
+        # with the Macintosh SE/II circa 1987. The Mac Plus (1986)
+        # continued the warmer beige of the 128k/512k Macs -- Apple's own
+        # designer confirmed the reference color was Pantone 453C
+        # (hex ~#bfbb98), widely documented as "Apple Beige."
+        # CORRECTED (round 2): a generated reference photo of a real
+        # M0110A keyboard showed narrow dark gaps between the low-profile
+        # keycaps (the switch plate/mechanism beneath, visible where caps
+        # don't fully meet) -- the same finding as IBM Model M. `well`
+        # (and the background, which derives from it) had wrongly used a
+        # darker shade of the same beige; fixed to actually be dark. The
+        # thin `margin_frac`/`rim_frac` already in place happen to be
+        # correct for how little of that dark gap actually shows on this
+        # keyboard's tightly-packed keys -- only the color was wrong.
+        "description": "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color) with the real dark switch-plate showing in the narrow gaps between keys, rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
         # Low-profile, rounded, minimal: a thin bezel (keys nearly fill
         # the housing) and a nearly-flat face -- smooth and pillowy, not
         # deeply sculpted.
         "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.1,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
-        "well": (138, 134, 110),
+        "well": (26, 25, 24),
         "face_default": (191, 187, 152),
         "face_stickyon": (219, 216, 190),
-        "rim": (95, 90, 68),
+        "rim": (72, 68, 62),
         "legend": (42, 40, 30),
         "bloom_stickyon_color": (91, 127, 166),
         "bloom_stickyon_alpha": 130,
@@ -643,8 +655,8 @@ KEYBOARD_PROFILES = [
         "slug": "amber-terminal",
         "name": "Amber Terminal",
         "theme_id": "com.shelbee.amberterminal",
-        "reference_note": "a VT100-style terminal's real beige-putty keyboard, with the amber phosphor screen glow carried as its accent color",
-        "description": "Amber phosphor terminal variant: uniform beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color at all; the amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode.",
+        "reference_note": "a VT100-style terminal's real beige-putty keyboard, with a distinct dark brown/gray function-key row (confirmed via a generated reference photo) and the amber phosphor screen glow carried as its accent color",
+        "description": "Amber phosphor terminal variant: beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- with a distinct dark taupe function-key row (a real feature of these keyboards, confirmed against a reference photo, not invented), blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. The amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode.",
         # Blocky and nearly flat -- a terminal function key is a slab
         # behind a wireframe outline, not a sculpted physical cap. Sharp
         # corners, a thin bright rim (the only real detailing), a wider
@@ -655,20 +667,20 @@ KEYBOARD_PROFILES = [
         # a real beige keycap actually shows its sculpting, where a near-
         # black key could get away with almost none.
         "face_top_blend": 0.08, "face_bottom_scale": 0.88,
-        # CONFIDENCE NOTE: no source gave a precise VT100 case/keycap
+        # CONFIDENCE NOTE: no text source gave a precise VT100 case/keycap
         # color spec (unlike C64's RAL 1019 or Mac Plus's Pantone 453C).
         # DEC terminal keyboards of this era are generally recalled as
         # beige/putty plastic, the same "computer beige" family as most
         # 1970s-80s hardware -- this is an informed approximation within
-        # that family, not a sourced match, and the near-black face this
-        # repo originally shipped (assumed purely from the amber-CRT
-        # aesthetic, never checked) was likely wrong either way. The
-        # amber now lives only in the rim/bloom (bright) and legend (a
-        # darker amber-brown, for legibility against the light face --
-        # real terminal keycaps had dark-printed legends, not glowing
-        # amber ones).
+        # that family, not a sourced match. A generated reference photo of
+        # a real VT100-style keyboard confirmed this AND surfaced a real
+        # feature this repo had missed entirely: the top function-key row
+        # is a distinct dark brown/gray, not beige like the rest -- the
+        # same "one row gets its own color" pattern the C64 already has.
+        # Added `face_function` for that; everything else stays beige.
         "well": (180, 174, 156),
         "face_default": (206, 200, 180),
+        "face_function": (72, 66, 58),
         "rim": (255, 176, 0),
         "legend": (140, 74, 0),
         "bloom_action_color": (255, 176, 0),
