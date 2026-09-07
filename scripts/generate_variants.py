@@ -160,7 +160,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 6
+version = 7
 description = "{description}"
 
 [options]
@@ -799,11 +799,31 @@ CONSOLE_PROFILES = [
         "slug": "gameboy-dmg",
         "name": "Game Boy",
         "theme_id": "com.shelbee.gameboydmg",
-        "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found)",
-        "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16.",
-        # Chunky molded plastic buttons sitting in a thick shell bezel --
-        # the DMG's brick-like housing is the most visible "well" of any
-        # variant here.
+        "reference_note": "the original Game Boy (DMG) via a real Wikimedia Commons archival photo (Game-Boy-FL.jpg by Evan-Amos, public domain, pixel-sampled directly): putty-gray shell, near-black D-pad/Select/Start, and dark magenta/burgundy (~#7f1e53) A/B buttons",
+        # CORRECTED: this profile previously had no magenta anywhere and
+        # called the buttons uniformly "dark gray" -- true of the D-pad
+        # and Select/Start, but not of A/B, which a real archival photo
+        # (downloaded and pixel-sampled, not guessed) shows are a
+        # distinct dark magenta/burgundy, the only spot of color on the
+        # whole unit. Gave the action key its own `face_action` in that
+        # sampled color -- a real, visible fill, not a `bloom_action`
+        # accent -- after discovering `render_organic_key`'s bloom effect
+        # is essentially invisible in practice: `bloom_*_color/_alpha`
+        # only shows in the sliver where a key's own silhouette differs
+        # from its neighbors' corner-rounding, which for most profiles'
+        # tight radius_frac/margin_frac/rim_frac gaps is imperceptibly
+        # thin even before blur washes it out further (confirmed by
+        # direct pixel-sampling: max R-G across a full center scanline
+        # was 0 at bloom_alpha up to 220). `face_action`/`face_stickyon`
+        # overrides (already how SNES and Groovy Code itself carry their
+        # accent colors) are the only mechanism in this renderer that
+        # reliably shows -- see the v24 changelog in docs/VARIANTS.md for
+        # the full writeup; this repo's other `bloom_action`/
+        # `bloom_stickyon` uses (NES, amber-terminal, every `stickyon`)
+        # likely have the same near-invisibility problem and are flagged
+        # as an open item rather than fixed here, since a real fix touches
+        # shared rendering code used by all 9 themes.
+        "description": "Classic Game Boy (DMG) variant: near-black D-pad and buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a dark magenta/burgundy action/enter key matching the real A/B buttons' actual color (the only non-gray element on the real hardware) and a small D-pad-cross motif scattered on the background. No per-row or per-role color coding otherwise -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16.",
         "radius_frac": 0.30, "wobble": 0.09, "margin_frac": 0.14, "rim_frac": 0.020,
         "gap": 1.2,
         "font_file": "DotGothic16-Regular.ttf",
@@ -811,6 +831,7 @@ CONSOLE_PROFILES = [
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
         "face_default": (58, 58, 56),
+        "face_action": (127, 30, 83),
         "face_stickyon": (75, 75, 72),
         "rim": (90, 88, 78),
         "legend": (230, 224, 200),
@@ -822,11 +843,25 @@ CONSOLE_PROFILES = [
         "slug": "nes",
         "name": "NES",
         "theme_id": "com.shelbee.nes",
-        "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found)",
-        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in Press Start 2P.",
-        # The NES controller's buttons are famously rectangular, not
-        # round -- minimal corner rounding here, a moderate bezel.
-        "radius_frac": 0.13, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
+        "reference_note": "the real NES controller (via a Wikimedia Commons archival photo, NES_controller.JPG by Denis Apel, CC-BY-SA-3.0, pixel-sampled directly): light gray shell, near-black D-pad/Select/Start, and ROUND red A/B buttons",
+        # CORRECTED: this profile previously claimed the NES controller's
+        # A/B buttons were "famously rectangular" and rendered them nearly
+        # square (radius_frac 0.13) -- that claim was never actually
+        # checked against a real photo or source. A real archival photo
+        # (downloaded and pixel-sampled, not AI-generated -- see the
+        # repo-wide lesson from the keyboard variants' v22 round) shows
+        # the shipped NES controller's A/B buttons are fully ROUND, not
+        # rectangular. This confusion likely traces to the earliest
+        # Famicom prototype, which briefly had square A/B buttons before
+        # Nintendo changed them to circular for production because the
+        # square buttons could catch in the controller casing -- so even
+        # the "rectangular" claim's own premise was for a design that was
+        # never actually shipped. Also sampled the real button color
+        # directly: a strong, saturated red (~#f4281b), matching the
+        # bloom_action/bloom_stickyon red already used here (already
+        # correct, so left unchanged) -- only the SHAPE was wrong.
+        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, round like the real controller's actual A/B buttons (corrected from an earlier, unverified claim that they were rectangular), with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow matching the real A/B buttons' saturated red. Set in Press Start 2P.",
+        "radius_frac": 0.42, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "PressStart2P-Regular.ttf",
         "depth_style": "dome", "specular_alpha": 75, "edge_ao_alpha": 70,

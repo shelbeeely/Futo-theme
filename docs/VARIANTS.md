@@ -369,6 +369,101 @@ All 8 variants' `theme.txt` `version` bumped 5→6. Confirmed via
 `preview-theme` on all 8 — the dish/dome distinction, specular highlights,
 and all 8 fonts render correctly and distinctly from each other.
 
+## v24: "is each console using console-appropriate buttons?" — a real answer
+
+The user asked this directly, pointedly, after this repo's own track record
+of unverified geometry/color claims (see v20-v22). Rather than assert an
+answer, downloaded real archival photos for all 4 console variants — NES
+(`NES_controller.JPG` by Denis Apel, CC-BY-SA-3.0, Wikimedia Commons),
+SNES (`Nintendo-Super-NES-Controller.jpg`, Wikimedia Commons), Game Boy DMG
+and Game Boy Color (`Game-Boy-FL.jpg` / `Nintendo-Game-Boy-Color-FL.jpg`,
+both by Evan-Amos, public domain) — and inspected them directly (visual
+read plus Pillow pixel-sampling), the same discipline the v22 keyboard pass
+established: a real photo, not a generated image, is the only acceptable
+evidence for a hardware-accuracy claim here.
+
+**Two real, confirmed errors found and fixed:**
+
+1. **NES's button shape was wrong.** The existing profile asserted the NES
+   controller's A/B buttons were "famously rectangular" and rendered them
+   at `radius_frac=0.13` (near-square) — a claim that was never actually
+   checked against a source or photo. The real photo shows the shipped
+   controller's A/B buttons are fully **round**, glossy red circles. (The
+   "rectangular" idea likely traces to the earliest Famicom prototype,
+   which briefly had square buttons before Nintendo changed them to
+   circular for production because the square ones could catch in the
+   controller casing — so even the premise behind the original claim
+   describes a design that was never actually shipped.) Fixed:
+   `radius_frac` raised from `0.13` to `0.42`. The sampled real button
+   color (`#f4281b`, a strong saturated red) already matched the existing
+   `bloom_action`/`bloom_stickyon` red almost exactly — the color itself
+   didn't need a fix, though see below: that bloom likely isn't actually
+   visible in the rendered asset either.
+
+2. **Game Boy (DMG) was missing its only real accent color entirely.**
+   The profile described the DMG as uniformly "dark gray buttons" — true
+   of the D-pad and Select/Start, but not of A/B, which the real photo
+   (pixel-sampled directly) shows are a distinct dark magenta/burgundy
+   (`#7f1e53`) — the one splash of color on an otherwise all-gray unit.
+   Fixed: gave the action key its own `face_action=(127, 30, 83)` — a
+   real, solid fill, confirmed visible via `preview-theme` (the action/
+   enter key now renders a clear magenta, matching the same mechanism
+   SNES already uses for its purple A/B accent).
+
+   **A real rendering bug surfaced while fixing this**: the first attempt
+   used `bloom_action_color`/`bloom_action_alpha` (the same mechanism NES
+   already had, and which the existing docs described as giving the
+   action key "a soft red glow"). It rendered with *zero* visible effect
+   — confirmed by pixel-sampling a rendered key's full center scanline
+   and finding no red tint at any alpha up to 220. Root cause:
+   `render_organic_key`'s well/rim/face masks are all the *same*
+   `organic_mask` shape (a rounded-rect filling the full canvas), differing
+   only in corner-rounding radius, not overall size — there is no literal
+   inset margin between them the way "well → rim → face, nested at
+   shrinking radius" (the function's own docstring) implies. The `bloom`
+   layer is painted *before* the rim and face layers and gets almost
+   entirely overpainted by them, since face's footprint is nearly
+   identical to (often bigger than) the bloom's. `bloom_pad_frac` also
+   adds to a corner-*rounding* fraction rather than expanding the shape's
+   actual size, the wrong direction to make a bloom bleed further out.
+   Switched to a `face_action`/`face_stickyon` override instead — the only
+   mechanism in this renderer confirmed to reliably show a distinct color
+   (already how Groovy Code and SNES carry their own accents) — rather
+   than attempting a deeper fix to the shared bloom code, which every one
+   of the other 8 themes also depends on. **This means NES's existing
+   "soft red glow" on its action/caps-lock keys, and every other
+   variant's `bloom_action`/`bloom_stickyon` use, is likely equally
+   invisible in the actual rendered asset** — not fixed in this round
+   (out of scope of the specific shape/color question asked), flagged as
+   a real open item below.
+
+**Two already confirmed accurate, no change needed:**
+
+- **SNES** — already corrected in v20/v22 to the real NA SNS-005 scheme
+  (light lavender X/Y, darker purple A/B, gray-lavender body,
+  round/glossy/thin-bezel geometry). The real photo directly confirms
+  this: round glossy buttons, light-lavender-top/darker-purple-bottom
+  layout, warm gray body. No change.
+- **Game Boy Color** — the real photo shows near-black/charcoal buttons
+  (pixel-sampled ~`#323439`, essentially neutral dark gray-blue) in a
+  translucent grape-purple shell. The existing `face_default`
+  (`#3a2a4a`, dark violet) is a slightly more purple-leaning
+  interpretation than the sampled neutral charcoal, but both read as
+  "dark, cool-toned, non-primary" — close enough that this isn't treated
+  as a confirmed error the way NES's shape and DMG's missing accent were.
+  Flagged here rather than silently left alone, since the profile's own
+  comment had already asked this exact question ("worth double-checking
+  against a reference photo").
+
+All 8 variants' `theme.txt` `version` bumped 6→7 (only NES's art and Game
+Boy DMG's `Button-action.png` actually changed pixel-for-pixel; the other
+6 variants regenerate identically but pick up the version bump for release
+consistency, matching how this repo has handled version bumps in every
+prior round). Verified via `preview-theme` on NES and Game Boy DMG: NES's
+A/B keys now render round instead of near-square, and Game Boy's action
+key now carries a visible magenta glow. Not yet confirmed on a real
+device.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -566,8 +661,8 @@ Color and notable color departure:
 | Macintosh Plus | `mac-plus` | `#8a866e` (**v22**: reverted to v20, confirmed correct by a real photo) | `#bfbb98` Apple Beige (Pantone 453C) | `#5f5a44` | fully monochrome except `stickyon` | Sourced (Apple's own designer); mild case/keycap contrast confirmed via real archival photo |
 | Commodore 64 | `commodore-64` | `#a48f7a` RAL 1019 Grey Beige case (**v22**: this is the case color, not the keycaps — v20/v21 had it backwards) | `#2a241e` dark brown/near-black keycaps (**v22**, real photo) | `#605442` | none — **v22**: removed the invented tan "Mustard" function row and rust RETURN key, neither visible on a real photographed unit; fully monochrome except `stickyon` | Case color sourced (RAL 1019); uniform dark keycaps confirmed via real archival photo |
 | Amber terminal | `amber-terminal` | `#c4b28a` beige-tan deck (**v22**, real photo — genuinely new correct info) | `#221e1a` dark near-black keycaps (**v22**: reverted from v21's beige, which was a hallucination) | `#ffb000` amber (stylistic, not literal) | none — **v22**: removed the invented function-key row, not visible on the real unit; legend is light near-white (`#dedcc8`), matching real printed legends, not the bright rim amber | Deck color: confirmed via real archival photo. Dark keycaps: v19's original instinct, now confirmed correct |
-| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | none — fully monochrome except `stickyon` (red LED bloom) | Informed approximation, no source found |
-| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom (logotype nod), on top of `stickyon`'s | Informed approximation, no source found |
+| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | action key is a solid dark magenta/burgundy `#7f1e53` (**added in v24** via `face_action`, not a bloom — see below) matching the real A/B buttons — fully monochrome otherwise except `stickyon` (red LED bloom, likely not actually visible — see "Open items") | Case/D-pad color: informed approximation, no source found. A/B magenta: **confirmed in v24** via a real archival photo |
+| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom matching the real A/B buttons' sampled color, on top of `stickyon`'s | **Confirmed in v24** via a real archival photo — light gray shell, near-black D-pad, red (`#f4281b`) round A/B buttons |
 | SNES | `snes` | `#cec9cc` warm gray-lavender | `#a7a4e0` lavender (X/Y) | `#908a99` | action (Enter, standing in for A/B) is `#514689` darker purple — **corrected in v20**, see above | Community-sourced (color-hex.com NA palette), not official Nintendo spec |
 | Game Boy Color | `gameboy-color` | `#4a2f5e` grape | `#3a2a4a` dark violet | `#8a6ba8` | none — fully monochrome except `stickyon` (green LED bloom) | Informed approximation, no source found — "Grape" is also a real GBC colorway name, worth double-checking against a photo |
 
@@ -582,7 +677,7 @@ variant's own motif glyph:
 | Commodore 64 | 0.26 | 0.10 | 0.09 | 0.020 | 1.15 | 0.16 → 0.80 | dish, 30/90 | Sixtyfour | IC chip | baseline chunky sculpted retro key |
 | Amber terminal | 0.10 | 0.04 | 0.05 | 0.014 | 1.3 | 0.04 → 0.94 | dish, 8/35 | VT323 | cursor prompt | blocky, near-flat, wide grid spacing |
 | Game Boy (DMG) | 0.30 | 0.09 | 0.14 | 0.020 | 1.2 | 0.12 → 0.80 | dome, 90/70 | DotGothic16 | D-pad cross | chunky plastic, thick shell bezel |
-| NES | 0.13 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | dome, 75/70 | Press Start 2P | button pair | rectangular, minimal rounding |
+| NES | 0.42 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | dome, 75/70 | Press Start 2P | button pair | round, glossy (**corrected in v24** — was 0.13/"rectangular," an unverified claim; a real photo shows fully round A/B buttons) |
 | SNES | 0.44 | 0.09 | 0.05 | 0.012 | 1.05 | 0.22 → 0.78 | dome, 130/45 | Jersey 10 | diamond cluster (4-color) | roundest, thinnest bezel, glossiest |
 | Game Boy Color | 0.34 | 0.10 | 0.13 | 0.020 | 1.15 | 0.14 → 0.80 | dome, 95/65 | Pixelify Sans | D-pad cross | rounder/softer than DMG, moderate bezel |
 
@@ -666,6 +761,28 @@ remembering this.**
 
 **None of the eight have been confirmed on a real device yet** — same
 outstanding gap as Groovy Code itself.
+
+## Open items
+
+- **`bloom_action`/`bloom_stickyon` are likely invisible in the rendered
+  asset for most variants that rely on them** — found and fixed for Game
+  Boy DMG's action key in v24 (see that section), by switching to a real
+  `face_action` fill instead. Not yet audited or fixed for: NES's action/
+  stickyon red glow, amber terminal's action gold glow
+  (`bloom_action_color=(255,176,0)`), or any variant's `stickyon` bloom
+  (every variant has one). Groovy Code itself and SNES are unaffected —
+  both already give their accent keys a distinct `face_action`/
+  `face_stickyon` color independent of any bloom. A real fix means either
+  reworking `render_organic_key`'s bloom layer to actually expand past the
+  rim's own footprint (not just add to a corner-rounding fraction) or
+  compositing it after the face layer instead of before — untested, and
+  touches shared code all 9 themes depend on, so treat as its own
+  follow-up rather than a quick patch.
+- Game Boy Color's `face_default` (`#3a2a4a`, dark violet) is a more
+  purple-leaning read than the real photo's neutral dark charcoal
+  (`~#323439`, pixel-sampled in v24) — close enough not to call it a
+  confirmed error, but not an exact match either. Worth a second look if
+  a higher-resolution or better-lit reference photo turns up.
 
 ## Adding another variant
 

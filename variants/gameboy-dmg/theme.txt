@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Game Boy — a color-and-shape variant of Groovy Code, replicating
-# the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found), set in DotGothic16.
+# the original Game Boy (DMG) via a real Wikimedia Commons archival photo (Game-Boy-FL.jpg by Evan-Amos, public domain, pixel-sampled directly): putty-gray shell, near-black D-pad/Select/Start, and dark magenta/burgundy (~#7f1e53) A/B buttons, set in DotGothic16.
 # -------------------------------------------------------------------
 
 name = "Game Boy"
 author = "Shelbee"
 id = "com.shelbee.gameboydmg"
-version = 6
-description = "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16."
+version = 7
+description = "Classic Game Boy (DMG) variant: near-black D-pad and buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a dark magenta/burgundy action/enter key matching the real A/B buttons' actual color (the only non-gray element on the real hardware) and a small D-pad-cross motif scattered on the background. No per-row or per-role color coding otherwise -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16."
 
 [options]
 auto_borders = true
@@ -21,7 +21,7 @@ weight_text = 500
 weight_hints = 400
 
 [colors]
-primary = "#3a3a38"
+primary = "#7f1e53"
 on_primary = "#e6e0c8"
 primary_container = "#c4bea4"
 on_primary_container = "#e6e0c8"
@@ -44,7 +44,7 @@ surface = "#ddd7bd"
 on_surface = "#e6e0c8"
 surface_variant = "#c4bea4"
 on_surface_variant = "#e6e0c8"
-surface_tint = "#3a3a38"
+surface_tint = "#7f1e53"
 inverse_surface = "#e6e0c8"
 inverse_on_surface = "#ddd7bd"
 

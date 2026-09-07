@@ -189,6 +189,34 @@ is sparsely documented anywhere else.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
+- **"Is each console using console-appropriate buttons?" (variants v24;
+  Groovy Code untouched):** the user asked this directly, given this
+  repo's track record of unverified geometry/color claims. Downloaded
+  real archival photos (Wikimedia Commons, not AI-generated) for all 4
+  console variants and pixel-sampled them. Found two real errors: (1)
+  **NES's A/B buttons were rendered near-rectangular
+  (`radius_frac=0.13`)** on an unverified "famously rectangular" claim —
+  the real controller's buttons are fully round; fixed to `radius_frac=
+  0.42`. (2) **Game Boy (DMG) had no magenta anywhere** despite the real
+  A/B buttons being a distinct dark magenta/burgundy (`#7f1e53`,
+  pixel-sampled) — the only color on an otherwise all-gray unit; fixed by
+  giving the action key its own `face_action` in that color. SNES and
+  Game Boy Color were checked and found already close enough to their
+  real photos to leave alone. **A real rendering bug was found while
+  fixing #2**: `bloom_action_color`/`bloom_action_alpha` (the mechanism
+  NES's own "red glow" and most other variants' accent colors rely on)
+  turned out to have **zero visible effect** — confirmed by pixel-sampling
+  a rendered key and finding no color tint anywhere, at any bloom alpha
+  tested. Root cause: `render_organic_key`'s well/rim/face layers are all
+  the same full-canvas shape differing only in corner-rounding, not size,
+  so the bloom layer (painted first) gets essentially fully overpainted by
+  the face layer painted on top of it. Fixed DMG by using a real
+  `face_action` fill instead (the same mechanism Groovy Code/SNES already
+  use); NES's and every other variant's `bloom_action`/`bloom_stickyon`
+  are now flagged, not yet fixed, since a real fix touches rendering code
+  shared by all 9 themes — see `docs/VARIANTS.md`'s v24 entry and "Open
+  items" section.
+
 - **Real depth + per-theme fonts (Groovy Code v20, variants v23):** the
   user's vision widened past color/photo accuracy: "look like the real
   hardware so keycaps on keyboards, buttons on NES controllers... use
@@ -673,6 +701,17 @@ without (c) eventually happening.
 
 ## Open items / not yet done
 
+- **`bloom_action`/`bloom_stickyon` are likely invisible in the rendered
+  asset for most variants** (found in v24 — see `docs/VARIANTS.md`'s
+  "Open items"): the bloom layer in `render_organic_key` gets almost
+  entirely overpainted by the face layer drawn on top of it, since both
+  are the same full-canvas shape differing only in corner-rounding, not
+  size. Confirmed fixed only for Game Boy DMG's action key (switched to a
+  real `face_action` fill). NES's own "red glow," amber terminal's gold
+  glow, and every variant's `stickyon` bloom are unaudited — likely have
+  the same problem. A real fix touches `keycap_render.py`'s shared bloom
+  code, used by all 9 themes; treat as its own follow-up, not a quick
+  patch alongside an unrelated change.
 - **Whether to layer any photo-realism/texture technique (surface
   texture, vignette, edge ambient-occlusion, specular highlight) onto the
   current organic solid-color faces is an open judgment call, not
