@@ -538,6 +538,52 @@ for the same "rarely visible, low priority" reasoning documented there.
 If "no shared assets" should extend there too, that's a follow-up, not
 assumed here.
 
+## v26: the last shared assets — `morekeysbox`/`morekey` — given to every theme
+
+The very next thing the user said, directly: *"Every theme needs to be
+separated with no shared assets, they're just sharing the same repo. The
+only thing that they should share is the build step that provides them
+as zip files to individually install."* This settles the scope question
+v25 had left open: `Button-morekeysbox.png`/`Button-morekey.png` (the
+long-press accent-key popup) were the last two files every variant
+copied byte-for-byte from Groovy Code's own output, and they needed the
+same fix icons got in v25.
+
+Added `render_morekeysbox(size, fill_color, rim_color)` to
+`keycap_render.py` — a plain rounded rect (a popup strip reads as one
+flat surface holding several accent chips, not an organic-blob keycap,
+so it deliberately doesn't use `render_organic_key`'s machinery) — and
+`render_morekey_transparent()`. Every variant now calls
+`render_morekeysbox(MOREKEYSBOX_SIZE, scale(well, 0.30), rim)` in
+`generate_variant()`, using its *own* `well`/`rim` colors already defined
+in its profile (no new constants needed) — the same relationship Groovy
+Code's own original asset had (a darkened case tone for the fill, its own
+rim accent for the border), just computed per theme instead of
+hardcoded once. `generate_assets.py` (Groovy Code) now generates these
+two the same way, using its own `BROWN`/`GOLD`, rather than leaving them
+as static, hand-maintained files outside the generation pipeline (as the
+v12 entry in `docs/GROOVY-CODE-THEME.md` had explicitly carved out).
+`SHARED_FILES` and its copy loop are gone entirely from
+`scripts/generate_variants.py` — there is nothing left in it to copy.
+
+**One of these two is necessarily still identical everywhere, and that's
+correct, not a leftover gap**: `Button-morekey.png` has to be fully
+transparent regardless of theme (CLAUDE.md fact #13 — a blank `morekey`
+asset is what suppresses the individual long-press chips so only the
+containing `morekeysbox` reads as one surface). A transparent PNG has no
+room for per-theme variation; generating it fresh per theme (rather than
+copying) is what "no shared assets" actually asks for here, even though
+the *content* comes out identical by necessity.
+
+Confirmed all 8 variants' `Button-morekeysbox.png` now hash differently
+from each other and from Groovy Code's own (verified via `md5sum`) and
+visually distinct (each theme's own well-derived fill + its own rim
+color). **Not verified in `preview-theme`**: its own JS preview stubs
+long-press to always-false (see "Verification" below and CLAUDE.md's
+open items) — this can only be confirmed on a real device, same
+long-standing limitation as before. All 8 variants' `theme.txt`
+`version` bumped 8→9; Groovy Code's own `version` bumped 20→21.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -777,20 +823,23 @@ import needs everything present, not references back to the repo root):
   currently use this, see "Row-banded variants" above), a gradient
   background PNG matching the variant's case tone scattered with its own
   motif glyph, its own `FONT-ATTRIBUTION.txt` naming its own font's
-  author/license/source (since v23), and (since v25) its own full
-  `Icon-*.png` set plus its own `ICON-ATTRIBUTION.txt` — see the v25
-  entry above.
+  author/license/source (since v23), its own full `Icon-*.png` set plus
+  its own `ICON-ATTRIBUTION.txt` (since v25), and (since v26) its own
+  `Button-morekeysbox.png` in its own well/rim colors — see the v25 and
+  v26 entries above.
 - **Copied from `scripts/fonts/` (since v23, not the repo root)**: each
   variant's own font file (see the v23 table above) — no longer
   FiraCode, and no longer shared across variants at all.
-- **Copied unchanged from the repo root**: only
-  `Button-morekey.png`/`Button-morekeysbox.png` remain (the long-press
-  popup styling — still the original gold-ring look from Groovy Code
-  v11, not restyled per variant or per the organic-shape/icon passes; see
-  "Open items" in `docs/GROOVY-CODE-THEME.md`, same low-priority
-  reasoning applies here). Every other asset class (borders, background,
-  font, icons) is now generated per variant — as of v25, no theme in this
-  repo shares an `Icon-*.png` with any other.
+- **Generated but necessarily identical everywhere**: `Button-morekey.png`
+  has to render fully transparent regardless of theme (see the v26 entry
+  above) — every variant calls the same `render_morekey_transparent()`,
+  so the *file* is byte-identical across all 9 themes even though nothing
+  is actually copied. As of v26, this is the only asset in the repo where
+  that's true, and it's a content constraint (there is no other valid
+  content for this asset's role), not an unaddressed sharing gap.
+  Nothing in this repo is copied from the root repo directory into a
+  variant anymore — every other asset class (borders, background, font,
+  icons, `morekeysbox`) is generated fresh per theme.
 
 ## Packaging and releases
 

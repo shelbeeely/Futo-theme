@@ -56,8 +56,9 @@ import os
 import shutil
 
 from keycap_render import (
-    KEY_SIZE, SPACE_SIZE,
-    render_organic_key, vertical_gradient, scale, compute_slicing, scatter_motifs,
+    KEY_SIZE, SPACE_SIZE, MOREKEY_SIZE, MOREKEYSBOX_SIZE,
+    render_organic_key, render_morekey_transparent, render_morekeysbox,
+    vertical_gradient, scale, compute_slicing, scatter_motifs,
     motif_switch_cross, motif_crt, motif_chip, motif_cursor,
     motif_dpad, motif_button_pair, motif_diamond_cluster,
 )
@@ -129,11 +130,6 @@ FONT_INFO = {
     ),
 }
 
-SHARED_FILES = [
-    "Button-morekey.png", "Button-morekeysbox.png",
-]
-
-
 def hexs(rgb):
     return "#%02x%02x%02x" % rgb
 
@@ -157,7 +153,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 8
+version = 9
 description = "{description}"
 
 [options]
@@ -1051,8 +1047,12 @@ def generate_variant(profile):
     background_file = f"{slug}-background.png"
     build_background(well, motif_fn, rim, motif_kwargs, seed=5).save(os.path.join(out_dir, background_file))
 
-    for fname in SHARED_FILES:
-        shutil.copy(os.path.join(REPO_ROOT, fname), os.path.join(out_dir, fname))
+    # v26: this variant's own long-press popup, in its own well/rim colors
+    # -- the last genuinely shared asset in the repo (every variant used
+    # to copy Groovy Code's own gold-rimmed Button-morekeysbox.png
+    # byte-for-byte). See docs/VARIANTS.md's v26 entry.
+    render_morekeysbox(MOREKEYSBOX_SIZE, scale(well, 0.30), rim).save(os.path.join(out_dir, "Button-morekeysbox.png"))
+    render_morekey_transparent(MOREKEY_SIZE).save(os.path.join(out_dir, "Button-morekey.png"))
 
     font_file = profile["font_file"]
     font_name, font_author, font_source, font_note = FONT_INFO[font_file]

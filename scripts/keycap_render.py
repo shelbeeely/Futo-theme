@@ -307,6 +307,39 @@ def render_organic_key(
     return canvas
 
 
+MOREKEYSBOX_SIZE = (900, 180)
+MOREKEY_SIZE = (160, 160)
+
+
+def render_morekeysbox(size, fill_color, rim_color, radius_frac=0.35, rim_width_frac=0.03):
+    """The long-press accent-key popup surface (`morekeysbox`): a plain
+    rounded rect, not an organic-blob shape -- a popup strip reads as a
+    single flat surface holding several accent chips, not a keycap. Every
+    theme gets its own `fill_color`/`rim_color` (see generate_assets.py /
+    generate_variants.py) instead of sharing one hardcoded style -- fixed
+    v26, see docs/VARIANTS.md."""
+    w, h = size
+    img = Image.new("RGBA", size, (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    r = radius_frac * min(w, h)
+    rim_w = max(2, round(rim_width_frac * min(w, h)))
+    draw.rounded_rectangle(
+        [rim_w / 2, rim_w / 2, w - rim_w / 2, h - rim_w / 2],
+        radius=r, fill=fill_color + (255,), outline=rim_color + (255,), width=rim_w,
+    )
+    return img
+
+
+def render_morekey_transparent(size=MOREKEY_SIZE):
+    """`morekey` (the individual long-press accent-key chip) stays fully
+    transparent -- per CLAUDE.md fact #13, a blank `morekey` asset
+    suppresses the individual chips so only the containing `morekeysbox`
+    reads as one surface. This is the only valid content for this asset's
+    role, so every theme's version is necessarily identical -- a content
+    constraint, not an unaddressed shared-asset gap."""
+    return Image.new("RGBA", size, (0, 0, 0, 0))
+
+
 # ---------------------------------------------------------------------------
 # Motif glyphs -- small, simple line-art badges, one per theme, used (a)
 # baked into a theme's stickyon/accent key art via render_organic_key's

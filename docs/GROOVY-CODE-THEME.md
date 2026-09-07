@@ -399,6 +399,22 @@ theme ships under for third-party art/font.
   image directly rather than trusting the formula by inspection.
   Confirmed via `preview-theme` on QWERTY — the dish depth and specular
   sheen read clearly without hurting letter-glyph legibility.
+- **Button-morekeysbox.png/Button-morekey.png were the last genuinely
+  shared assets in the repo (fixed v26):** every one of the 8 hardware
+  variants copied these two files byte-for-byte from this theme's own
+  output, rather than each theme rendering its own — the user pointed
+  this out directly ("every theme needs to be separated with no shared
+  assets... the only thing they should share is the build step").
+  `keycap_render.py` gained `render_morekeysbox(size, fill_color,
+  rim_color)` (a plain rounded rect — a popup strip reads as one flat
+  surface, not an organic-blob keycap) and `render_morekey_transparent()`
+  (`morekey` has to stay fully transparent regardless of theme — see
+  fact #13 — so this one file is necessarily identical everywhere; a
+  content constraint, not an unaddressed gap). `generate_assets.py` now
+  generates both directly instead of leaving them as hand-maintained,
+  untouched assets; Groovy Code's own long-press popup keeps its original
+  near-black-fill/gold-rim look, just generated now rather than static.
+  See `docs/VARIANTS.md`'s v26 entry for the per-variant half.
 
 ## Verification method
 

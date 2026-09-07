@@ -23,16 +23,23 @@ variant themes in variants/ (see scripts/generate_variants.py) -- this
 file just supplies Groovy Code's own palette, motif choice (a small 70's
 sunburst -- see `motif_sunburst`), and per-asset role mapping.
 
-Deliberately does NOT touch Icon-*.png, Button-morekey.png, or
-Button-morekeysbox.png -- the icon-regeneration regression documented in
-docs/GROOVY-CODE-THEME.md happened because a full regen run silently
-clobbered hand-picked icon art. Keeping icons entirely outside this
-script's reach makes that class of bug impossible, not just avoided.
+Deliberately does NOT touch Icon-*.png -- the icon-regeneration
+regression documented in docs/GROOVY-CODE-THEME.md happened because a
+full regen run silently clobbered hand-picked icon art. Keeping icons
+entirely outside this script's reach makes that class of bug impossible,
+not just avoided.
+
+v26: DOES generate Button-morekeysbox.png/Button-morekey.png now (it
+didn't before) -- these two were the last genuinely shared assets in the
+repo, copied byte-identical into every variant from this file's own
+output. Fixed per the user's explicit "every theme needs to be separated
+with no shared assets" direction -- see docs/VARIANTS.md's v26 entry.
 """
 
 from keycap_render import (
     KEY_SIZE, SPACE_SIZE, blend_white, motif_sunburst, render_organic_key,
-    scatter_motifs, vertical_gradient, scale,
+    render_morekey_transparent, render_morekeysbox, scale, scatter_motifs,
+    vertical_gradient,
 )
 
 BACKGROUND_SIZE = (1080, 1080)
@@ -115,6 +122,15 @@ def main():
     )
     background.convert("RGB").save("GroovyCode-background.png")
     print("wrote GroovyCode-background.png")
+
+    # Long-press popup: a plain rounded rect (not an organic-blob shape --
+    # see render_morekeysbox's own docstring), in Groovy Code's own
+    # near-black-on-brown + gold-rim look (this theme's original v11
+    # style, now generated rather than hand-maintained).
+    morekeysbox = render_morekeysbox((900, 180), scale(BROWN, 0.30), GOLD)
+    morekeysbox.save("Button-morekeysbox.png")
+    render_morekey_transparent().save("Button-morekey.png")
+    print("wrote Button-morekeysbox.png / Button-morekey.png")
 
 
 if __name__ == "__main__":

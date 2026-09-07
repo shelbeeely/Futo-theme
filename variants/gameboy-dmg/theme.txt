@@ -8,7 +8,7 @@
 name = "Game Boy"
 author = "Shelbee"
 id = "com.shelbee.gameboydmg"
-version = 8
+version = 9
 description = "Classic Game Boy (DMG) variant: near-black D-pad and buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a dark magenta/burgundy action/enter key matching the real A/B buttons' actual color (the only non-gray element on the real hardware) and a small D-pad-cross motif scattered on the background. No per-row or per-role color coding otherwise -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16."
 
 [options]

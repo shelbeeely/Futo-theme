@@ -8,7 +8,7 @@
 name = "Macintosh Plus"
 author = "Shelbee"
 id = "com.shelbee.macplus"
-version = 8
+version = 9
 description = "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in Silkscreen."
 
 [options]
