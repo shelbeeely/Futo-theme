@@ -171,6 +171,15 @@ to the format, not something more research resolves.
 
 ## v21: AI-generated reference photos caught what text sources missed
 
+**⚠️ Superseded by "v22" below.** The user directly challenged this whole
+approach — generating a synthetic image and treating it as research is
+backwards, and the image-gen skill used here is for producing assets, not
+for standing in as reference material. Real archival photos (fetched in
+v22) proved several of this section's specific fixes were themselves
+wrong, in some cases making a variant *less* accurate than before v21.
+Left in place as a record of what happened and why it wasn't good enough,
+not as current guidance — see v22 for what's actually correct now.
+
 v20 fixed colors using text sources (RAL/Pantone specs, forum threads).
 This round used a different tool for the 4 real keyboard variants
 specifically: generating a photorealistic reference image of each real
@@ -219,6 +228,75 @@ All four fixes were verified by regenerating and re-rendering with
 directly rather than trusting the description of what changed. All 8
 variants' `theme.txt` `version` bumped 3→4 (even the four consoles,
 untouched this round, for consistency with the shared `HEAD_TEMPLATE`).
+
+## v22: real archival photos overturn most of v21
+
+The user called out v21 directly: *"why are you not actually looking for
+images of these keyboards with search... generating images that's not
+what that skill is for."* Correct on both counts. This round replaced
+every AI-generated "reference" with a real photograph — searched via
+`WebSearch`, sourced from **Wikimedia Commons** (public-domain or
+CC-licensed archival photos), downloaded, and inspected directly (in one
+case with actual pixel-level color sampling via Pillow, not just eyeballing).
+Sources used: `IBM_Model_M_keyboard_(US_layout_with_101_keys).jpg`,
+`Apple_Macintosh_Plus_Keyboard.jpg` (All About Apple museum),
+`DEC_VT100_terminal.jpg` (Jason Scott, Living Computer Museum), and
+`C64_breadbin.jpg` — all four linked from their respective Wikimedia
+Commons file pages.
+
+**The real photos overturned v21's two biggest "fixes" — proving them
+hallucinated, not just imprecise:**
+
+- **IBM Model M**: the real case is a **light** putty-gray/off-white, not
+  the dark charcoal v21 introduced. The AI-generated image that prompted
+  that change simply invented a dark case that doesn't exist. The real
+  photo *did* reveal something v20 also missed, though: the keyboard
+  genuinely has two key tones — near-white alphanumeric/F-keys, and a
+  visibly grayer modifier/navigation cluster (Tab, Caps Lock, Shift, Ctrl,
+  Alt, arrows, Insert/Home/PgUp/Delete/End/PgDn, Num Lock, Print Screen/
+  Scroll Lock/Pause, numpad operators). Fixed: `well` back to light,
+  `face_function` added for the gray cluster (reusing the Pantone 452C
+  tone from v20 — that color wasn't wrong, it was just applied to the
+  whole keyboard instead of correctly scoped to this specific key set).
+- **Macintosh Plus**: the real photo shows the case and keycaps as close,
+  mildly-contrasting shades of the *same* Apple Beige — no dark
+  switch-plate gap anywhere. v21's "dark well" fix was pure invention from
+  the AI image. Fully reverted to v20's original values, which needed no
+  change at all.
+- **Amber Terminal (VT100)**: the real photo (Living Computer Museum) shows
+  the *opposite* of v21's fix — the terminal's deck/case is beige-tan
+  (genuinely new, correct information), but the keycaps themselves are
+  dark near-black, not beige. v19's original dark-key instinct was closer
+  to right than v21's "correction." Also: no distinct function-key row is
+  visible anywhere on the real unit — v21's `face_function` addition was
+  invented by the same hallucinated image and has been removed. `legend`
+  switched from dark-amber-on-light back to light-near-white, matching the
+  real photo's actual printed legends; `rim`/bloom stay bright amber as an
+  explicitly-labeled stylistic choice (representing the amber-phosphor CRT
+  aesthetic this variant is themed around), not a literal hardware claim.
+- **Commodore 64**: the real photo revealed this repo's whole model was
+  backwards, not just imprecise. RAL 1019 beige is the **case** color —
+  it had been applied to `face_default` (the keycaps) instead of `well`
+  (the case). The actual keycaps are uniformly dark brown/near-black, with
+  **no visible tan "Mustard" function row or reddish-brown RETURN key** on
+  the photographed unit — both `face_function` and `face_action` were
+  invented (the earlier text source, a paraphrased Lemon64 forum thread
+  about "tan vs. gray function keys," most likely described whole
+  keyboards shipping in different uniform dark tones across production
+  runs, not a two-tone single board — a real photo outweighs a
+  search-engine's paraphrase of a forum thread). Swapped `well`/
+  `face_default`, removed both invented overrides; C64 is now uniform dark
+  keys in a beige case, differentiated only by the `stickyon` bloom.
+
+**What this means going forward:** an AI-generated image is not
+acceptable evidence for a hardware-accuracy claim in this repo. Real
+archival photos (Wikimedia Commons is the first place to check — most
+notable retro hardware has a public-domain or CC-licensed photo there)
+are the standard; if none exists, say so explicitly and use a sourced
+spec (Pantone/RAL) or an honestly-labeled approximation instead, the way
+the four still-unsourced variants (Game Boy DMG, NES, Game Boy Color, and
+now the "Mustard" hue specifically) already do. All 8 variants' `version`
+bumped 4→5.
 
 ## Structure: shared rendering code, per-variant palette AND geometry
 
@@ -320,47 +398,49 @@ consoles are too.
 
 ### Classic keyboards
 
-- **IBM Model M** and **Macintosh Plus** are monochrome at the *keycap*
-  level — no per-row or per-key color coding on either real keyboard, so
-  `face_function`/`face_action`/`face_space` all default to the same
-  `face_default` color. But their `well` (the recess/gap around each key,
-  and the source color for the generated background) is genuinely
-  **dark**, not a darker shade of the keycap beige as this repo originally
-  rendered it — both real keyboards show a distinct dark charcoal case/
-  switch-plate through the gaps between keys, confirmed via a v21
-  reference photo of each. The *only* place either variant departs from
-  monochrome keycaps is the `stickyon` (caps-lock-engaged) state, which has
-  no on-key equivalent on either real keyboard (both indicate caps-lock via
-  a case LED, not a key color change) but still needs to read as "locked"
-  in a touchscreen theme — each gets a brightened face plus a small colored
+- **IBM Model M** is the one real keyboard here with a genuine two-tone
+  keycap scheme, confirmed via a real archival photo (v22): near-white
+  alphanumeric/F-keys, and a visibly grayer tone (`face_function`,
+  reusing the Pantone 452C hue) for the modifier/navigation cluster (Tab,
+  Caps Lock, Shift, Ctrl, Alt, arrows, Insert/Home/PgUp/Delete/End/PgDn,
+  Num Lock, Print Screen/Scroll Lock/Pause, numpad operators) — a real
+  hardware feature, not an invented accent. `well` (the case, and the
+  source color for the generated background) is a light putty-gray,
+  matching the real case exactly — an earlier version of this repo had it
+  wrongly dark, based on a since-discredited AI-generated image; see "v22"
+  above.
+- **Macintosh Plus** is monochrome at the keycap level — no per-row or
+  per-key color coding on the real keyboard, so `face_function`/
+  `face_action`/`face_space` all default to `face_default`. Case and
+  keycaps are both Apple Beige (Pantone 453C, sourced to Apple's own
+  designer), mildly contrasting, confirmed via a real archival photo.
+  Both keyboards' *only* departure from their real monochrome/two-tone
+  keycaps is the `stickyon` (caps-lock-engaged) state, which has no on-key
+  equivalent on either real keyboard (both indicate caps-lock via a case
+  LED, not a key color change) but still needs to read as "locked" in a
+  touchscreen theme — each gets a brightened face plus a small colored
   bloom (amber for Model M, a soft System-6 blue for Mac Plus) and its own
   motif: a switch-stem cross for Model M, a CRT-monitor glyph for Mac Plus.
-  Model M's putty-beige is approximated from Pantone 452C (the closest
-  reference found, not confirmed Model-M-specific); Mac Plus's beige is
-  Pantone 453C ("Apple Beige"), sourced to Apple's own designer — see
-  "v20: hardware-accuracy pass" above for both, and "v21" for the dark-well
-  correction.
-- **Commodore 64** keeps a little more differentiation because the real
-  keyboard actually has it: beige keys overall (RAL 1019 "Grey beige," the
-  documented real breadbin color), but a distinct brown/tan ("Mustard,"
-  Commodore's own real part name) for the function/system row and a
-  reddish-brown RETURN key — both real features of the hardware, not an
-  invented accent. Unlike Model M/Mac Plus, its `well` genuinely IS a
-  darker shade of the same beige — a v21 reference photo confirmed the C64's
-  keys sit close enough together that no dark gap shows, a real difference
-  in hardware design, not an inconsistency. `stickyon` gets a bright "blue
-  screen" glow, an artistic nod rather than a literal feature, plus a small
-  IC-chip motif.
-- **Amber terminal** has every key the same beige-putty (an informed
-  approximation — no precise VT100 color spec was found, but a near-black
-  key, which this variant originally shipped with, was almost certainly
-  wrong for real terminal hardware of this era) **except the function-key
-  row**, which is a distinct dark taupe — a real feature this repo missed
-  entirely until a v21 reference photo showed it, the same "one set of keys
-  gets its own material color" pattern the C64 already has. The amber
-  lives only in the rim, a darkened amber-brown legend (for contrast
-  against the lighter face), and a soft bloom on `action`/`stickyon`
-  evoking a lit terminal cursor block, plus a small cursor-prompt motif.
+- **Commodore 64** has uniformly dark brown/near-black keycaps sitting in
+  a beige case (RAL 1019 "Grey beige," the documented real breadbin
+  color) — confirmed via a real archival photo, which also showed **no**
+  distinctly-colored function row or RETURN key anywhere on the
+  photographed unit, contrary to what this repo previously invented (a
+  paraphrased forum thread about "tan vs. gray function keys" most likely
+  described whole boards shipping in different uniform dark tones across
+  production runs, not a two-tone single board). `stickyon` gets a bright
+  "blue screen" glow, an artistic nod rather than a literal feature, plus
+  a small IC-chip motif.
+- **Amber terminal** has uniformly dark near-black keycaps (confirmed via
+  a real archival photo from the Living Computer Museum) sitting in a
+  beige-tan deck — genuinely new, correct information this repo didn't
+  have until v22 fetched a real photo; no distinct function-key row is
+  visible anywhere on the real unit either. The amber lives only in the
+  rim, a light near-white legend (matching the real unit's actual printed
+  legends), and a soft bloom on `action`/`stickyon` evoking a lit terminal
+  cursor block, plus a small cursor-prompt motif — an explicitly-labeled
+  stylistic choice representing the amber-phosphor CRT aesthetic this
+  variant is themed around, not a literal keyboard-hardware claim.
 
 ### Classic consoles
 
@@ -411,10 +491,10 @@ Color and notable color departure:
 
 | Variant | slug | Well | Face (default) | Rim | Notable color departure | Source confidence |
 |---|---|---|---|---|---|---|
-| IBM Model M | `ibm-model-m` | `#202023` dark charcoal case | `#b0aa7e` putty (Pantone 452C) | `#444442` neutral bevel | fully monochrome except `stickyon` — **v21**: `well` corrected from a darker beige to the real dark case color | Case: confirmed via reference photo. Keycap beige: best available, not Model-M-confirmed |
-| Macintosh Plus | `mac-plus` | `#1a1918` dark switch plate | `#bfbb98` Apple Beige (Pantone 453C) | `#48443e` neutral bevel | fully monochrome except `stickyon` — **v21**: `well` corrected from a darker beige to the real dark gap color | Switch plate: confirmed via reference photo. Beige: sourced (Apple's own designer) |
-| Commodore 64 | `commodore-64` | `#6b5d4f` | `#a48f7a` RAL 1019 Grey Beige | `#4a4037` | function keys `#9a763e` brown/tan ("Mustard"), action (RETURN) `#8b4432` rust — confirmed correct as-is via a v21 reference photo | Sourced (RAL 1019); Mustard hue is a reasoned approximation |
-| Amber terminal | `amber-terminal` | `#b4ae9c` beige-putty | `#cecab4` beige-putty | `#ffb000` amber | function keys `#48423a` dark taupe (**added in v21**, confirmed via reference photo); legend is a darkened amber-brown (`#8c4a00`) for contrast, not the bright rim amber | Informed approximation, no source found |
+| IBM Model M | `ibm-model-m` | `#c6c2b4` light putty-gray case (**v22**, real photo) | `#dedacc` near-white alpha keys | `#aaa594` neutral bevel | `face_function` `#96917a` gray modifier/nav keys (**v22**, real photo — confirmed, not invented) — fully monochrome otherwise except `stickyon` | Case/two-tone: confirmed via real archival photo. Gray hue: Pantone 452C (best available, not Model-M-confirmed) |
+| Macintosh Plus | `mac-plus` | `#8a866e` (**v22**: reverted to v20, confirmed correct by a real photo) | `#bfbb98` Apple Beige (Pantone 453C) | `#5f5a44` | fully monochrome except `stickyon` | Sourced (Apple's own designer); mild case/keycap contrast confirmed via real archival photo |
+| Commodore 64 | `commodore-64` | `#a48f7a` RAL 1019 Grey Beige case (**v22**: this is the case color, not the keycaps — v20/v21 had it backwards) | `#2a241e` dark brown/near-black keycaps (**v22**, real photo) | `#605442` | none — **v22**: removed the invented tan "Mustard" function row and rust RETURN key, neither visible on a real photographed unit; fully monochrome except `stickyon` | Case color sourced (RAL 1019); uniform dark keycaps confirmed via real archival photo |
+| Amber terminal | `amber-terminal` | `#c4b28a` beige-tan deck (**v22**, real photo — genuinely new correct info) | `#221e1a` dark near-black keycaps (**v22**: reverted from v21's beige, which was a hallucination) | `#ffb000` amber (stylistic, not literal) | none — **v22**: removed the invented function-key row, not visible on the real unit; legend is light near-white (`#dedcc8`), matching real printed legends, not the bright rim amber | Deck color: confirmed via real archival photo. Dark keycaps: v19's original instinct, now confirmed correct |
 | Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | none — fully monochrome except `stickyon` (red LED bloom) | Informed approximation, no source found |
 | NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom (logotype nod), on top of `stickyon`'s | Informed approximation, no source found |
 | SNES | `snes` | `#cec9cc` warm gray-lavender | `#a7a4e0` lavender (X/Y) | `#908a99` | action (Enter, standing in for A/B) is `#514689` darker purple — **corrected in v20**, see above | Community-sourced (color-hex.com NA palette), not official Nintendo spec |

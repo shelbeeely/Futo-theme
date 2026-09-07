@@ -8,7 +8,7 @@
 name = "Game Boy Color"
 author = "Shelbee"
 id = "com.shelbee.gameboycolor"
-version = 4
+version = 5
 description = "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode."
 
 [options]

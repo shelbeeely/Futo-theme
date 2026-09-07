@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Amber Terminal — a color-and-shape variant of Groovy Code, replicating
-# a VT100-style terminal's real beige-putty keyboard, with a distinct dark brown/gray function-key row (confirmed via a generated reference photo) and the amber phosphor screen glow carried as its accent color, set in FiraCode.
+# a VT100-style terminal's real beige-tan deck with genuinely dark near-black keycaps -- verified against a real archival photo (Wikimedia Commons, Living Computer Museum), which contradicts BOTH earlier versions of this profile in this repo, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "Amber Terminal"
 author = "Shelbee"
 id = "com.shelbee.amberterminal"
-version = 4
-description = "Amber phosphor terminal variant: beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- with a distinct dark taupe function-key row (a real feature of these keyboards, confirmed against a reference photo, not invented), blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. The amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode."
+version = 5
+description = "Amber phosphor terminal variant: dark near-black keycaps (the real VT100-era keyboard color) sitting in a beige-tan deck, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color (the real keyboard has none) -- the amber accent (rim and the enter/caps-lock glow) represents the terminal's own amber-phosphor CRT screen, not a literal keyboard feature. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -21,32 +21,32 @@ weight_text = 500
 weight_hints = 400
 
 [colors]
-primary = "#cec8b4"
-on_primary = "#8c4a00"
-primary_container = "#b4ae9c"
-on_primary_container = "#8c4a00"
+primary = "#221e1a"
+on_primary = "#ded8c8"
+primary_container = "#c4b28a"
+on_primary_container = "#ded8c8"
 inverse_primary = "#ffb000"
 
-secondary = "#48423a"
-on_secondary = "#8c4a00"
-secondary_container = "#b4ae9c"
-on_secondary_container = "#8c4a00"
+secondary = "#221e1a"
+on_secondary = "#ded8c8"
+secondary_container = "#c4b28a"
+on_secondary_container = "#ded8c8"
 
 tertiary = "#ffb000"
-on_tertiary = "#8c4a00"
-tertiary_container = "#b4ae9c"
-on_tertiary_container = "#8c4a00"
+on_tertiary = "#ded8c8"
+tertiary_container = "#c4b28a"
+on_tertiary_container = "#ded8c8"
 
-background = "#cdc7b5"
-on_background = "#8c4a00"
+background = "#ddcba3"
+on_background = "#ded8c8"
 
-surface = "#cdc7b5"
-on_surface = "#8c4a00"
-surface_variant = "#b4ae9c"
-on_surface_variant = "#8c4a00"
-surface_tint = "#cec8b4"
-inverse_surface = "#8c4a00"
-inverse_on_surface = "#cdc7b5"
+surface = "#ddcba3"
+on_surface = "#ded8c8"
+surface_variant = "#c4b28a"
+on_surface_variant = "#ded8c8"
+surface_tint = "#221e1a"
+inverse_surface = "#ded8c8"
+inverse_on_surface = "#ddcba3"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
@@ -57,22 +57,22 @@ outline = "#ffb00099"
 outline_variant = "#ffb00066"
 scrim = "#000000"
 
-surface_bright = "#b4ae9c"
-surface_dim = "#cdc7b5"
-surface_container = "#cdc7b5"
-surface_container_high = "#b4ae9c"
-surface_container_highest = "#b4ae9c"
-surface_container_low = "#cdc7b5"
-surface_container_lowest = "#cdc7b5"
+surface_bright = "#c4b28a"
+surface_dim = "#ddcba3"
+surface_container = "#ddcba3"
+surface_container_high = "#c4b28a"
+surface_container_highest = "#c4b28a"
+surface_container_low = "#ddcba3"
+surface_container_lowest = "#ddcba3"
 
-keyboard_surface = "#cdc7b5"
-keyboard_surface_dim = "#cdc7b5"
-keyboard_container = "#b4ae9c"
-keyboard_container_variant = "#b4ae9c"
-on_keyboard_container = "#8c4a00"
-keyboard_press = "#b4ae9c"
+keyboard_surface = "#ddcba3"
+keyboard_surface_dim = "#ddcba3"
+keyboard_container = "#c4b28a"
+keyboard_container_variant = "#c4b28a"
+on_keyboard_container = "#ded8c8"
+keyboard_press = "#c4b28a"
 keyboard_container_pressed = "#ffb00044"
-on_keyboard_container_pressed = "#8c4a0000"
+on_keyboard_container_pressed = "#ded8c800"
 
 [options.font]
 font = "FiraCode-Regular.ttf"
@@ -194,7 +194,7 @@ asset = "Icon-arrow-right.png"
 [[asset.border]]
 name = "Button-morekeysbox.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.05, 0.28, 0.95, 0.72]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -203,7 +203,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-morekey.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0, 0, 1, 1]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -212,7 +212,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -221,7 +221,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -230,7 +230,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -239,7 +239,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function-pressed.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -248,7 +248,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.0297, 0.1187, 0.9703, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -257,7 +257,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.0297, 0.1187, 0.9703, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -266,7 +266,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-action.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -275,7 +275,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-action-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -284,7 +284,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-stickyon.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]
@@ -293,7 +293,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#8c4a00"
+foreground_tint = "#ded8c8"
 padding = [0, 0, 0, 0]
 slicing = [0.1187, 0.1187, 0.8812, 0.8812]
 gap = [1.3, 1.3, 1.3, 1.3]

@@ -177,6 +177,39 @@ is sparsely documented anywhere else.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
+- **Variants hardware-accuracy pass, round 3 (v22 of the variants; Groovy
+  Code itself untouched, still v19) — corrects round 2's own mistake:**
+  the user directly challenged round 2's method: "why are you not
+  actually looking for images of these keyboards with search... generating
+  images that's not what that skill is for." Correct on both counts —
+  generating a synthetic "reference photo" and designing against it is
+  backwards (it's a hallucination, not evidence), and the image-gen skill
+  is for producing assets, not standing in as research. Redid all four
+  real keyboards using `WebSearch` + real archival photos from Wikimedia
+  Commons (public-domain/CC-licensed), downloaded and inspected directly
+  (with actual pixel sampling via Pillow in places, not just eyeballing).
+  **The real photos overturned round 2's two biggest "fixes," proving them
+  hallucinated rather than just imprecise**: IBM Model M's and Macintosh
+  Plus's real cases are LIGHT (round 2's "dark case" claim, from an
+  AI-generated image, was pure invention) — reverted both, and while at
+  it found a real, photo-confirmed feature round 1 had also missed: Model
+  M genuinely has near-white alpha keys vs. a distinctly grayer modifier/
+  nav-key cluster. Amber Terminal's real photo showed the *opposite* of
+  round 2's fix -- deck is beige (genuinely new correct info) but the
+  keycaps are dark near-black, not beige; round 2's invented function-key
+  row wasn't visible on the real unit either, and was removed. Commodore
+  64's whole model was backwards: RAL 1019 beige is the CASE color, not
+  the keycap color -- the real keycaps are uniformly dark brown/near-black
+  with no tan "Mustard" row or rust RETURN key visible on the photographed
+  unit; both were invented from a paraphrased forum thread and have been
+  removed. All 8 variants' `version` bumped 4→5. Full writeup, sources,
+  and the corrected color table: `docs/VARIANTS.md`'s "v22" section (the
+  "v21" section is left in place, marked superseded, as a record of what
+  went wrong). **Lesson, stated plainly for next time**: an AI-generated
+  image is never acceptable evidence for a hardware-accuracy claim in this
+  repo -- search for and use a real photo, or say plainly that none was
+  found.
+
 - **Variants hardware-accuracy pass, round 2 (v21 of the variants; Groovy
   Code itself untouched, still v19):** the user pushed further on the
   "keyboards" specifically (IBM Model M, Macintosh Plus, Commodore 64,

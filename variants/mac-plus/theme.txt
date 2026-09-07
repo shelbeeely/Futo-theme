@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Macintosh Plus — a color-and-shape variant of Groovy Code, replicating
-# the original Macintosh's actual "Apple Beige" (Pantone 453C) case/keyboard color -- not the cooler gray "Platinum" this repo originally guessed (a later Apple color the Plus didn't ship in) -- with the keys' real dark switch-plate gaps, not another shade of beige, set in FiraCode.
+# the original Macintosh's actual "Apple Beige" (Pantone 453C) case/keyboard color -- not the cooler gray "Platinum" this repo originally guessed (a later Apple color the Plus didn't ship in) -- verified against a real archival photo showing case and keycaps as close, mildly-contrasting shades of the same beige, NOT a dark switch-plate, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "Macintosh Plus"
 author = "Shelbee"
 id = "com.shelbee.macplus"
-version = 4
-description = "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color) with the real dark switch-plate showing in the narrow gaps between keys, rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode."
+version = 5
+description = "Classic Macintosh Plus variant: Apple Beige keycaps (Pantone 453C, the real original Mac case color), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -23,55 +23,55 @@ weight_hints = 400
 [colors]
 primary = "#bfbb98"
 on_primary = "#2a281e"
-primary_container = "#1a1918"
+primary_container = "#8a866e"
 on_primary_container = "#2a281e"
-inverse_primary = "#48443e"
+inverse_primary = "#5f5a44"
 
 secondary = "#bfbb98"
 on_secondary = "#2a281e"
-secondary_container = "#1a1918"
+secondary_container = "#8a866e"
 on_secondary_container = "#2a281e"
 
-tertiary = "#48443e"
+tertiary = "#5f5a44"
 on_tertiary = "#2a281e"
-tertiary_container = "#1a1918"
+tertiary_container = "#8a866e"
 on_tertiary_container = "#2a281e"
 
-background = "#333231"
+background = "#a39f87"
 on_background = "#2a281e"
 
-surface = "#333231"
+surface = "#a39f87"
 on_surface = "#2a281e"
-surface_variant = "#1a1918"
+surface_variant = "#8a866e"
 on_surface_variant = "#2a281e"
 surface_tint = "#bfbb98"
 inverse_surface = "#2a281e"
-inverse_on_surface = "#333231"
+inverse_on_surface = "#a39f87"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#48443e99"
-outline_variant = "#48443e66"
+outline = "#5f5a4499"
+outline_variant = "#5f5a4466"
 scrim = "#000000"
 
-surface_bright = "#1a1918"
-surface_dim = "#333231"
-surface_container = "#333231"
-surface_container_high = "#1a1918"
-surface_container_highest = "#1a1918"
-surface_container_low = "#333231"
-surface_container_lowest = "#333231"
+surface_bright = "#8a866e"
+surface_dim = "#a39f87"
+surface_container = "#a39f87"
+surface_container_high = "#8a866e"
+surface_container_highest = "#8a866e"
+surface_container_low = "#a39f87"
+surface_container_lowest = "#a39f87"
 
-keyboard_surface = "#333231"
-keyboard_surface_dim = "#333231"
-keyboard_container = "#1a1918"
-keyboard_container_variant = "#1a1918"
+keyboard_surface = "#a39f87"
+keyboard_surface_dim = "#a39f87"
+keyboard_container = "#8a866e"
+keyboard_container_variant = "#8a866e"
 on_keyboard_container = "#2a281e"
-keyboard_press = "#1a1918"
-keyboard_container_pressed = "#48443e44"
+keyboard_press = "#8a866e"
+keyboard_container_pressed = "#5f5a4444"
 on_keyboard_container_pressed = "#2a281e00"
 
 [options.font]
