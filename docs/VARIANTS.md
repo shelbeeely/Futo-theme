@@ -80,6 +80,95 @@ it didn't inform any specific palette change here — noted for completeness
 about what was and wasn't acted on, not as a claim that every variant traces
 to an 8BitDo product.
 
+## v20: hardware-accuracy pass — real sourced colors, not remembered ones
+
+After screenshots went into the docs, the user asked directly: **"do these
+actually resemble the hardware they are named after?"**, then, after an
+initial answer that only checked two variants, pushed further: **"i don't
+just want similar color schemes. i want to replicate what the hardware
+actually looked like as best as possible."** The honest answer at that
+point was no — every variant's colors had been written from general
+recollection/community forum posts, never checked against a sourced
+reference the way Groovy Code's SVG or Animal Keys' own assets had been.
+This section documents what was actually verified via web search and what
+changed as a result.
+
+**One real, structural mistake found and fixed:** the "SNES" variant's
+green/blue/yellow/red Y/X/A/B face-button scheme is the **Japanese/
+European Super Famicom's** colors, not the **North American SNES**
+controller's — confirmed via multiple sources describing the real NA
+SNS-005 controller as having only two button colors, purple (A/B, convex)
+and lavender (X/Y, concave), no rainbow at all. Since every other variant
+in this repo uses North American naming (NES not Famicom, Game Boy not
+its Japanese launch name), "SNES" specifically implied the NA hardware,
+which this repo had never actually checked and gotten wrong. Asked the
+user how to resolve it — true NA colors (losing the rainbow), keep the
+rainbow renamed to Super Famicom, or both as separate variants — **the
+user chose true NA accuracy**. Fixed: dropped `row_banded` entirely (two
+button colors don't map onto three letter-rows the way four did), and the
+variant is now flat-with-an-accent-key like the rest of the console
+family — see the corrected table below. This also meant fixing a
+generator bug it exposed: `generate_variant()` only wrote files, never
+cleared the output directory first, so SNES's old `Button-row0/1/2*.png`
+were left orphaned in `variants/snes/` after the rewrite, unreferenced by
+the new `theme.txt` but still sitting in the package. Fixed by having
+`generate_variant()` `shutil.rmtree()` the variant's directory before
+regenerating it.
+
+**Two corrections backed by solid, citable sources:**
+- **Commodore 64**: the real breadbin case color is documented as **RAL
+  1019 "Grey beige"** (`#a48f7a`) across multiple restoration/color-
+  matching sources — noticeably grayer and more muted than the warm cream
+  beige this repo had guessed. The function-key color claim (a distinct
+  color from the rest of the keyset) turned out to be correct in kind —
+  real C64 units really did ship with either brown/tan ("Mustard,"
+  Commodore's own part name) or plain gray F-keys — but wrong in the
+  specific hue: this repo had invented a blue-gray that was never a real
+  option. Asked the user which real variant to match; **they chose
+  brown/tan**.
+- **Macintosh Plus**: the real original Mac case/keyboard color is
+  **Pantone 453C** (`#bfbb98`), widely documented as "Apple Beige" and
+  sourced to Apple's own industrial designer Jerry Manock. This repo had
+  used a cooler gray ("Platinum"), which is a *later* Apple color
+  introduced with the Macintosh SE/II around 1987 — after the Plus (1986)
+  was already established in its warmer beige. Corrected to the beige the
+  Plus actually shipped in.
+
+**One correction with no precise source found, but a clear existing
+mistake:** the "Amber Terminal" variant rendered near-black keycaps,
+assumed purely from the amber-CRT aesthetic and never checked. Real DEC
+terminal keyboards of this era were beige/putty plastic — the same
+"computer beige" family as virtually all hardware of the period — since
+amber describes the phosphor screen glow, not the physical keycap color.
+No source gave VT100's exact case color spec, so the new beige is an
+informed approximation within that family, not a confirmed match — but
+it's a better-grounded guess than the black slab it replaced. The amber
+now lives only in the rim, bloom, and a darkened amber-brown legend (for
+contrast against the lighter face — real terminal keycaps had printed
+dark legends, not glowing ones).
+
+**Confidence is not uniform across all eight, and the code/docs say so
+explicitly now.** Only two variants (C64, Mac Plus) have a precise,
+citable color spec. IBM Model M uses Pantone 452C as the *closest
+available* reference (commonly cited for "classic computer equipment"
+generally, not confirmed Model-M-specific). The amber terminal, Game Boy
+(DMG), NES, and Game Boy Color's colors remain informed approximations —
+no search turned up a sourced hex for any of them. Each profile in
+`scripts/generate_variants.py` now carries a `CONFIDENCE NOTE` comment and
+a `reference_note` string flagging exactly this, so a future pass knows
+which four still need real verification rather than assuming the whole
+batch is equally solid. See `scripts/generate_variants.py`'s per-profile
+comments for the specific sources checked (RAL 1019, Pantone 452C/453C,
+the color-hex.com "US Super Nintendo SNES Color Palette," and the Lemon64
+forum threads on C64 F-key colors).
+
+**What this doesn't and can't fix:** four of the eight (Game Boy, NES,
+SNES, Game Boy Color) are game controllers, not keyboards. There is no
+QWERTY layout on any of them, so "resembles the hardware" for those can
+only ever mean matching the real shell/button colors as precisely as
+possible — never a literal shape/layout match. That ceiling is inherent
+to the format, not something more research resolves.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -190,17 +279,25 @@ consoles are too.
   in a touchscreen theme — each gets a brightened face plus a small colored
   bloom (amber for Model M, a soft System-6 blue for Mac Plus) and its own
   motif: a switch-stem cross for Model M, a CRT-monitor glyph for Mac Plus.
+  Model M's putty-beige is approximated from Pantone 452C (the closest
+  reference found, not confirmed Model-M-specific); Mac Plus's beige is
+  Pantone 453C ("Apple Beige"), sourced to Apple's own designer — see
+  "v20: hardware-accuracy pass" above for both.
 - **Commodore 64** keeps a little more differentiation because the real
-  keyboard actually has it: beige keys overall, but a distinct blue-gray
-  for the function/system row and a reddish-brown RETURN key — both real
-  features of the hardware, not an invented accent. `stickyon` gets a
-  bright "blue screen" glow, an artistic nod rather than a literal feature,
-  plus a small IC-chip motif.
+  keyboard actually has it: beige keys overall (RAL 1019 "Grey beige," the
+  documented real breadbin color), but a distinct brown/tan ("Mustard,"
+  Commodore's own real part name) for the function/system row and a
+  reddish-brown RETURN key — both real features of the hardware, not an
+  invented accent. `stickyon` gets a bright "blue screen" glow, an
+  artistic nod rather than a literal feature, plus a small IC-chip motif.
 - **Amber terminal** is deliberately the flattest of all: every key face is
-  the same near-black, with *zero* face-color variation anywhere — the only
-  color on the whole board is the amber rim and amber legends (plus a soft
-  amber bloom on `action`/`stickyon` to draw the eye, evoking a lit
-  terminal cursor block) and a small cursor-prompt motif.
+  the same beige-putty (an informed approximation — no precise VT100 color
+  spec was found, but a near-black key, which this variant originally
+  shipped with, was almost certainly wrong for real terminal hardware of
+  this era). The amber lives only in the rim, a darkened amber-brown
+  legend (for contrast against the lighter face), and a soft bloom on
+  `action`/`stickyon` evoking a lit terminal cursor block, plus a small
+  cursor-prompt motif.
 
 ### Classic consoles
 
@@ -213,55 +310,52 @@ consoles are too.
   `action`/`stickyon` bloom is red (a nod to the console's red logotype,
   not a real indicator); Game Boy Color's `stickyon` bloom is green (its
   power LED is green, unlike the original DMG's red one — a deliberate,
-  small, correct distinction between the two).
-- **SNES is the one exception in either batch**, and deliberately so: the
-  SNES controller's entire visual identity IS its four-color face-button
-  scheme (Y green / X blue / A red / B yellow), so a flat lavender variant
-  would fail to evoke "SNES" at all — going flat here would be the
-  inauthentic choice, not the authentic one. So SNES opts back INTO
-  row-banding (`"row_banded": True`), the exact mechanism the first batch's
-  keyboards deliberately avoided: green across the top row (Y), blue across
-  the home row (X), yellow across the bottom row (B), and red on the
-  action/enter key (A — the confirm button, so mapping it to "Enter" isn't
-  arbitrary), all in a lavender-gray body matching the console's own
-  shoulder-button color. Its motif is a four-dot diamond cluster tinted in
-  the same Y/X/A/B colors, via `motif_diamond_cluster`'s `colors` kwarg —
-  the only variant whose motif isn't a single flat color.
+  small, correct distinction between the two). None of these three colors
+  are sourced to a precise spec — see "v20" above.
+- **SNES** is flat with an accent key, same as the rest of the console
+  family — corrected in v20 from an earlier row-banded rainbow scheme that
+  turned out to be the wrong hardware's colors (Japanese/European Super
+  Famicom, not the North American SNES this variant is named for). The
+  real NA controller (SNS-005) has exactly two button colors: lavender
+  (X/Y, concave) and a darker purple (A/B, convex), on a warm gray-lavender
+  body. This variant now maps lavender to `face_default` (the letter keys)
+  and the darker purple to `face_action` (enter, standing in for the
+  confirm/A button) — no row-banding, no four-color rainbow. Its motif is
+  a two-tone diamond cluster in the same lavender/purple pair, via
+  `motif_diamond_cluster`'s `colors` kwarg.
 
-## Row-banded variants: how `theme.txt` assembly handles it
+## Row-banded variants: mechanism kept, currently unused
 
-Since SNES needs the same `row0`/`row1`/`row2` matchrules and border assets
-as Groovy Code's own root theme used through v18 (Groovy Code itself
-dropped row-banding in v18 — see its own changelog — but SNES still needs
-it, since its face-button colors ARE its identity), `scripts/
-generate_variants.py` builds `theme.txt` from parts rather than one flat
-template: a shared `HEAD_TEMPLATE` (metadata/colors/options/background
-through the `functional` matchrule), an optional `MATCHRULES_ROWBANDED`
-block spliced in only when a profile sets `"row_banded": True`, a shared
-`TAIL_TEMPLATE` (the generic pressed/normal fallback, icon matchrules, and
-the non-row asset blocks), an optional `ASSETS_ROWBANDED` block for the
-row0/1/2 border asset configs, and a shared `ICON_ASSETS` block.
-`build_theme_txt()` concatenates the right parts and formats the whole
-thing once. A row-banded profile also needs a `row_faces` dict
-(`{0: color, 1: color, 2: color}`) and generates six extra
-`Button-row*.png` assets (`generate_variant()` handles this automatically
-whenever `row_banded` is set) — everything else about the profile dict is
-identical to a flat one.
+`scripts/generate_variants.py` still supports building a row-banded
+`theme.txt` — a profile setting `"row_banded": True` gets a
+`MATCHRULES_ROWBANDED` block spliced in after `functional` and before the
+generic pressed/normal fallback, an `ASSETS_ROWBANDED` block for six extra
+`Button-row0/1/2*.png` border assets, and a `row_faces` dict
+(`{0: color, 1: color, 2: color}`) to color them — the same mechanism
+Groovy Code's own root theme used through v18 (see its changelog) and SNES
+used until the v20 correction above found it didn't match real NA SNES
+hardware. **No variant currently sets `row_banded`.** The mechanism is
+kept, not deleted, in case a future variant's real hardware genuinely has
+three-way per-row color coding the way the Japanese Super Famicom
+controller (unlike the NA SNES) actually does — `build_theme_txt()`
+concatenates `HEAD_TEMPLATE`, the optional `MATCHRULES_ROWBANDED` block,
+`TAIL_TEMPLATE`, the optional `ASSETS_ROWBANDED` block, and `ICON_ASSETS`,
+formatting the whole thing once.
 
 ## Per-variant profiles (`scripts/generate_variants.py`)
 
 Color and notable color departure:
 
-| Variant | slug | Well | Face (default) | Rim | Notable color departure |
-|---|---|---|---|---|---|
-| IBM Model M | `ibm-model-m` | `#8c846d` | `#e8e0c4` ivory | `#6b6455` | none — fully monochrome except `stickyon` |
-| Macintosh Plus | `mac-plus` | `#8b8680` | `#d4d0c8` platinum | `#706b62` | none — fully monochrome except `stickyon` |
-| Commodore 64 | `commodore-64` | `#6e5738` | `#d6be94` beige | `#4a3b26` | function keys `#7c8a9c` blue-gray, action (RETURN) `#8b4432` rust |
-| Amber terminal | `amber-terminal` | `#0a0a0a` | `#161616` near-black | `#ffb000` amber | legend color is the rim color (amber-on-black everywhere) |
-| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | none — fully monochrome except `stickyon` (red LED bloom) |
-| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom (logotype nod), on top of `stickyon`'s |
-| SNES | `snes` | `#57536b` lavender | `#8983a0` lavender | `#c8c4d8` | **row-banded**: row0 `#00954c` green, row1 `#0074bf` blue, row2 `#f5a800` yellow, action `#e60012` red |
-| Game Boy Color | `gameboy-color` | `#4a2f5e` grape | `#3a2a4a` dark violet | `#8a6ba8` | none — fully monochrome except `stickyon` (green LED bloom) |
+| Variant | slug | Well | Face (default) | Rim | Notable color departure | Source confidence |
+|---|---|---|---|---|---|---|
+| IBM Model M | `ibm-model-m` | `#726f52` | `#b0aa7e` putty (Pantone 452C) | `#4f4d39` | none — fully monochrome except `stickyon` | Best available, not Model-M-confirmed |
+| Macintosh Plus | `mac-plus` | `#8a866e` | `#bfbb98` Apple Beige (Pantone 453C) | `#5f5a44` | none — fully monochrome except `stickyon` | Sourced (Apple's own designer) |
+| Commodore 64 | `commodore-64` | `#6b5d4f` | `#a48f7a` RAL 1019 Grey Beige | `#4a4037` | function keys `#9a763e` brown/tan ("Mustard"), action (RETURN) `#8b4432` rust | Sourced (RAL 1019); Mustard hue is a reasoned approximation |
+| Amber terminal | `amber-terminal` | `#b4ae9c` beige-putty | `#cecab4` beige-putty | `#ffb000` amber | legend is a darkened amber-brown (`#8c4a00`) for contrast, not the bright rim amber | Informed approximation, no source found |
+| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | none — fully monochrome except `stickyon` (red LED bloom) | Informed approximation, no source found |
+| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom (logotype nod), on top of `stickyon`'s | Informed approximation, no source found |
+| SNES | `snes` | `#cec9cc` warm gray-lavender | `#a7a4e0` lavender (X/Y) | `#908a99` | action (Enter, standing in for A/B) is `#514689` darker purple — **corrected in v20**, see above | Community-sourced (color-hex.com NA palette), not official Nintendo spec |
+| Game Boy Color | `gameboy-color` | `#4a2f5e` grape | `#3a2a4a` dark violet | `#8a6ba8` | none — fully monochrome except `stickyon` (green LED bloom) | Informed approximation, no source found — "Grape" is also a real GBC colorway name, worth double-checking against a photo |
 
 Geometry/material — the organic-shape knobs (see "Geometry" above) that
 make each one an actual unique silhouette rather than a recolor, plus each
@@ -291,8 +385,10 @@ import needs everything present, not references back to the repo root):
 - **Generated per variant**: `theme.txt` (own `id`/`name`/`description`/
   `[colors]`/matchrules), border assets (`default`/`function`/`action`/
   `space`/`stickyon`, each with a `-press`/`-pressed` pair — plus
-  `row0`/`row1`/`row2` pairs for SNES), and a gradient background PNG
-  matching the variant's case tone, scattered with its own motif glyph.
+  `row0`/`row1`/`row2` pairs for any future `row_banded` profile; none
+  currently use this, see "Row-banded variants" above), and a gradient
+  background PNG matching the variant's case tone, scattered with its own
+  motif glyph.
 - **Copied unchanged from the repo root**: `Icon-*.png` (icons are always
   force-recolored at runtime via canvas `source-in` compositing — see
   `CLAUDE.md` fact #3 — so the same alpha-shape PNGs work for every
@@ -332,34 +428,49 @@ layout the same way Groovy Code's own pre-v18 row-banding did). Row/
 hint-label spacing, rim/legend legibility, and icon recoloring all read
 correctly on every variant after all three passes.
 
-One real bug was caught and fixed during the v19 rewrite: the amber
-terminal profile's `description` field originally contained a literal
-`">_"` — unescaped double quotes inside a double-quoted TOML string. This
-broke `theme.txt` parsing and made `preview-theme`'s import fail
-repeatedly with a misleading generic error, initially mistaken for a
-network/proxy issue before the malformed file was found by inspection.
-Fixed by removing the quote characters from the description text. This is
-the second time this exact bug class has hit this repo (previously with
-Commodore 64's "blue screen" description) — worth grep-checking any new
-profile's `description` string for embedded `"` before regenerating.
+The embedded-quote TOML bug has now hit this repo **three times**: v19's
+amber terminal (`">_"` in its description), and during the v20
+hardware-accuracy pass, both the corrected Mac Plus description (which
+quoted "Apple Beige" and "Platinum") and the corrected Commodore 64
+description (which quoted "Grey beige" and "Mustard") broke the same way
+— caught only because `preview-theme`'s import failed with the same
+misleading generic error as before, not because anyone remembered to
+grep first. Fixed the same way each time: remove the quote characters
+from the `description` string entirely (`reference_note` is safe to quote
+freely, since it only ever appears inside a `#` comment in `theme.txt`,
+never inside a TOML string value). **Grep the diff for `\"` inside any
+new or edited `description` field before regenerating — do not rely on
+remembering this.**
 
 **None of the eight have been confirmed on a real device yet** — same
 outstanding gap as Groovy Code itself.
 
 ## Adding another variant
 
-1. Add a profile dict to `KEYBOARD_PROFILES` or `CONSOLE_PROFILES` (or a
+1. **Search for the real hardware's actual color spec before picking any
+   RGB values** — a Pantone/RAL reference, a restoration community's
+   color-matching thread, anything more concrete than general
+   recollection. The v20 hardware-accuracy pass (see above) exists
+   because this step was skipped for all eight original variants, and one
+   of them (SNES) turned out to be flatly wrong, not just imprecise. If no
+   precise source turns up, that's fine — use the closest reasoned
+   approximation, but say so explicitly in a `CONFIDENCE NOTE` comment and
+   in the `reference_note` string, the way the four unsourced variants
+   do now, rather than presenting a guess as fact.
+2. Add a profile dict to `KEYBOARD_PROFILES` or `CONSOLE_PROFILES` (or a
    new category list, then include it in `PROFILES`) in
    `scripts/generate_variants.py`: `slug`, `name`, `theme_id`,
-   `reference_note`, `description` (watch for embedded `"` — see the
-   amber-terminal bug above), `well`, `face_default`, `rim`, `legend`,
-   plus any of `face_function`/`face_action`/`face_space`/`face_stickyon`
-   that should differ from `face_default`, and optional
+   `reference_note`, `description` (watch for embedded `"` — this bug
+   class has hit this repo three times, see "Verification" above), `well`,
+   `face_default`, `rim`, `legend`, plus any of
+   `face_function`/`face_action`/`face_space`/`face_stickyon` that should
+   differ from `face_default`, and optional
    `bloom_action_color`/`bloom_action_alpha`/`bloom_stickyon_color`/
    `bloom_stickyon_alpha`. If the real hardware's identity is genuinely
-   its color-coding (the SNES case), add `"row_banded": True` and a
-   `row_faces` dict instead of forcing it flat.
-2. **Also give it its own geometry and motif** — don't just default to
+   its per-row color-coding (the Japanese Super Famicom controller would
+   qualify; the North American SNES, corrected in v20, does not), add
+   `"row_banded": True` and a `row_faces` dict instead of forcing it flat.
+3. **Also give it its own geometry and motif** — don't just default to
    Groovy Code's shape (that's the mistake this doc's "Geometry" section
    above exists to prevent from recurring). Pick `radius_frac`/`wobble`/
    `margin_frac`/`rim_frac`, `gap`, and `face_top_blend`/
@@ -370,12 +481,13 @@ outstanding gap as Groovy Code itself.
    `motif_fn` from `scripts/keycap_render.py` if it fits, or write a new
    one (a small Pillow primitive glyph, same pattern as the existing eight)
    if the hardware calls for its own signature shape.
-3. Run `python3 scripts/generate_variants.py` (this also recomputes that
+4. Run `python3 scripts/generate_variants.py` (this also recomputes that
    profile's `slicing`/`gap`/`roundedness` in its `theme.txt` — never hand-
-   copy Groovy Code's or another variant's values).
-4. Verify with `preview-theme` the same way as the others (see above) --
+   copy Groovy Code's or another variant's values — and, since v20, wipes
+   the variant's output directory first so a removed asset can't linger).
+5. Verify with `preview-theme` the same way as the others (see above) --
    specifically confirm the new variant reads as visually distinct from
    its nearest neighbor in the table, not just differently colored, and
    that its motif is legible on `stickyon` and the background.
-5. The packaging workflow picks up the new `variants/<slug>/` directory
+6. The packaging workflow picks up the new `variants/<slug>/` directory
    automatically on the next push to `main` — no workflow changes needed.

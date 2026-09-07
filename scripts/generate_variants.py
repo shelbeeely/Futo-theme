@@ -92,7 +92,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 2
+version = 3
 description = "{description}"
 
 [options]
@@ -544,18 +544,28 @@ KEYBOARD_PROFILES = [
         "slug": "ibm-model-m",
         "name": "IBM Model M",
         "theme_id": "com.shelbee.ibmmodelm",
-        "reference_note": "the IBM Model M's monochrome putty-beige keycaps",
-        "description": "Classic IBM Model M variant: monochrome putty-beige keycaps in a warm gray well, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
+        "reference_note": "the IBM Model M's putty-beige PBT keycaps, approximated via Pantone 452C -- the closest sourced reference found, though not confirmed Model-M-specific",
+        # NOTE ON CONFIDENCE: unlike Commodore 64 (RAL 1019, well-documented)
+        # and Macintosh Plus (Pantone 453C, sourced to Apple's own
+        # designer), no search turned up a color spec confirmed specific
+        # to the Model M. Pantone 452C (hex ~#b0aa7e) is the best
+        # available reference -- widely cited as "commonly associated
+        # with classic computer equipment," one shade more muted/grayish
+        # than Apple's warmer 453C, matching general recollection of
+        # IBM's duller, more institutional beige vs. Apple's warmer
+        # cream. Treat this as an informed approximation, not a
+        # confirmed match, until a better source turns up.
+        "description": "Classic IBM Model M variant: monochrome putty-beige keycaps (approximated from Pantone 452C, the closest sourced reference -- not confirmed Model-M-specific) in a darker shade of the same beige, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
         # Sharp, boxy, thick-bezeled -- heavy mechanical PBT caps, not
         # glossy plastic. Low wobble: a precision-molded keycap, not a
         # hand-thrown ceramic one.
         "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
         "gap": 1.05,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
-        "well": (140, 132, 109),
-        "face_default": (232, 224, 196),
-        "face_stickyon": (245, 238, 214),
-        "rim": (107, 100, 85),
+        "well": (114, 111, 82),
+        "face_default": (176, 170, 126),
+        "face_stickyon": (202, 197, 158),
+        "rim": (79, 77, 57),
         "legend": (43, 40, 32),
         "bloom_stickyon_color": (255, 153, 0),
         "bloom_stickyon_alpha": 150,
@@ -565,19 +575,27 @@ KEYBOARD_PROFILES = [
         "slug": "mac-plus",
         "name": "Macintosh Plus",
         "theme_id": "com.shelbee.macplus",
-        "reference_note": "the Macintosh Plus's platinum keycaps",
-        "description": "Classic Macintosh Plus variant: monochrome warm platinum-gray keycaps, rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
+        "reference_note": "the original Macintosh's actual \"Apple Beige\" (Pantone 453C) case/keyboard color -- not the cooler gray \"Platinum\" this repo originally guessed, which is a later Apple color (Mac SE/II era, ~1987) the Plus didn't ship in",
+        # CORRECTED: the earlier version of this profile used a cool
+        # gray ("Platinum"), Apple's *later* case color introduced with
+        # the Macintosh SE/II circa 1987. The Mac Plus (1986) continued
+        # the warmer beige of the 128k/512k Macs -- Apple's own designer
+        # confirmed the reference color was Pantone 453C (hex ~#bfbb98),
+        # widely documented as "Apple Beige." Corrected via web research
+        # after being asked to replicate real hardware, not just a
+        # similar-looking palette.
+        "description": "Classic Macintosh Plus variant: monochrome Apple Beige keycaps (Pantone 453C, the real original Mac case color -- not the later gray Platinum), rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
         # Low-profile, rounded, minimal: a thin bezel (keys nearly fill
         # the housing) and a nearly-flat face -- smooth and pillowy, not
         # deeply sculpted.
         "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.1,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
-        "well": (139, 134, 128),
-        "face_default": (212, 208, 200),
-        "face_stickyon": (237, 234, 226),
-        "rim": (112, 107, 98),
-        "legend": (42, 40, 35),
+        "well": (138, 134, 110),
+        "face_default": (191, 187, 152),
+        "face_stickyon": (219, 216, 190),
+        "rim": (95, 90, 68),
+        "legend": (42, 40, 30),
         "bloom_stickyon_color": (91, 127, 166),
         "bloom_stickyon_alpha": 130,
         "motif_fn": motif_crt,
@@ -586,8 +604,17 @@ KEYBOARD_PROFILES = [
         "slug": "commodore-64",
         "name": "Commodore 64",
         "theme_id": "com.shelbee.commodore64",
-        "reference_note": "the Commodore 64's beige keycaps with its blue-gray function row and reddish-brown RETURN key",
-        "description": "Classic Commodore 64 variant: warm beige keycaps in a brown well, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode.",
+        "reference_note": "the Commodore 64 breadbin's real RAL 1019 (\"Grey beige\") case color, with its brown/tan (\"Mustard\") function row and reddish-brown RETURN key",
+        # CORRECTED: face_default/well were an invented warm beige/brown
+        # that was never checked against a real source. RAL 1019
+        # ("Grey beige", hex ~#a48f7a) is the widely-documented real
+        # Commodore 64 breadbin color (confirmed across multiple
+        # restoration/color-matching sources, e.g. dfarq.homeip.net and
+        # Lemon64 threads) -- noticeably grayer and more muted than the
+        # cream-beige this repo guessed. well is a darker shade of the
+        # same RAL 1019 family rather than an unrelated brown, since the
+        # real C64 case is one uniform injection-molded color, not two.
+        "description": "Classic Commodore 64 variant: RAL 1019 Grey Beige keycaps (the real, documented breadbin case color) in a darker shade of the same beige, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Brown/tan function-key row (Commodore's own real part color, nicknamed Mustard), a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode.",
         # Chunky sculpted home-computer keys -- moderate rounding, a
         # visible bezel, a fairly pronounced dish. Kept close to a
         # generic "retro computer key" baseline since this is the
@@ -595,12 +622,18 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.26, "wobble": 0.10, "margin_frac": 0.09, "rim_frac": 0.020,
         "gap": 1.15,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
-        "well": (110, 87, 56),
-        "face_default": (214, 190, 148),
-        "face_function": (124, 138, 156),
+        "well": (107, 93, 79),
+        "face_default": (164, 143, 122),
+        # Real C64 units shipped with either brown/tan ("Mustard",
+        # Commodore's own part name) or plain gray F-keys, per lemon64.com
+        # forum threads from owners -- never the blue-gray this repo
+        # originally invented without checking. Asked the user which real
+        # variant to match; they chose brown/tan. (No precise hex found
+        # for "Mustard" itself; this is a reasoned tan approximation.)
+        "face_function": (154, 118, 62),
         "face_action": (139, 68, 50),
         "face_stickyon": (155, 169, 188),
-        "rim": (74, 59, 38),
+        "rim": (74, 64, 55),
         "legend": (32, 22, 13),
         "bloom_stickyon_color": (65, 105, 225),
         "bloom_stickyon_alpha": 160,
@@ -610,19 +643,34 @@ KEYBOARD_PROFILES = [
         "slug": "amber-terminal",
         "name": "Amber Terminal",
         "theme_id": "com.shelbee.amberterminal",
-        "reference_note": "a VT100-style amber phosphor terminal's monochrome black keys with amber trim",
-        "description": "Amber phosphor terminal variant: uniform near-black keycaps, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color at all -- the only color is a thin amber rim and amber legends on every key, with the enter key and caps-lock picking up a soft amber glow like a lit terminal cursor block. Set in FiraCode.",
+        "reference_note": "a VT100-style terminal's real beige-putty keyboard, with the amber phosphor screen glow carried as its accent color",
+        "description": "Amber phosphor terminal variant: uniform beige-putty keycaps -- matching the real VT100-era terminal keyboard's actual color, not the black slab this repo originally guessed -- blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color at all; the amber accent (rim, legends, and the enter/caps-lock glow) is carried over from the CRT's own phosphor color, evoking a lit terminal cursor block. Set in FiraCode.",
         # Blocky and nearly flat -- a terminal function key is a slab
         # behind a wireframe outline, not a sculpted physical cap. Sharp
         # corners, a thin bright rim (the only real detailing), a wider
         # gap for a grid/schematic feel instead of tightly-packed keys.
         "radius_frac": 0.10, "wobble": 0.04, "margin_frac": 0.05, "rim_frac": 0.014,
         "gap": 1.3,
-        "face_top_blend": 0.04, "face_bottom_scale": 0.94,
-        "well": (10, 10, 10),
-        "face_default": (22, 22, 22),
+        # A touch more dish depth than the original near-black version --
+        # a real beige keycap actually shows its sculpting, where a near-
+        # black key could get away with almost none.
+        "face_top_blend": 0.08, "face_bottom_scale": 0.88,
+        # CONFIDENCE NOTE: no source gave a precise VT100 case/keycap
+        # color spec (unlike C64's RAL 1019 or Mac Plus's Pantone 453C).
+        # DEC terminal keyboards of this era are generally recalled as
+        # beige/putty plastic, the same "computer beige" family as most
+        # 1970s-80s hardware -- this is an informed approximation within
+        # that family, not a sourced match, and the near-black face this
+        # repo originally shipped (assumed purely from the amber-CRT
+        # aesthetic, never checked) was likely wrong either way. The
+        # amber now lives only in the rim/bloom (bright) and legend (a
+        # darker amber-brown, for legibility against the light face --
+        # real terminal keycaps had dark-printed legends, not glowing
+        # amber ones).
+        "well": (180, 174, 156),
+        "face_default": (206, 200, 180),
         "rim": (255, 176, 0),
-        "legend": (255, 176, 0),
+        "legend": (140, 74, 0),
         "bloom_action_color": (255, 176, 0),
         "bloom_action_alpha": 90,
         "bloom_stickyon_color": (255, 176, 0),
@@ -637,10 +685,19 @@ KEYBOARD_PROFILES = [
 # monochrome-button hardware (a colored case at most) so they stay flat,
 # each with one small colored accent nodding to a real detail that has no
 # on-key equivalent (DMG's red power LED, NES's red logotype, GBC's green
-# power LED). SNES is the one exception -- its face buttons ARE its
-# identity -- so it opts into row-banding via "row_banded": True, mapping
-# Y/X/B to the three letter rows and A (the confirm/action button) to the
-# action/enter key, which lines up naturally rather than being arbitrary.
+# power LED). SNES was originally the one exception, row-banded to carry
+# a four-color Y/X/A/B scheme -- but that scheme turned out to be the
+# Japanese/European Super Famicom's colors, not the real North American
+# SNES controller's (which has only two button colors, purple + lavender,
+# no rainbow). Corrected to match the real NA hardware and folded back
+# into this flat-with-an-accent-key family; see its own profile below for
+# the full correction note.
+#
+# CONFIDENCE NOTE for this whole batch: unlike Commodore 64 (RAL 1019) and
+# Macintosh Plus (Pantone 453C), no search turned up a precise sourced hex
+# for the Game Boy (DMG), NES, or Game Boy Color's actual shell/button
+# colors -- these three remain informed approximations from general
+# recollection/community consensus, not confirmed against a real spec.
 # ---------------------------------------------------------------------------
 
 CONSOLE_PROFILES = [
@@ -648,7 +705,7 @@ CONSOLE_PROFILES = [
         "slug": "gameboy-dmg",
         "name": "Game Boy",
         "theme_id": "com.shelbee.gameboydmg",
-        "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons",
+        "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found)",
         "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
         # Chunky molded plastic buttons sitting in a thick shell bezel --
         # the DMG's brick-like housing is the most visible "well" of any
@@ -669,7 +726,7 @@ CONSOLE_PROFILES = [
         "slug": "nes",
         "name": "NES",
         "theme_id": "com.shelbee.nes",
-        "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons",
+        "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found)",
         "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
         # The NES controller's buttons are famously rectangular, not
         # round -- minimal corner rounding here, a moderate bezel.
@@ -690,9 +747,21 @@ CONSOLE_PROFILES = [
         "slug": "snes",
         "name": "SNES",
         "theme_id": "com.shelbee.snes",
-        "reference_note": "the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors",
-        "description": "Classic SNES variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key. Rounded and glossy like the real concave buttons, in a lavender-gray body, with a small four-dot diamond motif (in the same Y/X/A/B colors) scattered on the background. Set in FiraCode.",
-        "row_banded": True,
+        "reference_note": "the real North American SNES controller (SNS-005)'s warm gray-lavender body and its actual purple A/B + lavender X/Y buttons",
+        # CORRECTED: this variant originally used the green/blue/yellow/red
+        # Y/X/A/B scheme, which is the Japanese/European Super Famicom's
+        # colors, not the North American SNES's -- confirmed via research
+        # (a real mistake this repo made and hadn't checked). The real NA
+        # SNS-005 controller has only two button colors: purple (A/B,
+        # convex) and lavender (X/Y, concave), on a warm gray-lavender
+        # body -- no per-row rainbow at all. Hex approximations below are
+        # community-sourced (color-hex.com's "US Super Nintendo SNES Color
+        # Palette"), not an official Nintendo spec, but far closer to the
+        # real hardware than the invented rainbow was. Dropped
+        # "row_banded" entirely as a result -- two button colors don't
+        # map onto three letter-rows, so this is now flat-with-an-accent-
+        # key like the other console variants, not a special case.
+        "description": "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in FiraCode.",
         # Rounded, glossy, concave buttons sitting almost flush in the
         # housing -- the roundest radius and thinnest bezel of any
         # variant, plus a brighter top-blend for a glossier sheen than
@@ -700,24 +769,22 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.44, "wobble": 0.09, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.05,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
-        "well": (87, 83, 107),
-        "face_default": (137, 131, 160),
-        "face_function": (114, 110, 130),
-        "face_action": (230, 0, 18),
-        "face_stickyon": (216, 210, 230),
-        "rim": (200, 196, 216),
+        "well": (206, 201, 204),
+        "face_default": (167, 164, 224),
+        "face_action": (81, 70, 137),
+        "face_stickyon": (225, 222, 240),
+        "rim": (144, 138, 153),
         "legend": (28, 26, 36),
-        "row_faces": {0: (0, 149, 76), 1: (0, 116, 191), 2: (245, 168, 0)},
-        "bloom_stickyon_color": (230, 0, 18),
+        "bloom_stickyon_color": (81, 70, 137),
         "bloom_stickyon_alpha": 140,
         "motif_fn": motif_diamond_cluster,
-        "motif_kwargs": {"colors": [(0, 149, 76), (0, 116, 191), (245, 168, 0), (230, 0, 18)]},
+        "motif_kwargs": {"colors": [(81, 70, 137), (167, 164, 224), (81, 70, 137), (167, 164, 224)]},
     },
     {
         "slug": "gameboy-color",
         "name": "Game Boy Color",
         "theme_id": "com.shelbee.gameboycolor",
-        "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons",
+        "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons (approximated -- no sourced hex found; \"Grape\" was also a specific real GBC colorway name, not just a generic description, worth double-checking against a reference photo before calling this confirmed)",
         "description": "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
         # More rounded and curved than the boxy original DMG (the GBC's
         # shell is a noticeably softer, more ergonomic redesign) but not
@@ -758,6 +825,12 @@ def build_background(well, motif_fn, motif_color, motif_kwargs=None, seed=1):
 def generate_variant(profile):
     slug = profile["slug"]
     out_dir = os.path.join(VARIANTS_DIR, slug)
+    # Wipe and recreate rather than just os.makedirs(exist_ok=True) -- a
+    # profile that drops row_banded (as SNES did, corrected to match real
+    # NA hardware) would otherwise leave its old Button-row0/1/2*.png
+    # orphaned in the directory, unreferenced by the new theme.txt but
+    # still shipped in the package zip.
+    shutil.rmtree(out_dir, ignore_errors=True)
     os.makedirs(out_dir, exist_ok=True)
 
     well = profile["well"]

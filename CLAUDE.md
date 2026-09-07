@@ -177,6 +177,46 @@ is sparsely documented anywhere else.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
+- **Variants hardware-accuracy pass (v20 of the variants, screenshots
+  already published; Groovy Code itself untouched, still v19):** after
+  screenshots went into the docs, the user asked directly whether the 8
+  hardware variants actually resemble their namesakes, then pushed
+  further: "i don't just want similar color schemes. i want to replicate
+  what the hardware actually looked like as best as possible." Every
+  variant's colors had been written from general recollection, never
+  checked against a real source. Web research found one flatly wrong
+  fact: the "SNES" variant's green/blue/yellow/red Y/X/A/B scheme is the
+  Japanese/European Super Famicom's colors, not the North American SNES
+  controller's (which has only purple A/B + lavender X/Y, no rainbow) —
+  significant since every other variant here uses North American naming.
+  Asked the user how to resolve it; **they chose true NA accuracy over
+  keeping the rainbow**, so `row_banded` was dropped from SNES entirely.
+  Also found two well-sourced corrections (Commodore 64's real case color
+  is RAL 1019 "Grey beige," not the invented cream beige; Macintosh
+  Plus's real color is Pantone 453C "Apple Beige," not the later "Platinum"
+  gray this repo had used, which is a post-1987 Apple color the 1986 Plus
+  never shipped in) and one reasoned-but-unsourced fix (Amber Terminal's
+  keycaps were near-black, assumed from the CRT aesthetic alone and never
+  checked — real DEC terminal keyboards of this era were beige/putty, the
+  amber being the phosphor screen color, not the keycap color). Four
+  variants (IBM Model M, Game Boy DMG, NES, Game Boy Color) still have no
+  precisely sourced color spec despite searching — each now says so
+  explicitly in its own profile comment and in `docs/VARIANTS.md`'s
+  per-variant table, rather than presenting a guess as settled fact. Full
+  writeup, sources, and the corrected color table: `docs/VARIANTS.md`'s
+  "v20: hardware-accuracy pass" section. **Two bugs found along the way**:
+  (1) the embedded-quote TOML bug hit for a third time (Mac Plus's and
+  Commodore 64's new descriptions both quoted proper nouns like "Apple
+  Beige" and "Mustard," breaking `theme.txt` parsing the same way the
+  amber-terminal `">_"` bug did in v19 — grep any new/edited `description`
+  string for `\"` before regenerating, every time); (2) removing SNES's
+  `row_banded` flag left its old `Button-row0/1/2*.png` orphaned in
+  `variants/snes/`, unreferenced by the new `theme.txt` but still present
+  in the directory, because `generate_variant()` never cleared its output
+  directory before writing — fixed by having it `shutil.rmtree()` first.
+  All 8 variants' `theme.txt` `version` bumped 2→3. Re-verified via
+  `preview-theme` after both fixes; not yet confirmed on a real device.
+
 - **v19 (organic "cookie"-shaped keys + per-theme motifs, checked with
   `preview-theme` on all 9 themes, not yet on a real device):** the user's
   direction: "take inspiration from 8bitdo keyboards, all themes need

@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # Commodore 64 — a color-and-shape variant of Groovy Code, replicating
-# the Commodore 64's beige keycaps with its blue-gray function row and reddish-brown RETURN key, set in FiraCode.
+# the Commodore 64 breadbin's real RAL 1019 ("Grey beige") case color, with its brown/tan ("Mustard") function row and reddish-brown RETURN key, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "Commodore 64"
 author = "Shelbee"
 id = "com.shelbee.commodore64"
-version = 2
-description = "Classic Commodore 64 variant: warm beige keycaps in a brown well, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode."
+version = 3
+description = "Classic Commodore 64 variant: RAL 1019 Grey Beige keycaps (the real, documented breadbin case color) in a darker shade of the same beige, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Brown/tan function-key row (Commodore's own real part color, nicknamed Mustard), a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -23,55 +23,55 @@ weight_hints = 400
 [colors]
 primary = "#8b4432"
 on_primary = "#20160d"
-primary_container = "#6e5738"
+primary_container = "#6b5d4f"
 on_primary_container = "#20160d"
-inverse_primary = "#4a3b26"
+inverse_primary = "#4a4037"
 
-secondary = "#7c8a9c"
+secondary = "#9a763e"
 on_secondary = "#20160d"
-secondary_container = "#6e5738"
+secondary_container = "#6b5d4f"
 on_secondary_container = "#20160d"
 
-tertiary = "#4a3b26"
+tertiary = "#4a4037"
 on_tertiary = "#20160d"
-tertiary_container = "#6e5738"
+tertiary_container = "#6b5d4f"
 on_tertiary_container = "#20160d"
 
-background = "#877051"
+background = "#847668"
 on_background = "#20160d"
 
-surface = "#877051"
+surface = "#847668"
 on_surface = "#20160d"
-surface_variant = "#6e5738"
+surface_variant = "#6b5d4f"
 on_surface_variant = "#20160d"
 surface_tint = "#8b4432"
 inverse_surface = "#20160d"
-inverse_on_surface = "#877051"
+inverse_on_surface = "#847668"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#4a3b2699"
-outline_variant = "#4a3b2666"
+outline = "#4a403799"
+outline_variant = "#4a403766"
 scrim = "#000000"
 
-surface_bright = "#6e5738"
-surface_dim = "#877051"
-surface_container = "#877051"
-surface_container_high = "#6e5738"
-surface_container_highest = "#6e5738"
-surface_container_low = "#877051"
-surface_container_lowest = "#877051"
+surface_bright = "#6b5d4f"
+surface_dim = "#847668"
+surface_container = "#847668"
+surface_container_high = "#6b5d4f"
+surface_container_highest = "#6b5d4f"
+surface_container_low = "#847668"
+surface_container_lowest = "#847668"
 
-keyboard_surface = "#877051"
-keyboard_surface_dim = "#877051"
-keyboard_container = "#6e5738"
-keyboard_container_variant = "#6e5738"
+keyboard_surface = "#847668"
+keyboard_surface_dim = "#847668"
+keyboard_container = "#6b5d4f"
+keyboard_container_variant = "#6b5d4f"
 on_keyboard_container = "#20160d"
-keyboard_press = "#6e5738"
-keyboard_container_pressed = "#4a3b2644"
+keyboard_press = "#6b5d4f"
+keyboard_container_pressed = "#4a403744"
 on_keyboard_container_pressed = "#20160d00"
 
 [options.font]

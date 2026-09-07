@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # IBM Model M — a color-and-shape variant of Groovy Code, replicating
-# the IBM Model M's monochrome putty-beige keycaps, set in FiraCode.
+# the IBM Model M's putty-beige PBT keycaps, approximated via Pantone 452C -- the closest sourced reference found, though not confirmed Model-M-specific, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "IBM Model M"
 author = "Shelbee"
 id = "com.shelbee.ibmmodelm"
-version = 2
-description = "Classic IBM Model M variant: monochrome putty-beige keycaps in a warm gray well, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
+version = 3
+description = "Classic IBM Model M variant: monochrome putty-beige keycaps (approximated from Pantone 452C, the closest sourced reference -- not confirmed Model-M-specific) in a darker shade of the same beige, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -21,57 +21,57 @@ weight_text = 500
 weight_hints = 400
 
 [colors]
-primary = "#e8e0c4"
+primary = "#b0aa7e"
 on_primary = "#2b2820"
-primary_container = "#8c846d"
+primary_container = "#726f52"
 on_primary_container = "#2b2820"
-inverse_primary = "#6b6455"
+inverse_primary = "#4f4d39"
 
-secondary = "#e8e0c4"
+secondary = "#b0aa7e"
 on_secondary = "#2b2820"
-secondary_container = "#8c846d"
+secondary_container = "#726f52"
 on_secondary_container = "#2b2820"
 
-tertiary = "#6b6455"
+tertiary = "#4f4d39"
 on_tertiary = "#2b2820"
-tertiary_container = "#8c846d"
+tertiary_container = "#726f52"
 on_tertiary_container = "#2b2820"
 
-background = "#a59d86"
+background = "#8b886b"
 on_background = "#2b2820"
 
-surface = "#a59d86"
+surface = "#8b886b"
 on_surface = "#2b2820"
-surface_variant = "#8c846d"
+surface_variant = "#726f52"
 on_surface_variant = "#2b2820"
-surface_tint = "#e8e0c4"
+surface_tint = "#b0aa7e"
 inverse_surface = "#2b2820"
-inverse_on_surface = "#a59d86"
+inverse_on_surface = "#8b886b"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#6b645599"
-outline_variant = "#6b645566"
+outline = "#4f4d3999"
+outline_variant = "#4f4d3966"
 scrim = "#000000"
 
-surface_bright = "#8c846d"
-surface_dim = "#a59d86"
-surface_container = "#a59d86"
-surface_container_high = "#8c846d"
-surface_container_highest = "#8c846d"
-surface_container_low = "#a59d86"
-surface_container_lowest = "#a59d86"
+surface_bright = "#726f52"
+surface_dim = "#8b886b"
+surface_container = "#8b886b"
+surface_container_high = "#726f52"
+surface_container_highest = "#726f52"
+surface_container_low = "#8b886b"
+surface_container_lowest = "#8b886b"
 
-keyboard_surface = "#a59d86"
-keyboard_surface_dim = "#a59d86"
-keyboard_container = "#8c846d"
-keyboard_container_variant = "#8c846d"
+keyboard_surface = "#8b886b"
+keyboard_surface_dim = "#8b886b"
+keyboard_container = "#726f52"
+keyboard_container_variant = "#726f52"
 on_keyboard_container = "#2b2820"
-keyboard_press = "#8c846d"
-keyboard_container_pressed = "#6b645544"
+keyboard_press = "#726f52"
+keyboard_container_pressed = "#4f4d3944"
 on_keyboard_container_pressed = "#2b282000"
 
 [options.font]

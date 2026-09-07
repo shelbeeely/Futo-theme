@@ -2,14 +2,14 @@
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
 # SNES — a color-and-shape variant of Groovy Code, replicating
-# the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors, set in FiraCode.
+# the real North American SNES controller (SNS-005)'s warm gray-lavender body and its actual purple A/B + lavender X/Y buttons, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "SNES"
 author = "Shelbee"
 id = "com.shelbee.snes"
-version = 2
-description = "Classic SNES variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key. Rounded and glossy like the real concave buttons, in a lavender-gray body, with a small four-dot diamond motif (in the same Y/X/A/B colors) scattered on the background. Set in FiraCode."
+version = 3
+description = "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in FiraCode."
 
 [options]
 auto_borders = true
@@ -21,57 +21,57 @@ weight_text = 500
 weight_hints = 400
 
 [colors]
-primary = "#e60012"
+primary = "#514689"
 on_primary = "#1c1a24"
-primary_container = "#57536b"
+primary_container = "#cec9cc"
 on_primary_container = "#1c1a24"
-inverse_primary = "#c8c4d8"
+inverse_primary = "#908a99"
 
-secondary = "#726e82"
+secondary = "#a7a4e0"
 on_secondary = "#1c1a24"
-secondary_container = "#57536b"
+secondary_container = "#cec9cc"
 on_secondary_container = "#1c1a24"
 
-tertiary = "#c8c4d8"
+tertiary = "#908a99"
 on_tertiary = "#1c1a24"
-tertiary_container = "#57536b"
+tertiary_container = "#cec9cc"
 on_tertiary_container = "#1c1a24"
 
-background = "#706c84"
+background = "#e7e2e5"
 on_background = "#1c1a24"
 
-surface = "#706c84"
+surface = "#e7e2e5"
 on_surface = "#1c1a24"
-surface_variant = "#57536b"
+surface_variant = "#cec9cc"
 on_surface_variant = "#1c1a24"
-surface_tint = "#e60012"
+surface_tint = "#514689"
 inverse_surface = "#1c1a24"
-inverse_on_surface = "#706c84"
+inverse_on_surface = "#e7e2e5"
 
 error = "#bd361e"
 on_error = "#f5e6c8"
 error_container = "#422118"
 on_error_container = "#f0c9a0"
 
-outline = "#c8c4d899"
-outline_variant = "#c8c4d866"
+outline = "#908a9999"
+outline_variant = "#908a9966"
 scrim = "#000000"
 
-surface_bright = "#57536b"
-surface_dim = "#706c84"
-surface_container = "#706c84"
-surface_container_high = "#57536b"
-surface_container_highest = "#57536b"
-surface_container_low = "#706c84"
-surface_container_lowest = "#706c84"
+surface_bright = "#cec9cc"
+surface_dim = "#e7e2e5"
+surface_container = "#e7e2e5"
+surface_container_high = "#cec9cc"
+surface_container_highest = "#cec9cc"
+surface_container_low = "#e7e2e5"
+surface_container_lowest = "#e7e2e5"
 
-keyboard_surface = "#706c84"
-keyboard_surface_dim = "#706c84"
-keyboard_container = "#57536b"
-keyboard_container_variant = "#57536b"
+keyboard_surface = "#e7e2e5"
+keyboard_surface_dim = "#e7e2e5"
+keyboard_container = "#cec9cc"
+keyboard_container_variant = "#cec9cc"
 on_keyboard_container = "#1c1a24"
-keyboard_press = "#57536b"
-keyboard_container_pressed = "#c8c4d844"
+keyboard_press = "#cec9cc"
+keyboard_container_pressed = "#908a9944"
 on_keyboard_container_pressed = "#1c1a2400"
 
 [options.font]
@@ -130,30 +130,6 @@ asset = "Button-function-pressed.png"
 [[matchrules.border]]
 selector = "functional"
 asset = "Button-function.png"
-
-[[matchrules.border]]
-selector = "normal row 0 pressed"
-asset = "Button-row0-press.png"
-
-[[matchrules.border]]
-selector = "normal row 0"
-asset = "Button-row0.png"
-
-[[matchrules.border]]
-selector = "normal row 1 pressed"
-asset = "Button-row1-press.png"
-
-[[matchrules.border]]
-selector = "normal row 1"
-asset = "Button-row1.png"
-
-[[matchrules.border]]
-selector = "normal row 2 pressed"
-asset = "Button-row2-press.png"
-
-[[matchrules.border]]
-selector = "normal row 2"
-asset = "Button-row2.png"
 
 [[matchrules.border]]
 selector = "normal popup"
@@ -316,60 +292,6 @@ target_density = 640
 
 [[asset.border]]
 name = "Button-stickyon-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row0.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row0-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row1.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row1-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row2.png"
-background_tint = "#ffffff"
-foreground_tint = "#1c1a24"
-padding = [0, 0, 0, 0]
-slicing = [0.4588, 0.4588, 0.5413, 0.5413]
-gap = [1.05, 1.05, 1.05, 1.05]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row2-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
