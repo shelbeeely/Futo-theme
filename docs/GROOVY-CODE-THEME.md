@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v17**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v18**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -18,29 +18,28 @@ choices specific to this theme.
 - **Keycap structure, v17 — brown outer "well" + bright inset face + thin
   gold rim, on every key.** Replaces v15/v16's dark-charcoal-single-surface
   look entirely. See the v17 entry below for why and what.
-- **Row-banded letter keys:** top row = orange-red, home row = orange,
-  bottom row = brightened rust — mirrors the source palette's stacked
-  swatch order, implemented with `normal row 0`/`row 1`/`row 2` matchrules
-  (see `theme.txt`). As of v17 this is a solid, clearly visible inset-face
-  color per row again (not the v15/v16 near-imperceptible tint) — see the
-  v17 entry below. Confirmed via `preview-theme` on the `?123` Symbols and
-  Numpad layouts too, not just QWERTY — nothing layout-specific was needed.
-- **Gold inset face** = "system key" signal (shift, backspace, 123, gear,
-  comma/period) — i.e. the `functional` matchrules. As of v17 this is a
-  solid, clearly visible gold face again, reversing v15/v16's
-  near-imperceptible tint — this directly answers the "Open items"
-  question those versions had flagged (restore the cue vs. match the dark
-  reference exactly): the user's v17 direction settled it in favor of
-  restoring it.
+- **Uniform orange face on every key, v18** — every non-action, non-
+  stickyon key (every number, every letter, shift, backspace, ?123,
+  comma, emoji, spacebar, period) renders in the exact same orange
+  (`#e17a25`), matching the reference SVG literally. v17 had instead
+  brought back row-banding (orange-red/orange/brightened-rust) and a gold
+  "system key" face, both of which turned out not to exist anywhere in
+  the actual reference — see the v18 entry below for how this was caught
+  and fixed. There is no more `normal row 0`/`row 1`/`row 2` matchrule
+  distinction at all; a "normal" key and a "functional" key now render
+  the same color (they're still separate assets/matchrules for
+  architectural reasons — spacebar needs its own aspect ratio regardless
+  — just no longer separate colors).
 - **Brightest gold face + a soft bloom** (`stickyon` asset) = caps-lock
   engaged — brighter than every other key's face and the only key with a
   colored bloom bleeding past its rim, deliberately, so the locked state is
   unmistakable at a glance. Confirmed as the real caps-lock-locked visual
   state, not just an icon change — see `docs/THEME-FORMAT.md`'s `stickyon`
-  entry.
+  entry. Gold is now exclusive to this one state, freed up by v18 removing
+  the gold system-key face.
 - **True rust face + a modest bloom** = the `action` (enter) key —
-  distinct from every other key's orange/gold, matching the v17 reference
-  SVG's rust-red enter key exactly.
+  distinct from every other key's orange, matching the reference SVG's
+  rust-red enter key exactly.
 - **v12 mechanical-keyboard pass:** `gap` raised from `1` to `1.5` on every
   border asset (uniformly, so spacing stays even) to expose more
   background between keys — the single highest-leverage move in the
@@ -148,12 +147,50 @@ choices specific to this theme.
   rim, and the rust enter key all read correctly on all three. Not yet
   confirmed on a real device.
 
+- **v18 — fixed a real divergence from the reference SVG that v17
+  introduced.** The user re-shared the exact same reference ("Mechanical
+  keyboard illustration in a warm 70s palette") and said the theme looked
+  nothing like it. Rather than guess again, the actual SVG markup was
+  read line by line and rasterized to a PNG (no `cairosvg` available in
+  this environment, so via a headless-Chromium screenshot instead) for a
+  direct side-by-side against a fresh `preview-theme` render. The SVG
+  turned out to show something more literal than v17 had implemented:
+  every single key — every number, every letter across all three rows,
+  shift, backspace, ?123, comma, emoji, spacebar, period — is the exact
+  same solid orange (`#e17a25`) with a gold rim and a dark brown
+  (`#422118`) legend; the *only* key that differs at all is Enter, which
+  is rust (`#bd361e`) with a cream arrow icon. There is no row-banding
+  and no separate "gold system key" color anywhere in the reference —
+  v17's changelog entry had already flagged this exact tension (choosing
+  "closer to the v10-v13 look" over the reference's literal uniform
+  orange) but that judgment call turned out to be wrong once actually
+  checked against the rendered reference image instead of just its text
+  description. Fixed in `scripts/generate_assets.py`: `default`,
+  `function`, and `space` all now render the identical orange (previously
+  `default` was clay, `function` was gold, and row0/1/2 were orange-red/
+  orange/brightened-rust — none of which the reference has). Removed the
+  six `normal row 0/1/2 (pressed)` matchrules and their six asset blocks
+  from `theme.txt` entirely, since letter keys no longer need per-row
+  differentiation. Also corrected `foreground_tint` on every orange-faced
+  asset from `#2a1508` (an undocumented ad-hoc dark brown that was never
+  actually one of this theme's seven official palette colors) to
+  `#422118` — the reference's literal legend color, and also this
+  theme's own documented "near-black" palette swatch that `#2a1508` had
+  been quietly substituting for since v17. `action`/`stickyon` keep
+  `#2a1508`, unaffected by this fix since the reference doesn't cover
+  those states. Confirmed via `preview-theme` on QWERTY, Symbols, and
+  Numpad, all now uniformly orange as the reference shows. Not yet
+  confirmed on a real device.
+
 ## Build workflow
 
 Assets are generated with Python + Pillow (PIL), not hand-authored, via
 `scripts/generate_assets.py` (`pip install pillow`) — run
 `python3 scripts/generate_assets.py` from the repo root to regenerate all
-16 non-icon `Button-*.png` border assets in place. Palette and geometry
+10 non-icon `Button-*.png` border assets in place (`default`, `function`,
+`space`, `action`, `stickyon`, each with a `-press`/`-pressed` pair — down
+from 16 as of v18, since row-banding's six row0/1/2 assets were removed).
+Palette and geometry
 constants live at the top of the script; the geometry constants
 (radius/outline/canvas size) must match `theme.txt`'s `slicing` values (see
 `docs/THEME-FORMAT.md`'s "Computing slicing values") if you change them.
@@ -214,12 +251,25 @@ theme ships under for third-party art/font.
   has no code path that writes those filenames at all, closing off the
   v10 bug class (see above) at the source rather than relying on
   remembering not to reintroduce it.
-- **Row-banding matchrule ordering:** row-specific border rules
-  (`normal row 0/1/2` plus their `pressed` variants) must sit AFTER the
+- **Row-banding matchrule ordering (historical, v12–v17 only):** while this
+  theme had `normal row 0/1/2` matchrules, they had to sit AFTER the
   `action`/`spacebar`/`functional` rules and BEFORE the generic
   `pressed`/`normal` fallback — matchrules are order-dependent, first match
-  wins (see `docs/THEME-FORMAT.md`). Confirmed correct in the current
-  `theme.txt` — preserve this order if you edit that block.
+  wins (see `docs/THEME-FORMAT.md`). v18 removed row-banding entirely (see
+  its changelog entry) so this no longer applies to Groovy Code itself,
+  but the same ordering rule still matters if you reintroduce row-specific
+  rules here, or add them to a `variants/` theme.
+- **A judgment call flagged in an earlier version's changelog can still be
+  wrong — verify against the actual reference, not just its text
+  description.** v17's own entry explicitly flagged "closer to the
+  v10-v13 look" as a deliberate departure from the reference SVG's literal
+  uniform orange, reasoning that the user's chosen option text justified
+  it. It didn't — the user said the result looked nothing like the
+  reference. The fix (v18) came from actually rasterizing the SVG and
+  comparing it pixel-by-pixel against a fresh render, not from re-reading
+  the SVG's text description more carefully. When a visual claim is
+  checkable against a concrete reference, check it that way before
+  trusting a prior version's stated rationale.
 - **Hint-label padding units:** `padding` on a border asset is a *raw*
   value, not a fraction of key size (see `docs/THEME-FORMAT.md`). A small
   decorative-looking value copied from a reference theme without checking
@@ -246,15 +296,13 @@ eventually happening.**
 ## Open items / not yet done
 
 - **Whether to layer the v14–v16 photo-realism techniques back onto the
-  v17 solid-color faces is an open judgment call, not something the user
-  explicitly decided.** v17 dropped brushed texture/vignette/specular/edge
-  ambient-occlusion entirely because they fought against a flat, saturated
-  look — but the user's chosen option was about color/structure
-  ("solid colorful keys"), not explicitly about the realism techniques.
-  If a future round wants some photo-realism back (e.g. just a subtle
-  texture on the inset face, keeping the flat gold rim crisp), that's a
-  reasonable middle ground worth asking about rather than assuming either
-  way.
+  current solid-color faces is an open judgment call, not something the
+  user has decided.** Dropped in v17 because they fought against a flat,
+  saturated look, and v18 didn't revisit this question — it only fixed
+  the color-per-key-role mismatch, not the flat-vs-textured question. If a
+  future round wants some photo-realism back (e.g. just a subtle texture
+  on the inset face, keeping the flat gold rim crisp), ask rather than
+  assume either way.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, previous_key, etc. — full list in
   `docs/THEME-FORMAT.md`) — only the ones with a clear coding-relevant use
@@ -262,16 +310,16 @@ eventually happening.**
 - `morekeysbox`/`morekey` (long-press accent popup) styling was added but
   never confirmed on a real device — the editor's own JS preview stubs
   these to always-false, so it can only be verified in the real Android
-  app. They also weren't restyled for the v17 look (still the old
+  app. They also weren't restyled for the current look (still the old
   gold-ring style from v11) since they can't be previewed to check the
   result — low priority, since they're only visible during a long-press.
-- v11 through v17 have all been checked with the `preview-theme` skill's
+- v11 through v18 have all been checked with the `preview-theme` skill's
   real render but **none of them have been screenshotted/confirmed on a
   real device yet** — that's the immediate next verification step. Real
   screen color/gamma and actual touch/pressed-state interaction still
   can't be checked any other way.
 - The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v17 — a first attempt at a brushed-plate
+  dark texture, untouched through v18 — a first attempt at a brushed-plate
   background (pure Pillow, no numpy) had a near-zero-variance bug and was
   abandoned when the v14 mockup redirected effort toward the keycaps
   instead. Revisit only if the plain background still looks flat next to

@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 17
-description = "Warm-toned 70's-inspired theme styled as a real mechanical keyboard: solid colorful keycaps, each a brown outer well with a bright inset face and a thin gold rim, row-banded orange/orange-red/rust across the letter rows, gold system keys, a rust-red enter key, and a bright gold caps-lock — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 18
+description = "Warm-toned 70's-inspired theme styled as a real mechanical keyboard: solid colorful keycaps, each a brown outer well with a bright orange inset face and a thin gold rim, uniform across every key, with a rust-red enter key and a bright gold caps-lock — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
@@ -134,35 +134,6 @@ asset = "Button-function-pressed.png"
 selector = "functional"
 asset = "Button-function.png"
 
-# Row-banded letter keys: mirrors the palette's stacked swatch order
-# top row -> orange-red, home row -> orange, bottom row -> brightened rust.
-# These sit after action/spacebar/functional so they only ever catch
-# plain letter keys, and before the generic pressed/normal fallback.
-
-[[matchrules.border]]
-selector = "normal row 0 pressed"
-asset = "Button-row0-press.png"
-
-[[matchrules.border]]
-selector = "normal row 0"
-asset = "Button-row0.png"
-
-[[matchrules.border]]
-selector = "normal row 1 pressed"
-asset = "Button-row1-press.png"
-
-[[matchrules.border]]
-selector = "normal row 1"
-asset = "Button-row1.png"
-
-[[matchrules.border]]
-selector = "normal row 2 pressed"
-asset = "Button-row2-press.png"
-
-[[matchrules.border]]
-selector = "normal row 2"
-asset = "Button-row2.png"
-
 [[matchrules.border]]
 selector = "normal popup"
 asset = "Button-default-press.png"
@@ -250,7 +221,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -259,7 +230,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-default-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -268,7 +239,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -277,7 +248,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-function-pressed.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.18, 0.18, 0.82, 0.82]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -286,7 +257,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -295,7 +266,7 @@ target_density = 640
 [[asset.border]]
 name = "Button-space-press.png"
 background_tint = "#ffffff"
-foreground_tint = "#2a1508"
+foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
 slicing = [0.052, 0.206, 0.948, 0.794]
 gap = [1.15, 1.15, 1.15, 1.15]
@@ -312,60 +283,6 @@ target_density = 640
 
 [[asset.border]]
 name = "Button-action-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row0.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row0-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row1.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row1-press.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row2.png"
-background_tint = "#ffffff"
-foreground_tint = "#2a1508"
-padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
-gap = [1.15, 1.15, 1.15, 1.15]
-target_density = 640
-
-[[asset.border]]
-name = "Button-row2-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
