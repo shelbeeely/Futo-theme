@@ -2,3 +2,6 @@
 .claude/skills/preview-theme/.last-preview-hash
 
 __pycache__/
+
+# Secrets -- never commit
+.env
