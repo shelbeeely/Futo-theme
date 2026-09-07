@@ -6,6 +6,14 @@ accent, set in FiraCode. The repo root is the theme package itself —
 `theme.txt` plus PNG assets plus the font, ready to zip and sideload into the
 FUTO Keyboard app's theme importer.
 
+![Groovy Code](docs/images/groovy-code.png)
+
+This repo also ships eight classic-hardware variants (IBM Model M,
+Macintosh Plus, Commodore 64, an amber phosphor terminal, Game Boy, NES,
+SNES, Game Boy Color) as separate installable theme packages under
+`variants/` — see their screenshots and design rationale in
+[`docs/VARIANTS.md`](docs/VARIANTS.md).
+
 ## Getting the importable zip
 
 Every push to `main` that touches theme files runs
@@ -33,6 +41,9 @@ You can also trigger a build on demand from the Actions tab
 - [`docs/MECHANICAL-KEYBOARD-GUIDE.md`](docs/MECHANICAL-KEYBOARD-GUIDE.md) —
   notes on pushing a theme further toward a mechanical/desktop-keyboard
   look within what the format supports.
+- [`docs/VARIANTS.md`](docs/VARIANTS.md) — the eight classic-hardware
+  variants: screenshots, design rationale per device, and how to add
+  another one.
 
 See also `CLAUDE.md` for the working notes an AI assistant should read
 before continuing work on this repo.

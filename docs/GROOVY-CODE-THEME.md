@@ -7,6 +7,12 @@ sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
 choices specific to this theme.
 
+![Groovy Code QWERTY, rendered via the preview-theme skill](images/groovy-code.png)
+
+Screenshot above is a real render from `keyboard-theme-editor`'s own
+rendering code (see "Verification method" below) — not a mockup. Not yet
+confirmed on a real device.
+
 ## Design system
 
 - **Palette:** gold `#e19d25`, orange `#e17a25`, orange-red `#e14e25`, rust

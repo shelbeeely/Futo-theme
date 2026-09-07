@@ -10,6 +10,19 @@ thickness, key spacing, surface finish) — not just a recolor:
   Boy Color** — yes, not keyboards, but the same "replicate a real device's
   color identity" idea applied to game consoles instead.
 
+## Screenshots
+
+Real renders via the `preview-theme` skill (`keyboard-theme-editor`'s own
+rendering code, not mockups) — see "Verification" below. None of these are
+confirmed on a real device yet.
+
+| | |
+|---|---|
+| **IBM Model M**<br>![IBM Model M](images/ibm-model-m.png) | **Macintosh Plus**<br>![Macintosh Plus](images/mac-plus.png) |
+| **Commodore 64**<br>![Commodore 64](images/commodore-64.png) | **Amber Terminal**<br>![Amber Terminal](images/amber-terminal.png) |
+| **Game Boy (DMG)**<br>![Game Boy](images/gameboy-dmg.png) | **NES**<br>![NES](images/nes.png) |
+| **SNES**<br>![SNES](images/snes.png) | **Game Boy Color**<br>![Game Boy Color](images/gameboy-color.png) |
+
 ## Why these are separate packages, not a setting inside Groovy Code
 
 FUTO's theme format has no in-app palette switching within one theme — a
