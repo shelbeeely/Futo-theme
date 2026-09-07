@@ -13,10 +13,11 @@ Macintosh Plus, Commodore 64, an amber phosphor terminal, Game Boy, NES,
 SNES, Game Boy Color) as separate installable theme packages under
 `variants/`, each with its own real, properly-licensed period-appropriate
 font (IBM Plex Mono, Silkscreen, Sixtyfour, VT323, DotGothic16, Press
-Start 2P, Jersey 10, Pixelify Sans) and its own concave-keycap or
-convex-button depth rendering, matched to what the real hardware actually
-is — see their screenshots and design rationale in
-[`docs/VARIANTS.md`](docs/VARIANTS.md).
+Start 2P, Jersey 10, Pixelify Sans), its own concave-keycap or
+convex-button depth rendering matched to what the real hardware actually
+is, and its own procedurally-generated icon set (no icon file is shared
+between any two themes in this repo) — see their screenshots and design
+rationale in [`docs/VARIANTS.md`](docs/VARIANTS.md).
 
 ## Getting the importable zip
 

@@ -34,6 +34,15 @@ Repo layout:
   Code's own FiraCode) — see `docs/VARIANTS.md`'s v23 entry for which
   font is used where and why, and `FONT_INFO` in
   `scripts/generate_variants.py` for the license/source/rationale of each
+- `scripts/icon_render.py` — as of v25: procedural, parametric icon
+  glyphs (backspace, shift/shift-press, enter, globe, mic, tab, both
+  arrows, emoji) used by `scripts/generate_variants.py` to give each of
+  the 8 classic-hardware variants its own distinct `Icon-*.png` set
+  (stroke weight, sharp-vs-round joints, optional pixel-grid
+  quantization per variant) instead of all 9 themes sharing FUTO's
+  official icon SVGs byte-identical — see `docs/VARIANTS.md`'s v25 entry.
+  Groovy Code itself is untouched by this (still its own mix of FUTO's
+  official icons + 2 hand-drawn ones, see "Build workflow" below)
 - `scripts/generate_assets.py` — generates Groovy Code's own
   `Button-*.png` border assets AND `GroovyCode-background.png` (not part
   of the theme package's build inputs otherwise — `theme.txt` and the
@@ -188,6 +197,34 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **"All variants are separate themes. No shared assets." (variants v25;
+  Groovy Code untouched):** after the v24 audit, the user pointed out
+  that, despite every other asset class already being generated per
+  variant, all 9 themes here (Groovy Code plus all 8 variants) still
+  shared the identical 10 `Icon-*.png` files byte-for-byte, copied
+  straight from the repo root. Asked whether to fix just `Icon-emoji.png`
+  (the one the user had noticed) or the full 10-file set, given that
+  FUTO always force-recolors icons from their alpha channel alone (fact
+  #3 below) so RGB was never a real per-variant lever either way; **the
+  user chose the full set**. Built `scripts/icon_render.py`: 10
+  parametric glyph functions (same real shapes FUTO's own SVGs depict --
+  a restyle of *how* each is drawn, not a redesign of *what* it means),
+  driven by one `icon_style` dict per variant profile (`stroke_frac`,
+  `rounded`, `pixel_grid`) tied to each variant's already-established
+  character -- e.g. IBM Model M gets sharp/thick outlines matching its
+  boxy low-wobble keys, NES/Game Boy DMG get blocky pixel-grid icons
+  matching their pixel-art-era fonts, SNES stays round/thin/unpixelated
+  matching its "roundest, glossiest" character. `SHARED_FILES` in
+  `scripts/generate_variants.py` dropped from 12 entries to 2
+  (`Button-morekey.png`/`Button-morekeysbox.png` only -- flagged, not
+  silently left, as the one remaining shared-asset case). Confirmed all 8
+  variants' `Icon-emoji.png` now hash differently from each other and
+  from Groovy Code's own, and confirmed legible via `preview-theme` on
+  all 8, including the two extremes (IBM Model M's sharp outlines,
+  NES/Game Boy DMG's pixelated icons) rendering correctly recolored and
+  readable at real on-keyboard size. Full writeup:
+  `docs/VARIANTS.md`'s v25 entry.
 
 - **"Is each console using console-appropriate buttons?" (variants v24;
   Groovy Code untouched):** the user asked this directly, given this

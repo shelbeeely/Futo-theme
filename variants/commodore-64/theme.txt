@@ -8,7 +8,7 @@
 name = "Commodore 64"
 author = "Shelbee"
 id = "com.shelbee.commodore64"
-version = 7
+version = 8
 description = "Classic Commodore 64 variant: dark brown/near-black keycaps sitting in the real beige breadbin case (RAL 1019 family) -- corrected from an earlier, backwards version that had beige keycaps with invented tan/rust accent keys neither of which appear on the real hardware. Chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background and a bright blue-screen glow marking caps-lock. Set in Sixtyfour."
 
 [options]

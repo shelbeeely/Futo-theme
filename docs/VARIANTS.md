@@ -464,6 +464,80 @@ A/B keys now render round instead of near-square, and Game Boy's action
 key now carries a visible magenta glow. Not yet confirmed on a real
 device.
 
+## v25: every variant renders its own icon set — no more shared assets
+
+After the v24 button-shape/color audit, the user pointed out a real gap:
+*"all variants are separate themes. No shared assets. they all need
+seperate Icon-emoji.png"* — noticing that, despite every other asset
+class (borders, background, font) already being generated per variant
+since earlier rounds, all 9 themes in this repo (Groovy Code plus all 8
+variants) still shared the identical 10 `Icon-*.png` files, copied
+byte-for-byte from the repo root by `SHARED_FILES`.
+
+Before redesigning anything, worth restating the real constraint (per
+CLAUDE.md fact #3, verified from `keyboard-theme-editor` source): the app
+**always** force-recolors every icon at runtime via canvas `source-in`
+compositing, discarding whatever RGB is baked into the PNG and refilling
+it with the theme's own foreground color for that key state. So RGB was
+never actually a lever for per-variant icon identity — a variant's icons
+were always going to render in that variant's own colors regardless.
+Asked the user how far to take this given that constraint (just
+`Icon-emoji.png`, or the full 10-file set); **the user chose the full
+set** — every icon (backspace, shift, shift-press, enter, globe, mic,
+tab, both arrows, emoji), not just the one they'd noticed.
+
+With RGB off the table, the only real lever left is **silhouette**:
+stroke weight, sharp-vs-round joints/caps, and an optional pixel-grid
+quantization for the variants built around a pixel-art-era font. Built
+`scripts/icon_render.py`: 10 parametric glyph functions, each drawing the
+same real, recognizable shape FUTO's own official SVG depicts for that
+role (a delete-key outline with an X for backspace, an up-arrow merged
+into a bar for shift, a bent arrow for enter, a circle+meridians for
+globe, a capsule-on-a-stand for mic, an arrow-into-a-bar for tab, plain
+chevrons for the two arrow keys, a circle+eyes+smile for emoji) — a
+restyling of *how* each icon is drawn, not a redesign of *what* it
+communicates, so every variant's keyboard stays legible by the same
+visual vocabulary a FUTO user already knows. `render_icon_set()` renders
+all 10 into a variant's own directory using one `icon_style` dict per
+profile (`stroke_frac`, `rounded`, `pixel_grid`), tied to each variant's
+already-established character rather than picked arbitrarily:
+
+| Variant | stroke_frac | rounded | pixel_grid | Why |
+|---|---|---|---|---|
+| IBM Model M | 0.075 | sharp | none | boxy, thick-bezel character (see its own geometry table entry) |
+| Macintosh Plus | 0.045 | round | none | thin-bezel, nearly-flat character |
+| Commodore 64 | 0.065 | round | 16 | chunky sculpted retro key + an 8-bit-computer font (Sixtyfour) |
+| Amber terminal | 0.050 | sharp | 14 | blocky terminal character + a pixel terminal font (VT323) |
+| Game Boy (DMG) | 0.090 | sharp | 10 | thick shell-bezel character + a pixel LCD font (DotGothic16) |
+| NES | 0.080 | sharp | 10 | (now-round buttons, but still an 8-bit arcade font, Press Start 2P) |
+| SNES | 0.050 | round | none | roundest/glossiest character + a clean (non-blocky) pixel-grid font |
+| Game Boy Color | 0.070 | round | 12 | softer/rounder than DMG + a softer pixel font (Pixelify Sans) |
+
+`generate_variant()` now calls `render_icon_set(out_dir, **icon_style)`
+after writing the border assets, and writes a new, variant-specific
+`ICON-ATTRIBUTION.txt` (these are original procedural art now, not
+converted from FUTO's SVGs, so the old FUTO BSD-3-Clause attribution text
+no longer applies). `SHARED_FILES` in `scripts/generate_variants.py`
+dropped from 12 entries to 2 (`Button-morekey.png`/
+`Button-morekeysbox.png` only — see "What's shared vs. generated per
+variant" below for why those two remain).
+
+Confirmed distinct per variant (all 8 `Icon-emoji.png` MD5 hashes now
+differ from each other and from Groovy Code's own), and confirmed
+legible via `preview-theme` on all 8 — including the two extremes
+(IBM Model M's sharp/thick outlines and NES/Game Boy DMG's blocky
+pixel-grid icons) rendering correctly recolored and readable at real
+on-keyboard size, not just in an isolated contact sheet. All 8 variants'
+`theme.txt` `version` bumped 7→8. Not yet confirmed on a real device.
+
+**Still shared, flagged rather than silently left**: `Button-morekey.png`
+and `Button-morekeysbox.png` (the long-press accent-key popup styling)
+remain byte-identical across all 9 themes — untouched since Groovy Code
+v11, never restyled per variant even during the v19 organic-shape pass,
+for the same "rarely visible, low priority" reasoning documented there.
+If "no shared assets" should extend there too, that's a follow-up, not
+assumed here.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -702,19 +776,21 @@ import needs everything present, not references back to the repo root):
   `row0`/`row1`/`row2` pairs for any future `row_banded` profile; none
   currently use this, see "Row-banded variants" above), a gradient
   background PNG matching the variant's case tone scattered with its own
-  motif glyph, and (since v23) its own `FONT-ATTRIBUTION.txt` naming its
-  own font's author/license/source.
+  motif glyph, its own `FONT-ATTRIBUTION.txt` naming its own font's
+  author/license/source (since v23), and (since v25) its own full
+  `Icon-*.png` set plus its own `ICON-ATTRIBUTION.txt` — see the v25
+  entry above.
 - **Copied from `scripts/fonts/` (since v23, not the repo root)**: each
   variant's own font file (see the v23 table above) — no longer
   FiraCode, and no longer shared across variants at all.
-- **Copied unchanged from the repo root**: `Icon-*.png` (icons are always
-  force-recolored at runtime via canvas `source-in` compositing — see
-  `CLAUDE.md` fact #3 — so the same alpha-shape PNGs work for every
-  variant's `foreground_tint`), `ICON-ATTRIBUTION.txt`, and
-  `Button-morekey.png`/`Button-morekeysbox.png` (the long-press popup
-  styling — still the original gold-ring look from Groovy Code v11, not
-  restyled per variant or per the organic-shape pass; see "Open items" in
-  `docs/GROOVY-CODE-THEME.md`, same low-priority reasoning applies here).
+- **Copied unchanged from the repo root**: only
+  `Button-morekey.png`/`Button-morekeysbox.png` remain (the long-press
+  popup styling — still the original gold-ring look from Groovy Code
+  v11, not restyled per variant or per the organic-shape/icon passes; see
+  "Open items" in `docs/GROOVY-CODE-THEME.md`, same low-priority
+  reasoning applies here). Every other asset class (borders, background,
+  font, icons) is now generated per variant — as of v25, no theme in this
+  repo shares an `Icon-*.png` with any other.
 
 ## Packaging and releases
 

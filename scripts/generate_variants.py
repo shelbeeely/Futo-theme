@@ -61,6 +61,7 @@ from keycap_render import (
     motif_switch_cross, motif_crt, motif_chip, motif_cursor,
     motif_dpad, motif_button_pair, motif_diamond_cluster,
 )
+from icon_render import render_icon_set
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VARIANTS_DIR = os.path.join(REPO_ROOT, "variants")
@@ -129,10 +130,6 @@ FONT_INFO = {
 }
 
 SHARED_FILES = [
-    "Icon-backspace.png", "Icon-emoji.png", "Icon-shift-press.png", "Icon-shift.png",
-    "Icon-enter.png", "Icon-globe.png", "Icon-mic.png", "Icon-tab.png",
-    "Icon-arrow-left.png", "Icon-arrow-right.png",
-    "ICON-ATTRIBUTION.txt",
     "Button-morekey.png", "Button-morekeysbox.png",
 ]
 
@@ -160,7 +157,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 7
+version = 8
 description = "{description}"
 
 [options]
@@ -636,6 +633,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
         "gap": 1.05,
         "font_file": "IBMPlexMono-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.075, rounded=False, pixel_grid=None),
         "depth_style": "dish", "specular_alpha": 20, "edge_ao_alpha": 110,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (198, 194, 180),
@@ -674,6 +672,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.1,
         "font_file": "Silkscreen-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.045, rounded=True, pixel_grid=None),
         "depth_style": "dish", "specular_alpha": 40, "edge_ao_alpha": 55,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (138, 134, 110),
@@ -719,6 +718,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.26, "wobble": 0.10, "margin_frac": 0.09, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "Sixtyfour-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.065, rounded=True, pixel_grid=16),
         "depth_style": "dish", "specular_alpha": 30, "edge_ao_alpha": 90,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (164, 143, 122),
@@ -759,6 +759,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.10, "wobble": 0.04, "margin_frac": 0.05, "rim_frac": 0.014,
         "gap": 1.3,
         "font_file": "VT323-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.050, rounded=False, pixel_grid=14),
         "depth_style": "dish", "specular_alpha": 8, "edge_ao_alpha": 35,
         "face_top_blend": 0.05, "face_bottom_scale": 0.92,
         "well": (196, 178, 138),
@@ -827,6 +828,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.30, "wobble": 0.09, "margin_frac": 0.14, "rim_frac": 0.020,
         "gap": 1.2,
         "font_file": "DotGothic16-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.090, rounded=False, pixel_grid=10),
         "depth_style": "dome", "specular_alpha": 90, "edge_ao_alpha": 70,
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
@@ -864,6 +866,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.42, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "PressStart2P-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.080, rounded=False, pixel_grid=10),
         "depth_style": "dome", "specular_alpha": 75, "edge_ao_alpha": 70,
         "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
@@ -902,6 +905,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.44, "wobble": 0.09, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.05,
         "font_file": "Jersey10-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.050, rounded=True, pixel_grid=None),
         "depth_style": "dome", "specular_alpha": 130, "edge_ao_alpha": 45,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (206, 201, 204),
@@ -927,6 +931,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.34, "wobble": 0.10, "margin_frac": 0.13, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "PixelifySans-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.070, rounded=True, pixel_grid=12),
         "depth_style": "dome", "specular_alpha": 95, "edge_ao_alpha": 65,
         "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
@@ -1058,6 +1063,31 @@ def generate_variant(profile):
             f"Licensed under the SIL Open Font License 1.1 -- free to use, modify, and\n"
             f"redistribute as part of this theme. Source: {font_source}\n"
             f"{font_note}\n"
+        )
+
+    # v25: every variant now renders its own icon set instead of copying
+    # FUTO's shared official icons byte-identical into all 9 themes -- the
+    # user asked for genuinely separate themes with no shared assets.
+    # Since the app force-recolors every icon from its alpha channel alone
+    # (icon RGB is always discarded, see CLAUDE.md fact #3), the only real
+    # per-variant lever is silhouette: stroke weight, sharp-vs-round
+    # joints, and an optional pixel-grid quantization for the variants
+    # built around a pixel-art-era font -- see icon_style above and
+    # docs/VARIANTS.md's v25 entry.
+    icon_style = profile["icon_style"]
+    render_icon_set(out_dir, **icon_style)
+    with open(os.path.join(out_dir, "ICON-ATTRIBUTION.txt"), "w") as f:
+        f.write(
+            "All 10 Icon-*.png files in this theme are original, procedurally\n"
+            "generated art (scripts/icon_render.py), not derived from FUTO's own\n"
+            "icon SVGs -- each variant renders its own distinct silhouette style\n"
+            "(stroke weight, sharp-vs-round joints, and pixel-grid quantization\n"
+            "where the profile calls for it), so no icon file is shared byte-\n"
+            "identical with any other theme in this repo.\n\n"
+            "The app recolors every icon at render time using the theme's\n"
+            "foreground color for that key state (canvas source-in compositing)\n"
+            "-- only each icon's alpha-channel shape matters, not any RGB baked\n"
+            "into the PNG.\n"
         )
 
     function_legend = profile.get("function_legend", legend)
