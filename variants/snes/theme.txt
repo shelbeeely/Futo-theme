@@ -1,20 +1,20 @@
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# SNES — a color variant of Groovy Code, replicating the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors,
-# set in FiraCode.
+# SNES — a color-and-shape variant of Groovy Code, replicating
+# the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "SNES"
 author = "Shelbee"
 id = "com.shelbee.snes"
-version = 1
-description = "Classic SNES color variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key, all set in a lavender-gray body matching the console's own shoulder-button color. Set in FiraCode."
+version = 2
+description = "Classic SNES variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key. Rounded and glossy like the real concave buttons, in a lavender-gray body, with a small four-dot diamond motif (in the same Y/X/A/B colors) scattered on the background. Set in FiraCode."
 
 [options]
 auto_borders = true
 center_hints = false
-roundedness = 0.9
+roundedness = 0.92
 scale_text = 1.0
 scale_hints = 0.85
 weight_text = 500
@@ -209,10 +209,10 @@ asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
 # Asset configs — one entry per image used above. {key_slicing}/
-# {space_slicing} are computed per profile from its own radius via
-# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
-# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
-# each variant now draws its own corner radius.
+# {space_slicing} are computed per profile from its own organic
+# radius_frac via keycap_render.compute_slicing() (see
+# docs/THEME-FORMAT.md "Computing slicing values") -- NOT Groovy Code's
+# own values, since each variant draws its own corner shape.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -238,7 +238,7 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -247,7 +247,7 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -256,7 +256,7 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -265,7 +265,7 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -274,7 +274,7 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.0641, 0.2562, 0.9359, 0.7438]
+slicing = [0.1147, 0.4588, 0.8853, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -283,7 +283,7 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.0641, 0.2562, 0.9359, 0.7438]
+slicing = [0.1147, 0.4588, 0.8853, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -292,7 +292,7 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -301,7 +301,7 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -310,7 +310,7 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -319,7 +319,7 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -328,7 +328,7 @@ name = "Button-row0.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -337,7 +337,7 @@ name = "Button-row0-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -346,7 +346,7 @@ name = "Button-row1.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -355,7 +355,7 @@ name = "Button-row1-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -364,7 +364,7 @@ name = "Button-row2.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -373,7 +373,7 @@ name = "Button-row2-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#1c1a24"
 padding = [0, 0, 0, 0]
-slicing = [0.2437, 0.2437, 0.7562, 0.7562]
+slicing = [0.4588, 0.4588, 0.5413, 0.5413]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 

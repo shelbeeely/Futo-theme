@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v18**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v19**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -13,15 +13,23 @@ Repo layout:
 - `Button-*.png` — key face assets (border/background layer)
 - `Icon-*.png` — icon assets (backspace, shift, enter, emoji, globe, mic, tab, arrows)
 - `FiraCode-Regular.ttf` — the font (SIL OFL 1.1)
-- `GroovyCode-background.png` — keyboard background texture
+- `GroovyCode-background.png` — keyboard background texture (regenerated in
+  v19: a brown gradient scattered with a small sunburst motif — see below)
 - `FONT-ATTRIBUTION.txt`, `ICON-ATTRIBUTION.txt` — required attributions
 - `docs/` — full written-up documentation, see below
-- `scripts/keycap_render.py` — shared Pillow rendering primitives (the
-  "well + inset face + rim" `render_key`), used by both
-  `scripts/generate_assets.py` (Groovy Code's own palette) and
-  `scripts/generate_variants.py` (the classic-keyboard variants below)
+- `scripts/keycap_render.py` — shared Pillow+numpy rendering primitives.
+  As of v19: `organic_mask`/`render_organic_key` build irregular,
+  "cookie"-shaped key silhouettes (a rounded-rect signed-distance field
+  with per-angle sine-harmonic wobble, seeded per key) instead of clean
+  rounded rects, plus eight `motif_*` glyph functions and
+  `scatter_motifs()` for scattering a motif across a background — used by
+  both `scripts/generate_assets.py` (Groovy Code's own palette/motif) and
+  `scripts/generate_variants.py` (the classic-hardware variants below,
+  each with its own motif)
 - `scripts/generate_assets.py` — generates Groovy Code's own
-  `Button-*.png` border assets (not part of the theme package itself)
+  `Button-*.png` border assets AND `GroovyCode-background.png` (not part
+  of the theme package's build inputs otherwise — `theme.txt` and the
+  font are hand-maintained)
 - `variants/<slug>/` — classic-hardware color variants: four classic
   keyboards (IBM Model M, Macintosh Plus, Commodore 64, amber terminal)
   and four classic game consoles (Game Boy/DMG, NES, SNES, Game Boy
@@ -33,11 +41,12 @@ Repo layout:
   mode inside Groovy Code itself. SNES is the one variant that revives
   row-banding (its four-color face buttons ARE its identity); every other
   variant is flat, matching its real hardware. Each variant also has its
-  own geometry (corner radius, bezel thickness, rim weight, key spacing,
-  gradient contrast) reflecting its real hardware's physical character —
-  after an initial color-only pass looked like Groovy Code's own shape
-  with new paint, the user asked for them to actually be unique themes,
-  not recolors. See `docs/VARIANTS.md`.
+  own geometry (silhouette radius/wobble, bezel thickness, rim weight, key
+  spacing, gradient contrast) reflecting its real hardware's physical
+  character, and its own motif glyph baked into `stickyon` + scattered on
+  its background — see `docs/VARIANTS.md`, including the 8BitDo research
+  behind the console variants and the "Animal Keys" theme that inspired
+  the whole organic-shape/motif technique in v19.
 - `.github/workflows/package-theme.yml` — zips the root theme package
   (everything above except `docs/`/`scripts/`/`variants/`/`.claude/`/this
   file/`README.md`) AND, in a separate matrix job, each `variants/<slug>/`
@@ -167,6 +176,61 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **v19 (organic "cookie"-shaped keys + per-theme motifs, checked with
+  `preview-theme` on all 9 themes, not yet on a real device):** the user's
+  direction: "take inspiration from 8bitdo keyboards, all themes need
+  documentation and to resemble what they are named after... the animal
+  theme is my main inspiration and i want to use images like it," pointing
+  at https://keyboard.futo.tech/themes. Rather than guess what "Animal
+  Keys" (by TrashKittyQueen, `p.trashkittyqueen.petkeys`) actually does,
+  downloaded and inspected its real assets directly. Its technique is
+  **not** photographic animal imagery — it's (1) irregular, organic
+  "cookie"-shaped key silhouettes (not clean rounded rects) and (2) a
+  small paw-print motif baked into a couple of accent keys' faces plus
+  scattered across the background at low alpha. Asked the user how far to
+  take this (all 9 themes here, including Groovy Code — which had JUST
+  been fixed in v18 to match a different, clean-rounded-rect reference SVG
+  — vs. just the 8 hardware variants); **the user chose all 9**. Also
+  asked whether to research 8BitDo's actual keyboard line for the console
+  variants; **user said yes** — confirmed via web search that 8BitDo's
+  real "Retro Mechanical Keyboard" line has exactly four editions (N/NES,
+  Fami/Famicom, M, C64/Commodore 64), validating this repo's existing
+  Commodore 64 variant as matching a real product category.
+  Implementation: rewrote `scripts/keycap_render.py` around
+  `organic_mask()` (a rounded-rect signed-distance field with per-angle
+  sine-harmonic radius perturbation, numpy-vectorized, supersampled 3x and
+  Lanczos-downsampled) and `render_organic_key()` (composites well/face/
+  rim/bloom as nested same-seed masks at shrinking radius, plus an
+  optional motif clipped to the face). Added 8 motif glyph functions
+  (sunburst, switch-cross, CRT, chip, cursor, D-pad, button-pair,
+  diamond-cluster) and `scatter_motifs()` for backgrounds. Rewrote
+  `scripts/generate_assets.py` to use the new primitives with Groovy
+  Code's own sunburst motif on `stickyon`, and regenerated
+  `GroovyCode-background.png` for the first time since v10 (previously
+  flagged, unaddressed, across many versions' "Open items"). Rewrote
+  `scripts/generate_variants.py`'s geometry model from absolute pixels
+  (`radius`/`margin_top`/etc.) to fractions of key size
+  (`radius_frac`/`wobble`/`margin_frac`/`rim_frac`), gave each of the 8
+  variants its own motif, and regenerated every variant's background with
+  its motif scattered on it. **Two real bugs caught along the way**: (1)
+  an ellipse-based first attempt at `organic_mask` produced pointy
+  spacebar ends on the 4:1 spacebar canvas (an ellipse's curvature scales
+  with aspect ratio) — fixed by switching to a proper rounded-rect SDF,
+  caught by comparing a spacebar smoke-test against Animal Keys' own
+  `Button-space-dark.png`. (2) amber-terminal's `description` string had
+  an unescaped `">_"` breaking TOML parsing — the second time this exact
+  bug class has hit this repo (see `docs/VARIANTS.md`). `compute_slicing`
+  was validated against Animal Keys' own `[0.3,0.3,0.7,0.7]` slicing
+  value, confirming the tuned `radius_frac=0.30` default lands in the
+  right range. Confirmed via `preview-theme` on all 9 themes (QWERTY, plus
+  Symbols/Numpad for Groovy Code, plus the `?123` layout for amber
+  terminal and SNES) — organic shapes, motifs, and backgrounds all read
+  correctly. **Open judgment call, not yet asked**: whether the v14-v16
+  photo-realism techniques should ever come back is now moot for the
+  silhouette (organic shape replaces rounded-rect entirely) but the
+  question of flat-solid vs. textured surface finish remains open, same
+  status as before.
 
 - **v18 (fixed a real divergence from the reference SVG, checked with
   `preview-theme`, not yet on a real device):** the user re-shared the
@@ -392,6 +456,19 @@ is sparsely documented anywhere else.
   same orange (`#e17a25`) — no row-banding, no separate gold system-key
   color. This matches the reference SVG literally; v17 had incorrectly
   added both. See the v18 changelog entry above.
+- **Organic "cookie"-shaped keys, v19:** the well/face/rim structure above
+  is unchanged, but every key's silhouette is now an irregular, hand-cut-
+  looking shape (`render_organic_key` in `scripts/keycap_render.py`)
+  instead of a clean rounded rectangle — inspired by the real published
+  theme "Animal Keys." This is a silhouette change only; the color
+  identity (uniform orange, rust enter key, gold caps-lock) is unchanged
+  from v18 and still the target. See the v19 changelog entry above.
+- **Sunburst motif, v19:** a small brown sunburst glyph is baked into the
+  `stickyon` key's face and scattered at low alpha across
+  `GroovyCode-background.png` — this theme's own signature element,
+  playing the same role Animal Keys' paw print plays for itself. Only
+  `stickyon` carries it on a key face (not `action`), to avoid competing
+  with the enter-key icon glyph.
 - **Brightest gold face + a soft bloom** (`stickyon` asset) = caps-lock
   engaged — brighter than every other key's face and the only key with a
   colored bloom bleeding past its rim, deliberately, so the locked state
@@ -402,21 +479,25 @@ is sparsely documented anywhere else.
 
 ## Build workflow
 
-Assets are generated with Python + Pillow (PIL), not hand-authored, via
+Assets are generated with Python + Pillow + numpy, not hand-authored, via
 `scripts/generate_assets.py` (run `python3 scripts/generate_assets.py`
-from the repo root — it writes the `Button-*.png` files in place). As of
-v17 the script no longer needs numpy — the v14-v16 brushed-texture/
-vignette/specular machinery was dropped along with the dark charcoal look
-it served. The actual `render_key` function now lives in
-`scripts/keycap_render.py`, shared with the classic-hardware variant themes
-in `variants/` (see `docs/VARIANTS.md`) so it isn't duplicated per variant.
-It covers all 10 non-icon border assets (down from 16 as of v18, which
-removed row-banding's six row0/1/2 assets): `default`, `function`,
-`action`, `space`, `stickyon`, each with a `-press`/`-pressed` pair.
-Palette/geometry constants live at the top of the script — see its
-docstring before changing radius/canvas-size constants, since `theme.txt`'s
-`slicing` values are computed from them (`docs/THEME-FORMAT.md` has the
-math). It deliberately never touches `Icon-*.png`, `Button-morekey.png`, or
+from the repo root — it writes the `Button-*.png` files AND
+`GroovyCode-background.png` in place). numpy came back in v19 for the
+organic-silhouette math (`organic_mask`'s vectorized signed-distance-field
++ sine-harmonic wobble) after v17 had dropped it — this is a different use
+than v14-v16's since-removed brushed-texture/vignette/specular machinery,
+which stays gone. The actual `render_organic_key`/`organic_mask` functions
+live in `scripts/keycap_render.py`, shared with the classic-hardware
+variant themes in `variants/` (see `docs/VARIANTS.md`) so they aren't
+duplicated per variant. It covers all 10 non-icon border assets (down from
+16 as of v18, which removed row-banding's six row0/1/2 assets): `default`,
+`function`, `action`, `space`, `stickyon`, each with a `-press`/`-pressed`
+pair, plus the background. Palette/geometry constants live at the top of
+`scripts/generate_assets.py`; `compute_slicing(radius_frac, size)` in
+`keycap_render.py` computes `theme.txt`'s `slicing` values from the
+organic shape's `radius_frac` — see its docstring before changing shape
+constants (`docs/THEME-FORMAT.md` has the underlying math). It
+deliberately never touches `Icon-*.png`, `Button-morekey.png`, or
 `Button-morekeysbox.png` — see the v12 entry above for why.
 
 Icons: 8 of them (`Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`)
@@ -445,13 +526,12 @@ without (c) eventually happening.
 
 ## Open items / not yet done
 
-- **Whether to layer the v14-v16 photo-realism techniques (brushed
-  texture, vignette, edge ambient-occlusion, specular highlight) back onto
-  the current solid-color faces is an open judgment call, not something
-  the user has decided.** Dropped in v17 because they fought against a
-  flat, saturated look; v18 didn't revisit this, it only fixed the
-  per-key-role color mismatch. Ask before assuming either way if this
-  comes up again.
+- **Whether to layer any photo-realism/texture technique (surface
+  texture, vignette, edge ambient-occlusion, specular highlight) onto the
+  current organic solid-color faces is an open judgment call, not
+  something the user has decided.** Dropped in v17 because it fought
+  against a flat, saturated look; v18/v19 didn't revisit this. Ask before
+  assuming either way if this comes up again.
 - ~15 other confirmed real icon IDs are unused (settings, numpad, undo,
   chevron_right, zwnj, previous_key, etc.) — only added the ones with a clear
   coding-relevant use case (tab, cursor arrows, globe, mic).
@@ -459,20 +539,24 @@ without (c) eventually happening.
   never confirmed on a real device — the editor's own JS preview stubs these
   to always-false, so it could only be verified in the real Android app.
   Not restyled for the current look either (still the old gold-ring style
-  from v11) for the same reason — low priority since it's only visible on
-  long-press.
-- v11 through v18 have all been checked with the `preview-theme` skill's
+  from v11) — not even the v19 organic-shape/motif pass touched it, for the
+  same reason — low priority since it's only visible on long-press.
+- v11 through v19 have all been checked with the `preview-theme` skill's
   real render (v13's caught the dish-squeeze bug; v15's fixed the "doesn't
   look mechanical" feedback; v18 fixed a real mismatch against the
   reference SVG that v17 had introduced and its own changelog had wrongly
-  rationalized) but **none of them have been screenshotted/confirmed on a
-  real device yet** — that's the immediate next step. This repo's own
-  history (dish contrast, icon regression, the v13 dish-squeeze, v14's
-  overall miss, v17's row-banding mismatch) is exactly why a real-code
-  render or a real device catches things static analysis can't.
-- The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v18. A first attempt at a brushed-plate
-  background (pure Pillow, no numpy) had a near-zero-variance bug and was
-  abandoned when effort redirected to the keycaps instead. Revisit only if
-  the plain background still looks flat against the now much more
-  colorful keycaps once seen on a real device.
+  rationalized; v19 rebuilt the silhouette entirely around organic shapes)
+  but **none of them have been screenshotted/confirmed on a real device
+  yet** — that's the immediate next step. This repo's own history (dish
+  contrast, icon regression, the v13 dish-squeeze, v14's overall miss,
+  v17's row-banding mismatch, v19's ellipse-vs-SDF spacebar bug) is
+  exactly why a real-code render or a real device catches things static
+  analysis can't.
+- `GroovyCode-background.png` was regenerated in v19 (brown gradient +
+  scattered sunburst motif, replacing the plain dark texture that had gone
+  untouched since v10) — not yet confirmed on a real device; the motif
+  density/alpha was tuned by eye against the `preview-theme` render only.
+- The organic-shape `wobble` amount (how irregular each key's silhouette
+  looks) was tuned by eye against Animal Keys' own assets and smoke-test
+  renders, not against a real device — revisit if it reads as too subtle
+  or too busy once seen on-screen.

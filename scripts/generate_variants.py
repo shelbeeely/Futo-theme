@@ -3,32 +3,44 @@
 
 Each variant is a separate, self-contained FUTO Keyboard theme package
 (its own theme.txt + Button-*.png + Icon-*.png + font + background +
-attributions) using the same "brown well + bright inset face + rim"
-structure as Groovy Code v17 (scripts/keycap_render.py), just recolored to
-replicate a real device's palette. FUTO's theme format has no in-app
-palette-switching within one theme (confirmed: one theme.txt = one fixed
+attributions) using the same organic "cookie"-shaped well+face+rim
+structure as Groovy Code v19 (scripts/keycap_render.py), recolored and
+reshaped to replicate a real device's palette and physical character, plus
+its own small motif glyph. FUTO's theme format has no in-app palette-
+switching within one theme (confirmed: one theme.txt = one fixed
 `[colors]`/asset set, see docs/THEME-FORMAT.md) -- so "alternative color
 options" means separate installable packages, not a mode switch inside
 Groovy Code itself.
 
-Per the user's explicit choice for the first batch of variants (the
-classic keyboards), these default to "mostly flat" like the real hardware
-they reference -- most keys are one uniform color, with only the devices
-whose own hardware has a real accent (Commodore 64's blue-gray function
-keys and reddish-brown RETURN key) or an unavoidable UI need (the
-`stickyon`/caps-lock state, which has no on-key equivalent on any of these
-real keyboards but has to read as "locked" in a touchscreen theme) getting
-any color variation at all.
+v19 note: every variant here was already organically-shaped-and-motif'd in
+this pass (there was no earlier rounded-rect version of these 8 to
+preserve compatibility with) -- this whole file was rewritten alongside
+keycap_render.py's organic primitives, prompted by the user's explicit
+direction to take the whole "classic-hardware variant" project in this
+direction after seeing Animal Keys (TrashKittyQueen,
+p.trashkittyqueen.petkeys, downloaded from
+https://keyboard.futo.tech/themes and inspected directly -- see
+docs/VARIANTS.md for what its actual technique turned out to be).
 
-The Game Boy / NES / SNES / Game Boy Color batch follows the same
-principle -- match the real hardware -- which is why SNES is the one
-exception that opts INTO row-banding (`"row_banded": True` in its
-profile): the SNES controller's whole visual identity IS its four-color
-face-button scheme (Y green / X blue / A red / B yellow), so a flat
-lavender variant would fail to evoke "SNES" at all, whereas Game Boy (DMG),
-NES, and Game Boy Color are all genuinely monochrome hardware (a colored
-shell/case at most, buttons all one color) and stay flat like the
-keyboards did.
+Per the user's explicit choice for the first (keyboard) batch, color
+stays "mostly flat" like the real hardware -- most keys are one uniform
+color, with only the devices whose own hardware has a real accent
+(Commodore 64's blue-gray function keys and reddish-brown RETURN key) or
+an unavoidable UI need (the `stickyon`/caps-lock state, which has no
+on-key equivalent on any of these real keyboards but has to read as
+"locked" in a touchscreen theme) getting any color variation at all. SNES
+is the one exception that opts INTO row-banding, since its four-color
+face-button scheme IS its identity (see its profile below).
+
+8BitDo research (per the user's explicit request, confirmed via web
+search): 8BitDo's real "Retro Mechanical Keyboard" product line has
+exactly four color editions -- N (NES), Fami (Famicom), M, and C64
+(Commodore 64) -- confirming a real, currently-sold C64-themed mechanical
+keyboard exists and validating this repo's own Commodore 64 variant as
+matching a real product category, not just an invented idea. "M Edition"
+is a separate colorway from either of our Game Boy or SNES references
+(8BitDo's own naming, not Nintendo's), so it didn't inform any specific
+palette change here -- noted for completeness rather than acted on.
 
 Run from the repo root: `python3 scripts/generate_variants.py`.
 """
@@ -37,9 +49,10 @@ import os
 import shutil
 
 from keycap_render import (
-    KEY_SIZE, KEY_RADIUS, SPACE_SIZE, SPACE_RADIUS,
-    MARGIN_TOP, MARGIN_SIDE, MARGIN_BOTTOM, RIM_WIDTH,
-    render_key, vertical_gradient, scale, compute_slicing,
+    KEY_SIZE, SPACE_SIZE,
+    render_organic_key, vertical_gradient, scale, compute_slicing, scatter_motifs,
+    motif_switch_cross, motif_crt, motif_chip, motif_cursor,
+    motif_dpad, motif_button_pair, motif_diamond_cluster,
 )
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -72,14 +85,14 @@ HEAD_TEMPLATE = """\
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# {name} — a color variant of Groovy Code, replicating {reference_note},
-# set in FiraCode.
+# {name} — a color-and-shape variant of Groovy Code, replicating
+# {reference_note}, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 1
+version = 2
 description = "{description}"
 
 [options]
@@ -287,10 +300,10 @@ asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
 # Asset configs — one entry per image used above. {{key_slicing}}/
-# {{space_slicing}} are computed per profile from its own radius via
-# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
-# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
-# each variant now draws its own corner radius.
+# {{space_slicing}} are computed per profile from its own organic
+# radius_frac via keycap_render.compute_slicing() (see
+# docs/THEME-FORMAT.md "Computing slicing values") -- NOT Groovy Code's
+# own values, since each variant draws its own corner shape.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -520,7 +533,10 @@ def build_theme_txt(row_banded, **kwargs):
 # color difference at all) unless a profile overrides them -- only
 # Commodore 64 (real hardware accent keys) and the stickyon/caps-lock
 # state (no on-key equivalent on any of these real keyboards, but required
-# for a legible "locked" cue) get real variation.
+# for a legible "locked" cue) get real color variation. Each also gets its
+# own organic radius_frac/wobble/margin_frac/rim_frac (silhouette
+# character) and a motif glyph baked into stickyon + scattered on the
+# background (see scripts/keycap_render.py's motif_* functions).
 # ---------------------------------------------------------------------------
 
 KEYBOARD_PROFILES = [
@@ -529,14 +545,12 @@ KEYBOARD_PROFILES = [
         "name": "IBM Model M",
         "theme_id": "com.shelbee.ibmmodelm",
         "reference_note": "the IBM Model M's monochrome putty-beige keycaps",
-        "description": "Classic IBM Model M color variant: monochrome putty-beige keycaps in a warm gray well, no per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
-        # Chunky boxy PBT keycaps: sharp corners, a thick bezel (that
-        # buckling-spring housing is deep), tight-set keys, and a deeper,
-        # more matte dish than Groovy Code's own -- heavy and mechanical
-        # rather than glossy.
-        "radius": 14, "space_radius": 16,
-        "margin_top": 16, "margin_side": 16, "margin_bottom": 26,
-        "rim_width": 4, "gap": 1.05,
+        "description": "Classic IBM Model M variant: monochrome putty-beige keycaps in a warm gray well, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode.",
+        # Sharp, boxy, thick-bezeled -- heavy mechanical PBT caps, not
+        # glossy plastic. Low wobble: a precision-molded keycap, not a
+        # hand-thrown ceramic one.
+        "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
+        "gap": 1.05,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (140, 132, 109),
         "face_default": (232, 224, 196),
@@ -545,20 +559,19 @@ KEYBOARD_PROFILES = [
         "legend": (43, 40, 32),
         "bloom_stickyon_color": (255, 153, 0),
         "bloom_stickyon_alpha": 150,
+        "motif_fn": motif_switch_cross,
     },
     {
         "slug": "mac-plus",
         "name": "Macintosh Plus",
         "theme_id": "com.shelbee.macplus",
         "reference_note": "the Macintosh Plus's platinum keycaps",
-        "description": "Classic Macintosh Plus color variant: monochrome warm platinum-gray keycaps, no per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
+        "description": "Classic Macintosh Plus variant: monochrome warm platinum-gray keycaps, rounded and thin-bezeled like real low-profile Apple caps, with a small CRT-monitor motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a soft System-blue glow, a small nod to the classic Mac UI highlight color rather than any real on-key indicator. Set in FiraCode.",
         # Low-profile, rounded, minimal: a thin bezel (keys nearly fill
-        # the housing) and a nearly-flat face -- Groovy Code's dish
-        # gradient exists to fake keycap depth, but Mac Plus keys read as
-        # smooth and pillowy, not deeply sculpted.
-        "radius": 32, "space_radius": 34,
-        "margin_top": 7, "margin_side": 7, "margin_bottom": 12,
-        "rim_width": 2, "gap": 1.1,
+        # the housing) and a nearly-flat face -- smooth and pillowy, not
+        # deeply sculpted.
+        "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
+        "gap": 1.1,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (139, 134, 128),
         "face_default": (212, 208, 200),
@@ -567,20 +580,20 @@ KEYBOARD_PROFILES = [
         "legend": (42, 40, 35),
         "bloom_stickyon_color": (91, 127, 166),
         "bloom_stickyon_alpha": 130,
+        "motif_fn": motif_crt,
     },
     {
         "slug": "commodore-64",
         "name": "Commodore 64",
         "theme_id": "com.shelbee.commodore64",
         "reference_note": "the Commodore 64's beige keycaps with its blue-gray function row and reddish-brown RETURN key",
-        "description": "Classic Commodore 64 color variant: warm beige keycaps in a brown well, blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode.",
+        "description": "Classic Commodore 64 variant: warm beige keycaps in a brown well, chunky and moderately rounded like real sculpted home-computer caps, with a small IC-chip motif scattered on the background. Blue-gray function/system keys, a reddish-brown RETURN key, and a bright blue-screen glow on caps-lock. Set in FiraCode.",
         # Chunky sculpted home-computer keys -- moderate rounding, a
         # visible bezel, a fairly pronounced dish. Kept close to a
         # generic "retro computer key" baseline since this is the
         # reference point the other geometries deliberately depart from.
-        "radius": 20, "space_radius": 24,
-        "margin_top": 12, "margin_side": 12, "margin_bottom": 22,
-        "rim_width": 3, "gap": 1.15,
+        "radius_frac": 0.26, "wobble": 0.10, "margin_frac": 0.09, "rim_frac": 0.020,
+        "gap": 1.15,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (110, 87, 56),
         "face_default": (214, 190, 148),
@@ -591,20 +604,20 @@ KEYBOARD_PROFILES = [
         "legend": (32, 22, 13),
         "bloom_stickyon_color": (65, 105, 225),
         "bloom_stickyon_alpha": 160,
+        "motif_fn": motif_chip,
     },
     {
         "slug": "amber-terminal",
         "name": "Amber Terminal",
         "theme_id": "com.shelbee.amberterminal",
         "reference_note": "a VT100-style amber phosphor terminal's monochrome black keys with amber trim",
-        "description": "Amber phosphor terminal color variant: uniform near-black keycaps, no per-row or per-role face color at all -- the only color is a thin amber rim and amber legends on every key, with the enter key and caps-lock picking up a soft amber glow like a lit terminal cursor block. Set in FiraCode.",
+        "description": "Amber phosphor terminal variant: uniform near-black keycaps, blocky and barely rounded like a flat function-key slab, with a small cursor-prompt motif scattered on the background and marking caps-lock. No per-row or per-role face color at all -- the only color is a thin amber rim and amber legends on every key, with the enter key and caps-lock picking up a soft amber glow like a lit terminal cursor block. Set in FiraCode.",
         # Blocky and nearly flat -- a terminal function key is a slab
         # behind a wireframe outline, not a sculpted physical cap. Sharp
         # corners, a thin bright rim (the only real detailing), a wider
         # gap for a grid/schematic feel instead of tightly-packed keys.
-        "radius": 6, "space_radius": 8,
-        "margin_top": 10, "margin_side": 10, "margin_bottom": 16,
-        "rim_width": 2, "gap": 1.3,
+        "radius_frac": 0.10, "wobble": 0.04, "margin_frac": 0.05, "rim_frac": 0.014,
+        "gap": 1.3,
         "face_top_blend": 0.04, "face_bottom_scale": 0.94,
         "well": (10, 10, 10),
         "face_default": (22, 22, 22),
@@ -614,6 +627,7 @@ KEYBOARD_PROFILES = [
         "bloom_action_alpha": 90,
         "bloom_stickyon_color": (255, 176, 0),
         "bloom_stickyon_alpha": 210,
+        "motif_fn": motif_cursor,
     },
 ]
 
@@ -635,13 +649,12 @@ CONSOLE_PROFILES = [
         "name": "Game Boy",
         "theme_id": "com.shelbee.gameboydmg",
         "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons",
-        "description": "Classic Game Boy (DMG) color variant: dark gray buttons in a putty-gray shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
+        "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in FiraCode.",
         # Chunky molded plastic buttons sitting in a thick shell bezel --
         # the DMG's brick-like housing is the most visible "well" of any
         # variant here.
-        "radius": 22, "space_radius": 24,
-        "margin_top": 15, "margin_side": 15, "margin_bottom": 24,
-        "rim_width": 3, "gap": 1.2,
+        "radius_frac": 0.30, "wobble": 0.09, "margin_frac": 0.14, "rim_frac": 0.020,
+        "gap": 1.2,
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
         "face_default": (58, 58, 56),
@@ -650,19 +663,18 @@ CONSOLE_PROFILES = [
         "legend": (230, 224, 200),
         "bloom_stickyon_color": (210, 30, 30),
         "bloom_stickyon_alpha": 170,
+        "motif_fn": motif_dpad,
     },
     {
         "slug": "nes",
         "name": "NES",
         "theme_id": "com.shelbee.nes",
         "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons",
-        "description": "Classic NES color variant: near-black D-pad and buttons in a light gray shell, no per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
+        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode.",
         # The NES controller's buttons are famously rectangular, not
-        # round -- minimal corner rounding here (the smallest radius of
-        # the three consoles besides the terminal), a moderate bezel.
-        "radius": 8, "space_radius": 10,
-        "margin_top": 13, "margin_side": 13, "margin_bottom": 22,
-        "rim_width": 3, "gap": 1.15,
+        # round -- minimal corner rounding here, a moderate bezel.
+        "radius_frac": 0.13, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
+        "gap": 1.15,
         "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
         "face_default": (43, 43, 43),
@@ -672,21 +684,21 @@ CONSOLE_PROFILES = [
         "bloom_action_alpha": 80,
         "bloom_stickyon_color": (224, 32, 32),
         "bloom_stickyon_alpha": 180,
+        "motif_fn": motif_button_pair,
     },
     {
         "slug": "snes",
         "name": "SNES",
         "theme_id": "com.shelbee.snes",
         "reference_note": "the Super Nintendo controller's lavender-gray body and its iconic Y/X/A/B face-button colors",
-        "description": "Classic SNES color variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key, all set in a lavender-gray body matching the console's own shoulder-button color. Set in FiraCode.",
+        "description": "Classic SNES variant -- the one exception to this variant family's usual monochrome rule, because the SNES controller's whole identity IS its four-color face buttons: green (Y) across the top row, blue (X) across the home row, yellow (B) across the bottom row, and red (A) on the action/enter key. Rounded and glossy like the real concave buttons, in a lavender-gray body, with a small four-dot diamond motif (in the same Y/X/A/B colors) scattered on the background. Set in FiraCode.",
         "row_banded": True,
         # Rounded, glossy, concave buttons sitting almost flush in the
         # housing -- the roundest radius and thinnest bezel of any
         # variant, plus a brighter top-blend for a glossier sheen than
         # the plastic-matte look everything else here goes for.
-        "radius": 36, "space_radius": 38,
-        "margin_top": 8, "margin_side": 8, "margin_bottom": 14,
-        "rim_width": 2, "gap": 1.05,
+        "radius_frac": 0.44, "wobble": 0.09, "margin_frac": 0.05, "rim_frac": 0.012,
+        "gap": 1.05,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (87, 83, 107),
         "face_default": (137, 131, 160),
@@ -698,19 +710,20 @@ CONSOLE_PROFILES = [
         "row_faces": {0: (0, 149, 76), 1: (0, 116, 191), 2: (245, 168, 0)},
         "bloom_stickyon_color": (230, 0, 18),
         "bloom_stickyon_alpha": 140,
+        "motif_fn": motif_diamond_cluster,
+        "motif_kwargs": {"colors": [(0, 149, 76), (0, 116, 191), (245, 168, 0), (230, 0, 18)]},
     },
     {
         "slug": "gameboy-color",
         "name": "Game Boy Color",
         "theme_id": "com.shelbee.gameboycolor",
         "reference_note": "the Game Boy Color's grape-purple shell and dark violet buttons",
-        "description": "Classic Game Boy Color color variant: dark violet-gray buttons in a deep grape-purple shell, no per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
+        "description": "Classic Game Boy Color variant: dark violet-gray buttons in a deep grape-purple shell, more rounded and softer-bezeled than the original DMG (matching its real, more ergonomic redesign), with a small D-pad-cross motif scattered on the background. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own green power-LED glow (versus the original Game Boy's red one). Set in FiraCode.",
         # More rounded and curved than the boxy original DMG (the GBC's
         # shell is a noticeably softer, more ergonomic redesign) but not
         # as thick-bezeled -- a middle ground between DMG and SNES.
-        "radius": 28, "space_radius": 30,
-        "margin_top": 13, "margin_side": 13, "margin_bottom": 22,
-        "rim_width": 3, "gap": 1.15,
+        "radius_frac": 0.34, "wobble": 0.10, "margin_frac": 0.13, "rim_frac": 0.020,
+        "gap": 1.15,
         "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
         "face_default": (58, 42, 74),
@@ -719,16 +732,27 @@ CONSOLE_PROFILES = [
         "legend": (232, 221, 240),
         "bloom_stickyon_color": (40, 200, 90),
         "bloom_stickyon_alpha": 170,
+        "motif_fn": motif_dpad,
     },
 ]
 
 PROFILES = KEYBOARD_PROFILES + CONSOLE_PROFILES
 
 
-def build_background(well):
+def build_background(well, motif_fn, motif_color, motif_kwargs=None, seed=1):
+    """A soft gradient plate scattered with the theme's own motif glyph,
+    low-alpha -- the same role Animal Keys' paw-print wood background
+    plays for itself."""
     top = tuple(min(255, c + 25) for c in well)
     bottom = scale(well, 0.6)
-    return vertical_gradient(BACKGROUND_SIZE, top, bottom)
+    bg = vertical_gradient(BACKGROUND_SIZE, top, bottom).convert("RGBA")
+    if motif_fn is not None:
+        layer = scatter_motifs(
+            BACKGROUND_SIZE, motif_fn, motif_color, count=22, seed=seed,
+            alpha=40, scale_frac=(0.018, 0.032), **(motif_kwargs or {}),
+        )
+        bg.alpha_composite(layer)
+    return bg.convert("RGB")
 
 
 def generate_variant(profile):
@@ -752,19 +776,18 @@ def generate_variant(profile):
     stickyon_bloom_color = profile.get("bloom_stickyon_color")
     stickyon_bloom_alpha = profile.get("bloom_stickyon_alpha", 0)
 
-    # Geometry/material knobs -- this is what makes each variant an actual
-    # distinct theme (shape, bezel thickness, gloss/dish depth) rather than
-    # Groovy Code's own silhouette with a new palette painted on. Every
-    # default below matches Groovy Code v17's own hardcoded values, so a
-    # profile that sets none of these renders exactly like the old
-    # one-size-fits-all look did.
-    radius = profile.get("radius", KEY_RADIUS)
-    space_radius = profile.get("space_radius", SPACE_RADIUS)
+    motif_fn = profile.get("motif_fn")
+    motif_kwargs = profile.get("motif_kwargs")
+
+    # Geometry/material knobs -- shape, bezel thickness, rim weight, and
+    # gradient contrast are what make each variant an actual distinct
+    # theme (an organic silhouette + material finish of its own) rather
+    # than Groovy Code's shape with new paint.
+    radius_frac = profile.get("radius_frac", 0.30)
+    wobble = profile.get("wobble", 0.09)
     geo = dict(
-        margin_top=profile.get("margin_top", MARGIN_TOP),
-        margin_side=profile.get("margin_side", MARGIN_SIDE),
-        margin_bottom=profile.get("margin_bottom", MARGIN_BOTTOM),
-        rim_width=profile.get("rim_width", RIM_WIDTH),
+        margin_frac=profile.get("margin_frac", 0.09),
+        rim_frac=profile.get("rim_frac", 0.018),
         well_top_blend=profile.get("well_top_blend", 0.10),
         well_bottom_scale=profile.get("well_bottom_scale", 0.72),
         face_top_blend=profile.get("face_top_blend", 0.14),
@@ -772,42 +795,43 @@ def generate_variant(profile):
     )
     gap = profile.get("gap", 1.15)
 
-    def rk(size, r, face, **kw):
-        return render_key(size, r, face, well, rim, **geo, **kw)
+    def rk(size, seed, face, **kw):
+        return render_organic_key(size, seed, face, well, rim, radius_frac=radius_frac, wobble=wobble, **geo, **kw)
 
     def save(name, img):
         img.save(os.path.join(out_dir, name))
 
-    save("Button-default.png", rk(KEY_SIZE, radius, face_default))
-    save("Button-default-press.png", rk(KEY_SIZE, radius, face_default, pressed=True))
+    save("Button-default.png", rk(KEY_SIZE, 10, face_default))
+    save("Button-default-press.png", rk(KEY_SIZE, 1010, face_default, pressed=True))
 
-    save("Button-function.png", rk(KEY_SIZE, radius, face_function))
-    save("Button-function-pressed.png", rk(KEY_SIZE, radius, face_function, pressed=True))
+    save("Button-function.png", rk(KEY_SIZE, 40, face_function))
+    save("Button-function-pressed.png", rk(KEY_SIZE, 1040, face_function, pressed=True))
 
     save("Button-action.png", rk(
-        KEY_SIZE, radius, face_action,
-        bloom_alpha=action_bloom_alpha, bloom_color=action_bloom_color, bloom_pad=7,
+        KEY_SIZE, 60, face_action,
+        bloom_alpha=action_bloom_alpha, bloom_color=action_bloom_color, bloom_pad_frac=0.04,
     ))
-    save("Button-action-press.png", rk(KEY_SIZE, radius, face_action, pressed=True))
+    save("Button-action-press.png", rk(KEY_SIZE, 1060, face_action, pressed=True))
 
-    save("Button-space.png", rk(SPACE_SIZE, space_radius, face_space, stabilizers=True))
-    save("Button-space-press.png", rk(SPACE_SIZE, space_radius, face_space, pressed=True, stabilizers=True))
+    save("Button-space.png", rk(SPACE_SIZE, 70, face_space, stabilizers=True))
+    save("Button-space-press.png", rk(SPACE_SIZE, 1070, face_space, pressed=True, stabilizers=True))
 
     save("Button-stickyon.png", rk(
-        KEY_SIZE, radius, face_stickyon,
-        bloom_alpha=stickyon_bloom_alpha, bloom_color=stickyon_bloom_color, bloom_pad=9,
+        KEY_SIZE, 80, face_stickyon,
+        bloom_alpha=stickyon_bloom_alpha, bloom_color=stickyon_bloom_color, bloom_pad_frac=0.05,
+        motif_fn=motif_fn, motif_color=rim, motif_alpha=140, motif_kwargs=motif_kwargs,
     ))
-    save("Button-stickyon-press.png", rk(KEY_SIZE, radius, face_stickyon, pressed=True))
+    save("Button-stickyon-press.png", rk(KEY_SIZE, 1080, face_stickyon, pressed=True))
 
     row_legends = {}
     if row_banded:
         for row_idx, row_face in row_faces.items():
-            save(f"Button-row{row_idx}.png", rk(KEY_SIZE, radius, row_face))
-            save(f"Button-row{row_idx}-press.png", rk(KEY_SIZE, radius, row_face, pressed=True))
+            save(f"Button-row{row_idx}.png", rk(KEY_SIZE, 100 + row_idx, row_face))
+            save(f"Button-row{row_idx}-press.png", rk(KEY_SIZE, 1100 + row_idx, row_face, pressed=True))
             row_legends[f"row{row_idx}_legend_hex"] = hexs(profile.get(f"row{row_idx}_legend", legend))
 
     background_file = f"{slug}-background.png"
-    build_background(well).save(os.path.join(out_dir, background_file))
+    build_background(well, motif_fn, rim, motif_kwargs, seed=5).save(os.path.join(out_dir, background_file))
 
     for fname in SHARED_FILES:
         shutil.copy(os.path.join(REPO_ROOT, fname), os.path.join(out_dir, fname))
@@ -815,9 +839,9 @@ def generate_variant(profile):
     function_legend = profile.get("function_legend", legend)
     action_legend = profile.get("action_legend", legend)
 
-    key_slicing = compute_slicing(radius, KEY_SIZE)
-    space_slicing = compute_slicing(space_radius, SPACE_SIZE)
-    roundedness = round(min(0.95, max(0.15, radius / 40)), 2)
+    key_slicing = compute_slicing(radius_frac, KEY_SIZE)
+    space_slicing = compute_slicing(radius_frac, SPACE_SIZE)
+    roundedness = round(min(0.95, max(0.15, radius_frac * 2.1)), 2)
 
     theme_txt = build_theme_txt(
         row_banded,

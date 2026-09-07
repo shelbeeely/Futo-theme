@@ -1,20 +1,20 @@
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# IBM Model M — a color variant of Groovy Code, replicating the IBM Model M's monochrome putty-beige keycaps,
-# set in FiraCode.
+# IBM Model M — a color-and-shape variant of Groovy Code, replicating
+# the IBM Model M's monochrome putty-beige keycaps, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "IBM Model M"
 author = "Shelbee"
 id = "com.shelbee.ibmmodelm"
-version = 1
-description = "Classic IBM Model M color variant: monochrome putty-beige keycaps in a warm gray well, no per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
+version = 2
+description = "Classic IBM Model M variant: monochrome putty-beige keycaps in a warm gray well, sharp-cornered and thick-bezeled like real buckling-spring PBT caps, with a small switch-stem motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real keyboard has none) -- only caps-lock brightens and picks up a small amber LED-style glow. Set in FiraCode."
 
 [options]
 auto_borders = true
 center_hints = false
-roundedness = 0.35
+roundedness = 0.34
 scale_text = 1.0
 scale_hints = 0.85
 weight_text = 500
@@ -185,10 +185,10 @@ asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
 # Asset configs — one entry per image used above. {key_slicing}/
-# {space_slicing} are computed per profile from its own radius via
-# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
-# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
-# each variant now draws its own corner radius.
+# {space_slicing} are computed per profile from its own organic
+# radius_frac via keycap_render.compute_slicing() (see
+# docs/THEME-FORMAT.md "Computing slicing values") -- NOT Groovy Code's
+# own values, since each variant draws its own corner shape.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -214,7 +214,7 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -223,7 +223,7 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -232,7 +232,7 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -241,7 +241,7 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -250,7 +250,7 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.0297, 0.1187, 0.9703, 0.8812]
+slicing = [0.0447, 0.1788, 0.9553, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -259,7 +259,7 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.0297, 0.1187, 0.9703, 0.8812]
+slicing = [0.0447, 0.1788, 0.9553, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -268,7 +268,7 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -277,7 +277,7 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -286,7 +286,7 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 
@@ -295,7 +295,7 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2b2820"
 padding = [0, 0, 0, 0]
-slicing = [0.1062, 0.1062, 0.8938, 0.8938]
+slicing = [0.1788, 0.1788, 0.8213, 0.8213]
 gap = [1.05, 1.05, 1.05, 1.05]
 target_density = 640
 

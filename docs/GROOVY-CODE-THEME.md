@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v18**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v19**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -21,15 +21,22 @@ choices specific to this theme.
 - **Uniform orange face on every key, v18** — every non-action, non-
   stickyon key (every number, every letter, shift, backspace, ?123,
   comma, emoji, spacebar, period) renders in the exact same orange
-  (`#e17a25`), matching the reference SVG literally. v17 had instead
-  brought back row-banding (orange-red/orange/brightened-rust) and a gold
+  (`#e17a25`). v17 had instead brought back row-banding and a gold
   "system key" face, both of which turned out not to exist anywhere in
-  the actual reference — see the v18 entry below for how this was caught
-  and fixed. There is no more `normal row 0`/`row 1`/`row 2` matchrule
-  distinction at all; a "normal" key and a "functional" key now render
-  the same color (they're still separate assets/matchrules for
-  architectural reasons — spacebar needs its own aspect ratio regardless
-  — just no longer separate colors).
+  the SVG reference that prompted v17 — see the v18 entry below for how
+  this was caught and fixed. There is no more `normal row 0`/`row 1`/
+  `row 2` matchrule distinction at all; a "normal" key and a "functional"
+  key now render the same color (they're still separate assets/
+  matchrules for architectural reasons — spacebar needs its own aspect
+  ratio regardless — just no longer separate colors).
+- **Organic "cookie"-shaped keys, v19** — every key's silhouette is now an
+  irregular, slightly hand-drawn-looking rounded shape (flat stretchy
+  edges, organically wobbled corners) instead of a clean rounded
+  rectangle, plus a small brown sunburst motif marking `stickyon` and
+  scattered across the background. This is a deliberate move *away* from
+  the v18 SVG reference's literal clean vector rounded rects — see the
+  v19 entry below for the direction change and why that's a considered
+  trade, not a contradiction of v18's own fix.
 - **Brightest gold face + a soft bloom** (`stickyon` asset) = caps-lock
   engaged — brighter than every other key's face and the only key with a
   colored bloom bleeding past its rim, deliberately, so the locked state is
@@ -182,28 +189,92 @@ choices specific to this theme.
   Numpad, all now uniformly orange as the reference shows. Not yet
   confirmed on a real device.
 
+- **v19 — organic "cookie"-shaped keys, replacing the v12-v18
+  rounded-rectangle structure entirely, across every theme in this repo
+  including Groovy Code itself.** Prompted by the user pointing at a real
+  published FUTO theme, "Animal Keys" by TrashKittyQueen
+  (`p.trashkittyqueen.petkeys`) as their main inspiration and asking for
+  "images like it." Downloaded the theme directly from
+  https://keyboard.futo.tech/themes and inspected its actual assets
+  rather than guessing from the name: its key art is NOT photographic
+  animal imagery -- it's irregular, organic, "cookie"-shaped key
+  silhouettes (not clean rounded rects), a handful of accent keys with a
+  paw-print motif baked into the art, and a wood-plank background with
+  paw prints scattered across it, low-alpha. That's the actual technique
+  reproduced here (procedurally, matching this repo's whole generative
+  approach, not by copying Animal Keys' own art or colors).
+
+  Asked directly how far to take this, given Groovy Code had *just* been
+  fixed in v18 specifically to match its own reference SVG's clean
+  rounded rects: all 8 hardware variants only, or all 9 themes including
+  Groovy Code. **The user chose all 9.** So this is a deliberate,
+  explicitly-confirmed reversal of v18's shape fidelity, not an
+  oversight -- Groovy Code's key SILHOUETTE now departs from that SVG's
+  literal vector rounded-rect shape, while its COLOR identity (uniform
+  orange, rust enter key, gold caps-lock, all fixed correctly in v18)
+  stays exactly as it was and remains the thing "matching the reference"
+  actually means for this theme going forward.
+
+  Implementation: `scripts/keycap_render.py` gained `organic_mask()`
+  (numpy, a rounded-rectangle signed-distance field whose effective
+  corner radius is perturbed per-angle by a few random sine harmonics --
+  flat edges get one perturbation each since the angle is constant along
+  them, corners get the fully organic wobble) and `render_organic_key()`
+  (the same well+face+rim structure as before, but every layer is a
+  nested self-similar organic mask at shrinking radius instead of a
+  rounded rect). **First attempt used a stretched ellipse instead** and
+  produced pointy ends on the wide spacebar canvas (an ellipse's
+  curvature scales with aspect ratio) -- caught by checking directly
+  against Animal Keys' own `Button-space-dark.png`, which turned out to
+  be a rounded-rect body with irregular corners and flat straight edges,
+  not a full organic blob stretched end to end. That's exactly what a
+  9-patch wants anyway (straight stretchy edges, detail only in the
+  corners), so the SDF-based rewrite fixed both the visual bug and
+  matched the real reference more closely at the same time. Slicing
+  values are no longer Groovy Code's old fixed 0.18/0.052/0.206 (those
+  were specific to a plain rounded rect at radius 26) -- every asset's
+  slicing is now computed via `compute_slicing(radius_frac, size)` from
+  its own organic `radius_frac`, landing at `[0.3187, 0.3187, 0.6813,
+  0.6813]` for Groovy Code's own keys, which lines up closely with
+  Animal Keys' own empirically-tuned `[0.3, 0.3, 0.7, 0.7]` -- a good
+  sign the computed value is in the right range, not just internally
+  consistent.
+
+  A small brown sunburst motif (`motif_sunburst` -- a disc with radiating
+  rays, this theme's own "70's groovy" glyph, the same role Animal Keys'
+  paw print plays for itself) is baked into `stickyon`'s face and
+  scattered low-alpha across a regenerated `GroovyCode-background.png`
+  (previously untouched, plain dark texture, through all of v10-v18 --
+  see the last "Open items" entry this closes out). Confirmed via
+  `preview-theme` on QWERTY and Symbols -- organic shapes read cleanly at
+  every role, hint labels aren't crowded, the sunburst motif is visible
+  but subtle through the gaps between keys. Not yet confirmed on a real
+  device.
+
 ## Build workflow
 
-Assets are generated with Python + Pillow (PIL), not hand-authored, via
-`scripts/generate_assets.py` (`pip install pillow`) — run
+Assets are generated with Python + Pillow (PIL) + numpy (back in use as
+of v19, for the organic-mask math -- v17/v18 had dropped it after
+removing the v14-v16 photo-realism machinery, but the organic silhouette
+itself needs vectorized per-angle math), not hand-authored, via
+`scripts/generate_assets.py` (`pip install pillow numpy`) — run
 `python3 scripts/generate_assets.py` from the repo root to regenerate all
-10 non-icon `Button-*.png` border assets in place (`default`, `function`,
-`space`, `action`, `stickyon`, each with a `-press`/`-pressed` pair — down
-from 16 as of v18, since row-banding's six row0/1/2 assets were removed).
-Palette and geometry
-constants live at the top of the script; the geometry constants
-(radius/outline/canvas size) must match `theme.txt`'s `slicing` values (see
-`docs/THEME-FORMAT.md`'s "Computing slicing values") if you change them.
-As of v17 the script no longer needs numpy — the v14–v16 brushed-texture/
-vignette/specular/edge-AO machinery was dropped along with the dark
-charcoal look it served (see the v17 changelog entry below); rendering is
-back to plain Pillow gradients and rounded-rect compositing. The actual
-`render_key` function now lives in `scripts/keycap_render.py`, shared with
-the classic-keyboard variant themes in `variants/` (see
-`docs/VARIANTS.md`) — this script just supplies Groovy Code's own palette
-and per-asset role mapping. It deliberately never touches `Icon-*.png`,
-`Button-morekey.png`, or `Button-morekeysbox.png` — see the icon-regression
-bug below for why that boundary is load-bearing, not incidental.
+10 non-icon `Button-*.png` border assets plus `GroovyCode-background.png`
+in place (`default`, `function`, `space`, `action`, `stickyon`, each with
+a `-press`/`-pressed` pair — down from 16 pre-v18, since row-banding's
+six row0/1/2 assets were removed and never came back). Palette constants
+live at the top of the script; geometry (`radius_frac`/`wobble`/
+`margin_frac`) is passed to `render_organic_key` per call and must stay
+in sync with `theme.txt`'s `slicing` values (see
+`docs/THEME-FORMAT.md`'s "Computing slicing values" and
+`scripts/keycap_render.py`'s `compute_slicing`) if you change it. The
+actual `render_organic_key`/`organic_mask`/motif functions live in
+`scripts/keycap_render.py`, shared with the classic-hardware variant
+themes in `variants/` (see `docs/VARIANTS.md`) — this script just
+supplies Groovy Code's own palette, motif choice, and per-asset role
+mapping. It deliberately never touches `Icon-*.png`, `Button-morekey.png`,
+or `Button-morekeysbox.png` — see the icon-regression bug below for why
+that boundary is load-bearing, not incidental.
 
 Icons: `Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`
 are straight rasterizations of FUTO's own SVGs — if you regenerate, re-clone
@@ -313,14 +384,23 @@ eventually happening.**
   app. They also weren't restyled for the current look (still the old
   gold-ring style from v11) since they can't be previewed to check the
   result — low priority, since they're only visible during a long-press.
-- v11 through v18 have all been checked with the `preview-theme` skill's
+- v11 through v19 have all been checked with the `preview-theme` skill's
   real render but **none of them have been screenshotted/confirmed on a
   real device yet** — that's the immediate next verification step. Real
   screen color/gamma and actual touch/pressed-state interaction still
   can't be checked any other way.
-- The background (`GroovyCode-background.png`) is still the original plain
-  dark texture, untouched through v18 — a first attempt at a brushed-plate
-  background (pure Pillow, no numpy) had a near-zero-variance bug and was
-  abandoned when the v14 mockup redirected effort toward the keycaps
-  instead. Revisit only if the plain background still looks flat next to
-  the now much more colorful keycaps once seen on a real device.
+- The background (`GroovyCode-background.png`) was regenerated in v19 —
+  no longer the original plain dark texture. It's now a brown gradient
+  plate with the sunburst motif scattered across it at low alpha (see the
+  v19 changelog entry above). Not yet confirmed on a real device — the
+  motif density/alpha (`count=20, alpha=40`) was tuned by eye against the
+  `preview-theme` render only; revisit if it reads as too busy or too
+  faint on real screen gamma.
+- The sunburst motif on `Button-stickyon.png` is the direct analog of
+  Animal Keys' paw-print technique (a small glyph baked into one accent
+  key's face, plus scattered across the background) — confirmed as the
+  intended read when the user asked about it directly after v19 was
+  built. Only `stickyon` carries the motif on a key face (not `action`),
+  to avoid competing with the enter-key icon glyph; same restraint applied
+  to all 8 `variants/` themes (motif baked into `stickyon` only, never
+  `action`).

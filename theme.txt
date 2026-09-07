@@ -7,8 +7,8 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 18
-description = "Warm-toned 70's-inspired theme styled as a real mechanical keyboard: solid colorful keycaps, each a brown outer well with a bright orange inset face and a thin gold rim, uniform across every key, with a rust-red enter key and a bright gold caps-lock — set in FiraCode. Font by Nikita Prokopov (SIL Open Font License v1.1)."
+version = 19
+description = "Warm-toned 70's-inspired theme with organic, hand-drawn-looking keycaps: a brown outer well, a bright orange inset face, and a thin gold rim on every key, uniform in color, with a rust-red enter key and a bright gold caps-lock marked by a small sunburst. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
 auto_borders = true
@@ -194,11 +194,13 @@ asset = "Icon-arrow-right.png"
 # Asset configs — one entry per image used above
 # -------------------------------------------------------------------
 
-# Slicing values below are computed, not eyeballed: for a 160x160 key
-# with corner radius 26 and a 3px outline, the safe (non-curved) interior
-# starts at radius+outline = 29px -> 29/160 = 0.18. The spacebar is
-# 640x160 with radius 30, so its interior starts at 33px -> 33/640 = 0.052
-# horizontally and 33/160 = 0.206 vertically.
+# Slicing values below are computed, not eyeballed, via
+# scripts/keycap_render.py's compute_slicing(radius_frac, size): for a
+# 160x160 key with the organic-shape radius_frac=0.30 and a 3px outline,
+# the safe interior starts at 0.30*160+3=51px -> 51/160 = 0.3187. The
+# spacebar is 640x160 at the same radius_frac (measured against its own
+# shorter dimension, 160), so its interior starts at 51px -> 51/640 =
+# 0.0797 horizontally and the same 0.3187 vertically.
 
 [[asset.border]]
 name = "Button-morekeysbox.png"
@@ -223,7 +225,7 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -232,7 +234,7 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -241,7 +243,7 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -250,7 +252,7 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -259,7 +261,7 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
+slicing = [0.0797, 0.3187, 0.9203, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -268,7 +270,7 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#422118"
 padding = [0, 0, 0, 0]
-slicing = [0.052, 0.206, 0.948, 0.794]
+slicing = [0.0797, 0.3187, 0.9203, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -277,7 +279,7 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -286,7 +288,7 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -295,7 +297,7 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -304,7 +306,7 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#2a1508"
 padding = [0, 0, 0, 0]
-slicing = [0.18, 0.18, 0.82, 0.82]
+slicing = [0.3187, 0.3187, 0.6813, 0.6813]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 

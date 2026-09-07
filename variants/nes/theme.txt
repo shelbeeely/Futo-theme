@@ -1,20 +1,20 @@
 # -------------------------------------------------------------------
 #                  FUTO Keyboard Theme Configuration
 #                        Format version: 1.0
-# NES — a color variant of Groovy Code, replicating the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons,
-# set in FiraCode.
+# NES — a color-and-shape variant of Groovy Code, replicating
+# the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons, set in FiraCode.
 # -------------------------------------------------------------------
 
 name = "NES"
 author = "Shelbee"
 id = "com.shelbee.nes"
-version = 1
-description = "Classic NES color variant: near-black D-pad and buttons in a light gray shell, no per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode."
+version = 2
+description = "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in FiraCode."
 
 [options]
 auto_borders = true
 center_hints = false
-roundedness = 0.2
+roundedness = 0.27
 scale_text = 1.0
 scale_hints = 0.85
 weight_text = 500
@@ -185,10 +185,10 @@ asset = "Icon-arrow-right.png"
 
 # -------------------------------------------------------------------
 # Asset configs — one entry per image used above. {key_slicing}/
-# {space_slicing} are computed per profile from its own radius via
-# keycap_render.compute_slicing() (see docs/THEME-FORMAT.md "Computing
-# slicing values") -- NOT Groovy Code's fixed 0.18/0.052/0.206, since
-# each variant now draws its own corner radius.
+# {space_slicing} are computed per profile from its own organic
+# radius_frac via keycap_render.compute_slicing() (see
+# docs/THEME-FORMAT.md "Computing slicing values") -- NOT Groovy Code's
+# own values, since each variant draws its own corner shape.
 # -------------------------------------------------------------------
 
 [[asset.border]]
@@ -214,7 +214,7 @@ name = "Button-default.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -223,7 +223,7 @@ name = "Button-default-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -232,7 +232,7 @@ name = "Button-function.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -241,7 +241,7 @@ name = "Button-function-pressed.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -250,7 +250,7 @@ name = "Button-space.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0203, 0.0813, 0.9797, 0.9187]
+slicing = [0.0372, 0.1487, 0.9628, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -259,7 +259,7 @@ name = "Button-space-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0203, 0.0813, 0.9797, 0.9187]
+slicing = [0.0372, 0.1487, 0.9628, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -268,7 +268,7 @@ name = "Button-action.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -277,7 +277,7 @@ name = "Button-action-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -286,7 +286,7 @@ name = "Button-stickyon.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 
@@ -295,7 +295,7 @@ name = "Button-stickyon-press.png"
 background_tint = "#ffffff"
 foreground_tint = "#e0e0da"
 padding = [0, 0, 0, 0]
-slicing = [0.0688, 0.0688, 0.9313, 0.9313]
+slicing = [0.1487, 0.1487, 0.8513, 0.8513]
 gap = [1.15, 1.15, 1.15, 1.15]
 target_density = 640
 

@@ -22,26 +22,87 @@ packages under `variants/<slug>/`, each with its own `id`/`name`/`theme.txt`
 — the user imports whichever one they want in FUTO Keyboard's theme picker,
 same as Groovy Code itself.
 
+## v19: organic shapes + motifs, inspired by "Animal Keys"
+
+Every variant here (and Groovy Code's own root theme) was rebuilt in v19
+around a technique borrowed from a real published FUTO theme, **Animal
+Keys** by TrashKittyQueen (`p.trashkittyqueen.petkeys`,
+https://keyboard.futo.tech/themes) — downloaded and inspected directly
+rather than guessed at from its name. Its actual technique turned out to be:
+
+- **Irregular, organic ("cookie"-shaped) key silhouettes** — not clean
+  rounded rectangles. Each key's corner radius is perturbed per-angle by a
+  few sine harmonics, so the outline reads as hand-cut rather than
+  vector-precise.
+- **A small motif glyph baked into one or two accent keys' faces** (its
+  own paw-print) plus **the same motif scattered across the background**
+  at low alpha — the way a theme signs itself without needing photographic
+  art.
+
+The user's explicit direction, after seeing this, was to apply it to *all
+nine* themes in this repo (Groovy Code included, even though Groovy Code
+had just been fixed in v18 to match a different, clean-rounded-rect
+reference SVG) — not just the 8 hardware variants. Groovy Code's key
+**silhouette** therefore moved away from that SVG's literal shape in v19;
+its **color identity** (uniform orange, rust enter key, gold caps-lock) is
+what still "matches the reference," unchanged. See
+`docs/GROOVY-CODE-THEME.md`'s v19 changelog entry for the full reasoning.
+
+Each of the 8 variants below got its own motif, playing the same role
+Animal Keys' paw print plays for itself — baked into `Button-stickyon.png`
+only (never `action`, to avoid competing with the enter-key icon glyph)
+and scattered across that variant's background.
+
+### 8BitDo research
+
+The user also asked to ground the console variants against 8BitDo's real
+retro-keyboard line rather than console hardware alone. Confirmed via web
+search: 8BitDo's actual **"Retro Mechanical Keyboard"** product has exactly
+four color editions — **N** (NES), **Fami** (Famicom), **M**, and **C64**
+(Commodore 64) — which validates this repo's existing Commodore 64 variant
+as matching a real, currently-sold product category, not just an invented
+idea. 8BitDo's "M Edition" colorway is distinct from either of this repo's
+Game Boy or SNES references (it's 8BitDo's own naming, not Nintendo's), so
+it didn't inform any specific palette change here — noted for completeness
+about what was and wasn't acted on, not as a claim that every variant traces
+to an 8BitDo product.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
-Every variant reuses the same underlying structure -- an outer well body,
-a bright inset face, a rim stroke at the boundary -- but, as of this
-round, that's *all* that's shared: colors, corner radius, bezel thickness,
-rim weight, key spacing, and gradient contrast are all per-variant. The
-first pass at these eight variants only varied color, which made them
-Groovy Code's own shape with new paint rather than unique themes -- the
-user asked directly for each to be visually distinct, not just
-recolored, so a geometry pass followed the color pass (see "Geometry"
-below). The rendering code that makes both possible lives in
-`scripts/keycap_render.py` (`render_key`, extracted from
-`scripts/generate_assets.py` so it could be reused here without
-duplicating the function per variant) -- every geometry/material
-parameter defaults to Groovy Code v17's own original hardcoded values, so
-a profile that sets none of them renders exactly like the old
-one-size-fits-all look did; Groovy Code's own output was verified
-byte-identical after both the color-sharing and geometry-sharing
-refactors. `scripts/generate_variants.py` defines each variant as a small
-profile dict (well/face/rim/legend colors, optional bloom, plus the
+Every variant reuses the same underlying structure — an outer well body, an
+inset face with an organic silhouette, a rim stroke at the boundary, and an
+optional bloom/motif — but nearly everything about *how* that structure
+looks is per-variant: colors, corner radius, wobble (how irregular the
+silhouette is), bezel thickness, rim weight, key spacing, gradient
+contrast, and motif glyph. The shared rendering code lives in
+`scripts/keycap_render.py`:
+
+- `organic_mask(size, seed, radius_frac, wobble, harmonics, supersample)` —
+  builds the irregular silhouette itself: a rounded-rectangle signed-
+  distance field (distance to an inset "inner rectangle," not distance from
+  center — an early ellipse-based attempt produced pointy spacebar ends,
+  since an ellipse's curvature scales with aspect ratio and the spacebar
+  canvas is 4:1) with the effective radius perturbed per-angle by a few
+  sine harmonics seeded per key, supersampled 3x and Lanczos-downsampled
+  for clean anti-aliasing.
+- `render_organic_key(size, seed, face_color, well_color, rim_color, ...)`
+  — composites well/face/rim/bloom as nested masks generated from the
+  *same seed* at shrinking `radius_frac` (so shape details agree at every
+  layer), plus gradients, optional stabilizer dimples on the spacebar, and
+  an optional motif clipped to the face.
+- Eight `motif_*` functions (`motif_sunburst`, `motif_switch_cross`,
+  `motif_crt`, `motif_chip`, `motif_cursor`, `motif_dpad`,
+  `motif_button_pair`, `motif_diamond_cluster`), each simple Pillow
+  primitive line-art, one per theme.
+- `scatter_motifs(size, motif_fn, color, count, seed, alpha, scale_frac)`
+  — scatters a motif across a background at low alpha, per-instance
+  jittered size/rotation-free placement.
+- `compute_slicing(radius_frac, size, outline)` — the 9-patch stretch
+  boundary a `theme.txt` needs, recomputed per variant's own `radius_frac`
+  (see `docs/THEME-FORMAT.md` "Computing slicing values").
+
+`scripts/generate_variants.py` defines each variant as a small profile
+dict (well/face/rim/legend colors, optional blooms, motif choice, plus the
 geometry fields below) and drives the shared renderer + a `theme.txt`
 template (assembled from parts — see "Row-banded variants" below) to
 produce a complete package per variant.
@@ -51,46 +112,47 @@ Run `python3 scripts/generate_variants.py` from the repo root to
 
 ## Geometry: what makes each variant an actual unique theme
 
-Six knobs distinguish the variants from each other and from Groovy Code,
-each chosen to reflect something real about the hardware, not picked
-arbitrarily:
+Four knobs distinguish the variants' silhouette/material from each other
+and from Groovy Code, each chosen to reflect something real about the
+hardware, not picked arbitrarily:
 
-- **`radius`/`space_radius`** — corner roundedness. Small radius reads as
-  boxy/blocky (Model M's slab PBT caps, NES's famously rectangular
-  buttons, the terminal's flat function keys); large radius reads as
-  rounded/pillowy (Mac Plus's low-profile keys, SNES's glossy concave
-  buttons).
-- **`margin_top`/`margin_side`/`margin_bottom`** — bezel thickness, i.e.
-  how much of the well shows around the inset face. Thick margins read as
+- **`radius_frac`** — corner roundedness, as a fraction of the key's
+  shorter dimension. Small reads as boxy/blocky (Model M's slab PBT caps,
+  NES's famously rectangular buttons, the terminal's flat function keys);
+  large reads as rounded/pillowy (Mac Plus's low-profile keys, SNES's
+  glossy concave buttons).
+- **`wobble`** — how far the silhouette departs from a clean rounded
+  rectangle, i.e. how "organic"/hand-cut it looks. Low wobble reads as
+  precision-molded (Model M, the amber terminal's wireframe-slab keys);
+  higher wobble reads as a more irregular, tactile cap (Commodore 64,
+  Game Boy Color).
+- **`margin_frac`** — bezel thickness, i.e. how much of the well shows
+  around the inset face, as a fraction of key size. Thick margins read as
   a chunky physical housing (Model M, the Game Boy's brick-like shell);
   thin margins read as a minimal design where the key nearly fills its
   housing (Mac Plus, SNES).
-- **`rim_width`** — the rim stroke's weight, from a thin hairline (Mac
-  Plus, SNES) to a chunky border (Model M) to a thin bright wireframe
-  outline that's doing most of the visual work on an otherwise flat board
-  (amber terminal).
-- **`gap`** — key-to-key spacing (this is `theme.txt`'s own `gap` field,
-  now per-variant instead of Groovy Code's fixed `1.15`). Tight for
-  keyboards/consoles with closely-packed keys (Model M, SNES); wide for
-  the terminal's more schematic, grid-like feel.
+- **`rim_frac`** — the rim stroke's weight. Thin hairline (Mac Plus, SNES)
+  to a chunky border (Model M) to a thin bright wireframe outline doing
+  most of the visual work on an otherwise flat board (amber terminal).
+
+Plus two material/spacing knobs, unchanged in role from earlier versions:
+
+- **`gap`** — key-to-key spacing (`theme.txt`'s own `gap` field). Tight
+  for keyboards/consoles with closely-packed keys (Model M, SNES); wide
+  for the terminal's more schematic, grid-like feel.
 - **`face_top_blend`/`face_bottom_scale`** — the inset face's gradient
   contrast, i.e. how deep/glossy/flat the surface reads. High contrast
   with a bright top blend reads as glossy/concave (SNES); low contrast
   reads as flat/matte/digital (the amber terminal's keys are barely
-  distinguishable from a flat fill, on purpose -- a terminal function key
-  is a slab behind a wireframe outline, not a physically sculpted cap).
-- **`roundedness`** (a `theme.txt` `[options]` field, mostly affecting
-  auto-generated fallback borders) — derived from `radius` automatically
-  (`min(0.95, max(0.15, radius / 40))`) rather than set by hand, so it
-  never drifts out of sync with the actual drawn corner shape.
+  distinguishable from a flat fill, on purpose).
 
-Changing `radius` also changes the 9-patch stretch boundary a theme.txt
-needs (see `docs/THEME-FORMAT.md` "Computing slicing values") -- Groovy
-Code's own fixed `0.18`/`0.052`/`0.206` values only work for its own
-radius 26. `scripts/keycap_render.py`'s `compute_slicing(radius, size)`
-generalizes that formula, and `generate_variant()` calls it per profile
-so every variant's `slicing` values are always correct for its own
-radius, never copy-pasted from Groovy Code's.
+`roundedness` (a `theme.txt` `[options]` field, mostly affecting
+auto-generated fallback borders) is derived automatically from
+`radius_frac` (`round(min(0.95, max(0.15, radius_frac * 2.1)), 2)`) rather
+than set by hand, so it never drifts out of sync with the actual drawn
+corner shape. `key_slicing`/`space_slicing` are likewise always computed
+per profile via `compute_slicing(radius_frac, size)`, never copy-pasted
+from Groovy Code's or another variant's values.
 
 ## "Match the real hardware" is the one rule across both batches
 
@@ -113,18 +175,19 @@ consoles are too.
   no on-key equivalent on either real keyboard (both indicate caps-lock via
   a case LED, not a key color change) but still needs to read as "locked"
   in a touchscreen theme — each gets a brightened face plus a small colored
-  bloom (amber for Model M, a soft System-6 blue for Mac Plus, a nod to the
-  classic Mac UI highlight color rather than any real indicator).
+  bloom (amber for Model M, a soft System-6 blue for Mac Plus) and its own
+  motif: a switch-stem cross for Model M, a CRT-monitor glyph for Mac Plus.
 - **Commodore 64** keeps a little more differentiation because the real
   keyboard actually has it: beige keys overall, but a distinct blue-gray
   for the function/system row and a reddish-brown RETURN key — both real
   features of the hardware, not an invented accent. `stickyon` gets a
-  bright "blue screen" glow, an artistic nod rather than a literal feature.
+  bright "blue screen" glow, an artistic nod rather than a literal feature,
+  plus a small IC-chip motif.
 - **Amber terminal** is deliberately the flattest of all: every key face is
   the same near-black, with *zero* face-color variation anywhere — the only
   color on the whole board is the amber rim and amber legends (plus a soft
   amber bloom on `action`/`stickyon` to draw the eye, evoking a lit
-  terminal cursor block).
+  terminal cursor block) and a small cursor-prompt motif.
 
 ### Classic consoles
 
@@ -132,11 +195,12 @@ consoles are too.
   monochrome-button hardware (a colored case/shell at most, but every
   button the same color) — same treatment as Model M/Mac Plus: flat, with
   one small accent bloom nodding to a real detail that has no on-button
-  equivalent. DMG's `stickyon` bloom is red (the console's actual power
-  LED); NES's `action`/`stickyon` bloom is red (a nod to the console's red
-  logotype, not a real indicator); Game Boy Color's `stickyon` bloom is
-  green (its power LED is green, unlike the original DMG's red one — a
-  deliberate, small, correct distinction between the two).
+  equivalent, plus a D-pad-cross motif (button-pair motif for NES). DMG's
+  `stickyon` bloom is red (the console's actual power LED); NES's
+  `action`/`stickyon` bloom is red (a nod to the console's red logotype,
+  not a real indicator); Game Boy Color's `stickyon` bloom is green (its
+  power LED is green, unlike the original DMG's red one — a deliberate,
+  small, correct distinction between the two).
 - **SNES is the one exception in either batch**, and deliberately so: the
   SNES controller's entire visual identity IS its four-color face-button
   scheme (Y green / X blue / A red / B yellow), so a flat lavender variant
@@ -147,22 +211,26 @@ consoles are too.
   the home row (X), yellow across the bottom row (B), and red on the
   action/enter key (A — the confirm button, so mapping it to "Enter" isn't
   arbitrary), all in a lavender-gray body matching the console's own
-  shoulder-button color.
+  shoulder-button color. Its motif is a four-dot diamond cluster tinted in
+  the same Y/X/A/B colors, via `motif_diamond_cluster`'s `colors` kwarg —
+  the only variant whose motif isn't a single flat color.
 
 ## Row-banded variants: how `theme.txt` assembly handles it
 
 Since SNES needs the same `row0`/`row1`/`row2` matchrules and border assets
-as Groovy Code's own root theme (which the flat variants skip entirely),
-`scripts/generate_variants.py` builds `theme.txt` from parts rather than
-one flat template: a shared `HEAD_TEMPLATE` (metadata/colors/options/
-background through the `functional` matchrule), an optional
-`MATCHRULES_ROWBANDED` block spliced in only when a profile sets
-`"row_banded": True`, a shared `TAIL_TEMPLATE` (the generic pressed/normal
-fallback, icon matchrules, and the non-row asset blocks), an optional
-`ASSETS_ROWBANDED` block for the row0/1/2 border asset configs, and a
-shared `ICON_ASSETS` block. `build_theme_txt()` concatenates the right
-parts and formats the whole thing once. A row-banded profile also needs a
-`row_faces` dict (`{0: color, 1: color, 2: color}`) and generates six extra
+as Groovy Code's own root theme used through v18 (Groovy Code itself
+dropped row-banding in v18 — see its own changelog — but SNES still needs
+it, since its face-button colors ARE its identity), `scripts/
+generate_variants.py` builds `theme.txt` from parts rather than one flat
+template: a shared `HEAD_TEMPLATE` (metadata/colors/options/background
+through the `functional` matchrule), an optional `MATCHRULES_ROWBANDED`
+block spliced in only when a profile sets `"row_banded": True`, a shared
+`TAIL_TEMPLATE` (the generic pressed/normal fallback, icon matchrules, and
+the non-row asset blocks), an optional `ASSETS_ROWBANDED` block for the
+row0/1/2 border asset configs, and a shared `ICON_ASSETS` block.
+`build_theme_txt()` concatenates the right parts and formats the whole
+thing once. A row-banded profile also needs a `row_faces` dict
+(`{0: color, 1: color, 2: color}`) and generates six extra
 `Button-row*.png` assets (`generate_variant()` handles this automatically
 whenever `row_banded` is set) — everything else about the profile dict is
 identical to a flat one.
@@ -182,23 +250,25 @@ Color and notable color departure:
 | SNES | `snes` | `#57536b` lavender | `#8983a0` lavender | `#c8c4d8` | **row-banded**: row0 `#00954c` green, row1 `#0074bf` blue, row2 `#f5a800` yellow, action `#e60012` red |
 | Game Boy Color | `gameboy-color` | `#4a2f5e` grape | `#3a2a4a` dark violet | `#8a6ba8` | none — fully monochrome except `stickyon` (green LED bloom) |
 
-Geometry/material (see "Geometry" above for what each column means) —
-this is what makes each one an actual unique theme rather than a recolor:
+Geometry/material — the organic-shape knobs (see "Geometry" above) that
+make each one an actual unique silhouette rather than a recolor, plus each
+variant's own motif glyph:
 
-| Variant | radius | bezel (T/S/B) | rim | gap | face gradient | character |
-|---|---|---|---|---|---|---|
-| IBM Model M | 14 | 16/16/26 | 4 | 1.05 | 0.10 → 0.76 | boxy, thick bezel, deep matte dish, tight-set |
-| Macintosh Plus | 32 | 7/7/12 | 2 | 1.1 | 0.08 → 0.90 | rounded, thin bezel, nearly flat |
-| Commodore 64 | 20 | 12/12/22 | 3 | 1.15 | 0.16 → 0.80 | baseline chunky sculpted retro key |
-| Amber terminal | 6 | 10/10/16 | 2 | 1.3 | 0.04 → 0.94 | blocky, near-flat, wide grid spacing |
-| Game Boy (DMG) | 22 | 15/15/24 | 3 | 1.2 | 0.12 → 0.80 | chunky plastic, thick shell bezel |
-| NES | 8 | 13/13/22 | 3 | 1.15 | 0.10 → 0.82 | rectangular, minimal rounding |
-| SNES | 36 | 8/8/14 | 2 | 1.05 | 0.22 → 0.78 | roundest, thinnest bezel, glossiest |
-| Game Boy Color | 28 | 13/13/22 | 3 | 1.15 | 0.14 → 0.80 | rounder/softer than DMG, moderate bezel |
+| Variant | radius_frac | wobble | margin_frac | rim_frac | gap | face gradient | motif | character |
+|---|---|---|---|---|---|---|---|---|
+| IBM Model M | 0.16 | 0.06 | 0.15 | 0.030 | 1.05 | 0.10 → 0.76 | switch-cross | boxy, thick bezel, low wobble (precision-molded PBT) |
+| Macintosh Plus | 0.42 | 0.07 | 0.05 | 0.012 | 1.1 | 0.08 → 0.90 | CRT | rounded, thin bezel, nearly flat |
+| Commodore 64 | 0.26 | 0.10 | 0.09 | 0.020 | 1.15 | 0.16 → 0.80 | IC chip | baseline chunky sculpted retro key |
+| Amber terminal | 0.10 | 0.04 | 0.05 | 0.014 | 1.3 | 0.04 → 0.94 | cursor prompt | blocky, near-flat, wide grid spacing |
+| Game Boy (DMG) | 0.30 | 0.09 | 0.14 | 0.020 | 1.2 | 0.12 → 0.80 | D-pad cross | chunky plastic, thick shell bezel |
+| NES | 0.13 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | button pair | rectangular, minimal rounding |
+| SNES | 0.44 | 0.09 | 0.05 | 0.012 | 1.05 | 0.22 → 0.78 | diamond cluster (4-color) | roundest, thinnest bezel, glossiest |
+| Game Boy Color | 0.34 | 0.10 | 0.13 | 0.020 | 1.15 | 0.14 → 0.80 | D-pad cross | rounder/softer than DMG, moderate bezel |
 
-(Groovy Code itself, for comparison, is radius 26, bezel 12/12/20, rim 3,
-gap 1.15, gradient 0.14 → 0.82 — untouched by any of this, since these
-are `render_key`'s own default parameter values.)
+(Groovy Code itself, for comparison, uses `radius_frac=0.30, wobble=0.09,
+margin_frac=0.09, rim_frac=0.018`, gap 1.15, gradient 0.14 → 0.82, and a
+sunburst motif — see `scripts/keycap_render.py`'s defaults, which every
+variant profile above overrides at least some of.)
 
 ## What's shared vs. generated per variant
 
@@ -208,17 +278,17 @@ import needs everything present, not references back to the repo root):
 - **Generated per variant**: `theme.txt` (own `id`/`name`/`description`/
   `[colors]`/matchrules), border assets (`default`/`function`/`action`/
   `space`/`stickyon`, each with a `-press`/`-pressed` pair — plus
-  `row0`/`row1`/`row2` pairs for SNES), and a simple gradient background
-  PNG matching the variant's case tone.
+  `row0`/`row1`/`row2` pairs for SNES), and a gradient background PNG
+  matching the variant's case tone, scattered with its own motif glyph.
 - **Copied unchanged from the repo root**: `Icon-*.png` (icons are always
   force-recolored at runtime via canvas `source-in` compositing — see
   `CLAUDE.md` fact #3 — so the same alpha-shape PNGs work for every
   variant's `foreground_tint`), `FiraCode-Regular.ttf`, `FONT-
   ATTRIBUTION.txt`, `ICON-ATTRIBUTION.txt`, and `Button-morekey.png`/
   `Button-morekeysbox.png` (the long-press popup styling — still the
-  original gold-ring look from Groovy Code v11, not restyled per variant;
-  see "Open items" in `docs/GROOVY-CODE-THEME.md`, same low-priority
-  reasoning applies here).
+  original gold-ring look from Groovy Code v11, not restyled per variant
+  or per the organic-shape pass; see "Open items" in
+  `docs/GROOVY-CODE-THEME.md`, same low-priority reasoning applies here).
 
 ## Packaging and releases
 
@@ -237,43 +307,62 @@ needed.
 All eight variants were checked with the `preview-theme` skill (`.claude/
 skills/preview-theme/scripts/build_zip.sh variants/<slug>` works directly,
 since each variant directory already has a `theme.txt` at its root) on
-QWERTY, both after the initial color-only pass and again after the
-geometry pass -- the second render is what actually confirmed the eight
-read as distinct shapes (boxy vs. rounded, thick-bezel vs. thin, tight vs.
-spaced) side by side, not just distinct colors. The amber terminal and
-SNES variants were additionally checked on the `?123` Symbols layout
-(amber terminal for icon/hint legibility on a uniform-black board, SNES to
-confirm row-banding survives onto a different layout the same way Groovy
-Code's own row-banding does). Row/hint-label spacing, rim/legend
-legibility, and icon recoloring all read correctly on every variant after
-both passes. **None of the eight have been confirmed on a real device
-yet** — same outstanding gap as Groovy Code itself.
+QWERTY across the color-only pass, the geometry pass, and again after the
+v19 organic-shape rewrite — each render confirmed the eight read as
+distinct shapes (boxy vs. rounded, thick-bezel vs. thin, tight vs. spaced,
+low-wobble vs. high-wobble) side by side, not just distinct colors, and
+that each variant's motif reads correctly on its `stickyon` key and
+background. The amber terminal and SNES variants were additionally checked
+on the `?123` Symbols layout (amber terminal for icon/hint legibility on a
+uniform-black board, SNES to confirm row-banding survives onto a different
+layout the same way Groovy Code's own pre-v18 row-banding did). Row/
+hint-label spacing, rim/legend legibility, and icon recoloring all read
+correctly on every variant after all three passes.
+
+One real bug was caught and fixed during the v19 rewrite: the amber
+terminal profile's `description` field originally contained a literal
+`">_"` — unescaped double quotes inside a double-quoted TOML string. This
+broke `theme.txt` parsing and made `preview-theme`'s import fail
+repeatedly with a misleading generic error, initially mistaken for a
+network/proxy issue before the malformed file was found by inspection.
+Fixed by removing the quote characters from the description text. This is
+the second time this exact bug class has hit this repo (previously with
+Commodore 64's "blue screen" description) — worth grep-checking any new
+profile's `description` string for embedded `"` before regenerating.
+
+**None of the eight have been confirmed on a real device yet** — same
+outstanding gap as Groovy Code itself.
 
 ## Adding another variant
 
 1. Add a profile dict to `KEYBOARD_PROFILES` or `CONSOLE_PROFILES` (or a
    new category list, then include it in `PROFILES`) in
    `scripts/generate_variants.py`: `slug`, `name`, `theme_id`,
-   `reference_note`, `description`, `well`, `face_default`, `rim`,
-   `legend`, plus any of `face_function`/`face_action`/`face_space`/
-   `face_stickyon` that should differ from `face_default`, and optional
+   `reference_note`, `description` (watch for embedded `"` — see the
+   amber-terminal bug above), `well`, `face_default`, `rim`, `legend`,
+   plus any of `face_function`/`face_action`/`face_space`/`face_stickyon`
+   that should differ from `face_default`, and optional
    `bloom_action_color`/`bloom_action_alpha`/`bloom_stickyon_color`/
    `bloom_stickyon_alpha`. If the real hardware's identity is genuinely
    its color-coding (the SNES case), add `"row_banded": True` and a
    `row_faces` dict instead of forcing it flat.
-2. **Also give it its own geometry** — don't just default to Groovy
-   Code's shape (that's the mistake this doc's "Geometry" section above
-   exists to prevent from recurring). Pick `radius`/`space_radius`,
-   `margin_top`/`margin_side`/`margin_bottom`, `rim_width`, `gap`, and
-   `face_top_blend`/`face_bottom_scale` that reflect something real about
-   the hardware (boxy vs. rounded, thick-cased vs. minimal, glossy vs.
-   matte) — see the geometry table above for the range already in use and
-   what reads as what.
+2. **Also give it its own geometry and motif** — don't just default to
+   Groovy Code's shape (that's the mistake this doc's "Geometry" section
+   above exists to prevent from recurring). Pick `radius_frac`/`wobble`/
+   `margin_frac`/`rim_frac`, `gap`, and `face_top_blend`/
+   `face_bottom_scale` that reflect something real about the hardware
+   (boxy vs. rounded, thick-cased vs. minimal, glossy vs. matte, precision-
+   molded vs. hand-cut) — see the geometry table above for the range
+   already in use and what reads as what. Either reuse an existing
+   `motif_fn` from `scripts/keycap_render.py` if it fits, or write a new
+   one (a small Pillow primitive glyph, same pattern as the existing eight)
+   if the hardware calls for its own signature shape.
 3. Run `python3 scripts/generate_variants.py` (this also recomputes that
    profile's `slicing`/`gap`/`roundedness` in its `theme.txt` — never hand-
    copy Groovy Code's or another variant's values).
 4. Verify with `preview-theme` the same way as the others (see above) --
    specifically confirm the new variant reads as visually distinct from
-   its nearest neighbor in the table, not just differently colored.
+   its nearest neighbor in the table, not just differently colored, and
+   that its motif is legible on `stickyon` and the background.
 5. The packaging workflow picks up the new `variants/<slug>/` directory
    automatically on the next push to `main` — no workflow changes needed.
