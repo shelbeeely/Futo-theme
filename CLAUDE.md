@@ -73,6 +73,20 @@ Repo layout:
   file/`README.md`) AND, in a separate matrix job, each `variants/<slug>/`
   directory, publishing each as its own GitHub release + build artifact on
   every push to `main` that touches theme files, or on manual dispatch
+- `vendor/tabler-icons/` — a **git submodule** pinned to
+  `github.com/shelbeeely/tabler-icons` (a fork of the upstream Tabler Icons
+  project, MIT-licensed, ~5,100 SVG icons). Vendored as a reference/source
+  library for future icon work (e.g. restyling `scripts/icon_render.py`'s
+  glyphs, or sourcing new `Icon-*.png` art) — not itself part of any
+  theme package. Excluded from every packaged zip
+  (`.github/workflows/package-theme.yml`'s `-x` list includes `vendor/*`).
+  Since it's a submodule, `git clone` needs
+  `--recurse-submodules` (or `git submodule update --init`) to actually
+  populate it; its own huge pnpm/React/Vue/etc. build tooling is never run
+  from here — only its `icons/` SVGs are relevant. If any of its icons are
+  ever rasterized into a shipped asset, add a Tabler Icons entry to
+  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna) at that point, same as the
+  existing FUTO-icons attribution.
 - `.claude/skills/preview-theme/` — a Claude Code skill that renders a real
   preview of the theme (using `keyboard-theme-editor`'s actual rendering
   code, headlessly) without needing an Android device. Use it after any
