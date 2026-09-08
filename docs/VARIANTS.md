@@ -369,6 +369,221 @@ All 8 variants' `theme.txt` `version` bumped 5→6. Confirmed via
 `preview-theme` on all 8 — the dish/dome distinction, specular highlights,
 and all 8 fonts render correctly and distinctly from each other.
 
+## v24: "is each console using console-appropriate buttons?" — a real answer
+
+The user asked this directly, pointedly, after this repo's own track record
+of unverified geometry/color claims (see v20-v22). Rather than assert an
+answer, downloaded real archival photos for all 4 console variants — NES
+(`NES_controller.JPG` by Denis Apel, CC-BY-SA-3.0, Wikimedia Commons),
+SNES (`Nintendo-Super-NES-Controller.jpg`, Wikimedia Commons), Game Boy DMG
+and Game Boy Color (`Game-Boy-FL.jpg` / `Nintendo-Game-Boy-Color-FL.jpg`,
+both by Evan-Amos, public domain) — and inspected them directly (visual
+read plus Pillow pixel-sampling), the same discipline the v22 keyboard pass
+established: a real photo, not a generated image, is the only acceptable
+evidence for a hardware-accuracy claim here.
+
+**Two real, confirmed errors found and fixed:**
+
+1. **NES's button shape was wrong.** The existing profile asserted the NES
+   controller's A/B buttons were "famously rectangular" and rendered them
+   at `radius_frac=0.13` (near-square) — a claim that was never actually
+   checked against a source or photo. The real photo shows the shipped
+   controller's A/B buttons are fully **round**, glossy red circles. (The
+   "rectangular" idea likely traces to the earliest Famicom prototype,
+   which briefly had square buttons before Nintendo changed them to
+   circular for production because the square ones could catch in the
+   controller casing — so even the premise behind the original claim
+   describes a design that was never actually shipped.) Fixed:
+   `radius_frac` raised from `0.13` to `0.42`. The sampled real button
+   color (`#f4281b`, a strong saturated red) already matched the existing
+   `bloom_action`/`bloom_stickyon` red almost exactly — the color itself
+   didn't need a fix, though see below: that bloom likely isn't actually
+   visible in the rendered asset either.
+
+2. **Game Boy (DMG) was missing its only real accent color entirely.**
+   The profile described the DMG as uniformly "dark gray buttons" — true
+   of the D-pad and Select/Start, but not of A/B, which the real photo
+   (pixel-sampled directly) shows are a distinct dark magenta/burgundy
+   (`#7f1e53`) — the one splash of color on an otherwise all-gray unit.
+   Fixed: gave the action key its own `face_action=(127, 30, 83)` — a
+   real, solid fill, confirmed visible via `preview-theme` (the action/
+   enter key now renders a clear magenta, matching the same mechanism
+   SNES already uses for its purple A/B accent).
+
+   **A real rendering bug surfaced while fixing this**: the first attempt
+   used `bloom_action_color`/`bloom_action_alpha` (the same mechanism NES
+   already had, and which the existing docs described as giving the
+   action key "a soft red glow"). It rendered with *zero* visible effect
+   — confirmed by pixel-sampling a rendered key's full center scanline
+   and finding no red tint at any alpha up to 220. Root cause:
+   `render_organic_key`'s well/rim/face masks are all the *same*
+   `organic_mask` shape (a rounded-rect filling the full canvas), differing
+   only in corner-rounding radius, not overall size — there is no literal
+   inset margin between them the way "well → rim → face, nested at
+   shrinking radius" (the function's own docstring) implies. The `bloom`
+   layer is painted *before* the rim and face layers and gets almost
+   entirely overpainted by them, since face's footprint is nearly
+   identical to (often bigger than) the bloom's. `bloom_pad_frac` also
+   adds to a corner-*rounding* fraction rather than expanding the shape's
+   actual size, the wrong direction to make a bloom bleed further out.
+   Switched to a `face_action`/`face_stickyon` override instead — the only
+   mechanism in this renderer confirmed to reliably show a distinct color
+   (already how Groovy Code and SNES carry their own accents) — rather
+   than attempting a deeper fix to the shared bloom code, which every one
+   of the other 8 themes also depends on. **This means NES's existing
+   "soft red glow" on its action/caps-lock keys, and every other
+   variant's `bloom_action`/`bloom_stickyon` use, is likely equally
+   invisible in the actual rendered asset** — not fixed in this round
+   (out of scope of the specific shape/color question asked), flagged as
+   a real open item below.
+
+**Two already confirmed accurate, no change needed:**
+
+- **SNES** — already corrected in v20/v22 to the real NA SNS-005 scheme
+  (light lavender X/Y, darker purple A/B, gray-lavender body,
+  round/glossy/thin-bezel geometry). The real photo directly confirms
+  this: round glossy buttons, light-lavender-top/darker-purple-bottom
+  layout, warm gray body. No change.
+- **Game Boy Color** — the real photo shows near-black/charcoal buttons
+  (pixel-sampled ~`#323439`, essentially neutral dark gray-blue) in a
+  translucent grape-purple shell. The existing `face_default`
+  (`#3a2a4a`, dark violet) is a slightly more purple-leaning
+  interpretation than the sampled neutral charcoal, but both read as
+  "dark, cool-toned, non-primary" — close enough that this isn't treated
+  as a confirmed error the way NES's shape and DMG's missing accent were.
+  Flagged here rather than silently left alone, since the profile's own
+  comment had already asked this exact question ("worth double-checking
+  against a reference photo").
+
+All 8 variants' `theme.txt` `version` bumped 6→7 (only NES's art and Game
+Boy DMG's `Button-action.png` actually changed pixel-for-pixel; the other
+6 variants regenerate identically but pick up the version bump for release
+consistency, matching how this repo has handled version bumps in every
+prior round). Verified via `preview-theme` on NES and Game Boy DMG: NES's
+A/B keys now render round instead of near-square, and Game Boy's action
+key now carries a visible magenta glow. Not yet confirmed on a real
+device.
+
+## v25: every variant renders its own icon set — no more shared assets
+
+After the v24 button-shape/color audit, the user pointed out a real gap:
+*"all variants are separate themes. No shared assets. they all need
+seperate Icon-emoji.png"* — noticing that, despite every other asset
+class (borders, background, font) already being generated per variant
+since earlier rounds, all 9 themes in this repo (Groovy Code plus all 8
+variants) still shared the identical 10 `Icon-*.png` files, copied
+byte-for-byte from the repo root by `SHARED_FILES`.
+
+Before redesigning anything, worth restating the real constraint (per
+CLAUDE.md fact #3, verified from `keyboard-theme-editor` source): the app
+**always** force-recolors every icon at runtime via canvas `source-in`
+compositing, discarding whatever RGB is baked into the PNG and refilling
+it with the theme's own foreground color for that key state. So RGB was
+never actually a lever for per-variant icon identity — a variant's icons
+were always going to render in that variant's own colors regardless.
+Asked the user how far to take this given that constraint (just
+`Icon-emoji.png`, or the full 10-file set); **the user chose the full
+set** — every icon (backspace, shift, shift-press, enter, globe, mic,
+tab, both arrows, emoji), not just the one they'd noticed.
+
+With RGB off the table, the only real lever left is **silhouette**:
+stroke weight, sharp-vs-round joints/caps, and an optional pixel-grid
+quantization for the variants built around a pixel-art-era font. Built
+`scripts/icon_render.py`: 10 parametric glyph functions, each drawing the
+same real, recognizable shape FUTO's own official SVG depicts for that
+role (a delete-key outline with an X for backspace, an up-arrow merged
+into a bar for shift, a bent arrow for enter, a circle+meridians for
+globe, a capsule-on-a-stand for mic, an arrow-into-a-bar for tab, plain
+chevrons for the two arrow keys, a circle+eyes+smile for emoji) — a
+restyling of *how* each icon is drawn, not a redesign of *what* it
+communicates, so every variant's keyboard stays legible by the same
+visual vocabulary a FUTO user already knows. `render_icon_set()` renders
+all 10 into a variant's own directory using one `icon_style` dict per
+profile (`stroke_frac`, `rounded`, `pixel_grid`), tied to each variant's
+already-established character rather than picked arbitrarily:
+
+| Variant | stroke_frac | rounded | pixel_grid | Why |
+|---|---|---|---|---|
+| IBM Model M | 0.075 | sharp | none | boxy, thick-bezel character (see its own geometry table entry) |
+| Macintosh Plus | 0.045 | round | none | thin-bezel, nearly-flat character |
+| Commodore 64 | 0.065 | round | 16 | chunky sculpted retro key + an 8-bit-computer font (Sixtyfour) |
+| Amber terminal | 0.050 | sharp | 14 | blocky terminal character + a pixel terminal font (VT323) |
+| Game Boy (DMG) | 0.090 | sharp | 10 | thick shell-bezel character + a pixel LCD font (DotGothic16) |
+| NES | 0.080 | sharp | 10 | (now-round buttons, but still an 8-bit arcade font, Press Start 2P) |
+| SNES | 0.050 | round | none | roundest/glossiest character + a clean (non-blocky) pixel-grid font |
+| Game Boy Color | 0.070 | round | 12 | softer/rounder than DMG + a softer pixel font (Pixelify Sans) |
+
+`generate_variant()` now calls `render_icon_set(out_dir, **icon_style)`
+after writing the border assets, and writes a new, variant-specific
+`ICON-ATTRIBUTION.txt` (these are original procedural art now, not
+converted from FUTO's SVGs, so the old FUTO BSD-3-Clause attribution text
+no longer applies). `SHARED_FILES` in `scripts/generate_variants.py`
+dropped from 12 entries to 2 (`Button-morekey.png`/
+`Button-morekeysbox.png` only — see "What's shared vs. generated per
+variant" below for why those two remain).
+
+Confirmed distinct per variant (all 8 `Icon-emoji.png` MD5 hashes now
+differ from each other and from Groovy Code's own), and confirmed
+legible via `preview-theme` on all 8 — including the two extremes
+(IBM Model M's sharp/thick outlines and NES/Game Boy DMG's blocky
+pixel-grid icons) rendering correctly recolored and readable at real
+on-keyboard size, not just in an isolated contact sheet. All 8 variants'
+`theme.txt` `version` bumped 7→8. Not yet confirmed on a real device.
+
+**Still shared, flagged rather than silently left**: `Button-morekey.png`
+and `Button-morekeysbox.png` (the long-press accent-key popup styling)
+remain byte-identical across all 9 themes — untouched since Groovy Code
+v11, never restyled per variant even during the v19 organic-shape pass,
+for the same "rarely visible, low priority" reasoning documented there.
+If "no shared assets" should extend there too, that's a follow-up, not
+assumed here.
+
+## v26: the last shared assets — `morekeysbox`/`morekey` — given to every theme
+
+The very next thing the user said, directly: *"Every theme needs to be
+separated with no shared assets, they're just sharing the same repo. The
+only thing that they should share is the build step that provides them
+as zip files to individually install."* This settles the scope question
+v25 had left open: `Button-morekeysbox.png`/`Button-morekey.png` (the
+long-press accent-key popup) were the last two files every variant
+copied byte-for-byte from Groovy Code's own output, and they needed the
+same fix icons got in v25.
+
+Added `render_morekeysbox(size, fill_color, rim_color)` to
+`keycap_render.py` — a plain rounded rect (a popup strip reads as one
+flat surface holding several accent chips, not an organic-blob keycap,
+so it deliberately doesn't use `render_organic_key`'s machinery) — and
+`render_morekey_transparent()`. Every variant now calls
+`render_morekeysbox(MOREKEYSBOX_SIZE, scale(well, 0.30), rim)` in
+`generate_variant()`, using its *own* `well`/`rim` colors already defined
+in its profile (no new constants needed) — the same relationship Groovy
+Code's own original asset had (a darkened case tone for the fill, its own
+rim accent for the border), just computed per theme instead of
+hardcoded once. `generate_assets.py` (Groovy Code) now generates these
+two the same way, using its own `BROWN`/`GOLD`, rather than leaving them
+as static, hand-maintained files outside the generation pipeline (as the
+v12 entry in `docs/GROOVY-CODE-THEME.md` had explicitly carved out).
+`SHARED_FILES` and its copy loop are gone entirely from
+`scripts/generate_variants.py` — there is nothing left in it to copy.
+
+**One of these two is necessarily still identical everywhere, and that's
+correct, not a leftover gap**: `Button-morekey.png` has to be fully
+transparent regardless of theme (CLAUDE.md fact #13 — a blank `morekey`
+asset is what suppresses the individual long-press chips so only the
+containing `morekeysbox` reads as one surface). A transparent PNG has no
+room for per-theme variation; generating it fresh per theme (rather than
+copying) is what "no shared assets" actually asks for here, even though
+the *content* comes out identical by necessity.
+
+Confirmed all 8 variants' `Button-morekeysbox.png` now hash differently
+from each other and from Groovy Code's own (verified via `md5sum`) and
+visually distinct (each theme's own well-derived fill + its own rim
+color). **Not verified in `preview-theme`**: its own JS preview stubs
+long-press to always-false (see "Verification" below and CLAUDE.md's
+open items) — this can only be confirmed on a real device, same
+long-standing limitation as before. All 8 variants' `theme.txt`
+`version` bumped 8→9; Groovy Code's own `version` bumped 20→21.
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
@@ -566,8 +781,8 @@ Color and notable color departure:
 | Macintosh Plus | `mac-plus` | `#8a866e` (**v22**: reverted to v20, confirmed correct by a real photo) | `#bfbb98` Apple Beige (Pantone 453C) | `#5f5a44` | fully monochrome except `stickyon` | Sourced (Apple's own designer); mild case/keycap contrast confirmed via real archival photo |
 | Commodore 64 | `commodore-64` | `#a48f7a` RAL 1019 Grey Beige case (**v22**: this is the case color, not the keycaps — v20/v21 had it backwards) | `#2a241e` dark brown/near-black keycaps (**v22**, real photo) | `#605442` | none — **v22**: removed the invented tan "Mustard" function row and rust RETURN key, neither visible on a real photographed unit; fully monochrome except `stickyon` | Case color sourced (RAL 1019); uniform dark keycaps confirmed via real archival photo |
 | Amber terminal | `amber-terminal` | `#c4b28a` beige-tan deck (**v22**, real photo — genuinely new correct info) | `#221e1a` dark near-black keycaps (**v22**: reverted from v21's beige, which was a hallucination) | `#ffb000` amber (stylistic, not literal) | none — **v22**: removed the invented function-key row, not visible on the real unit; legend is light near-white (`#dedcc8`), matching real printed legends, not the bright rim amber | Deck color: confirmed via real archival photo. Dark keycaps: v19's original instinct, now confirmed correct |
-| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | none — fully monochrome except `stickyon` (red LED bloom) | Informed approximation, no source found |
-| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom (logotype nod), on top of `stickyon`'s | Informed approximation, no source found |
+| Game Boy (DMG) | `gameboy-dmg` | `#c4bea4` putty | `#3a3a38` dark gray | `#5a584e` | action key is a solid dark magenta/burgundy `#7f1e53` (**added in v24** via `face_action`, not a bloom — see below) matching the real A/B buttons — fully monochrome otherwise except `stickyon` (red LED bloom, likely not actually visible — see "Open items") | Case/D-pad color: informed approximation, no source found. A/B magenta: **confirmed in v24** via a real archival photo |
+| NES | `nes` | `#b8b8b2` light gray | `#2b2b2b` near-black | `#8c8c86` | action key gets a soft red bloom matching the real A/B buttons' sampled color, on top of `stickyon`'s | **Confirmed in v24** via a real archival photo — light gray shell, near-black D-pad, red (`#f4281b`) round A/B buttons |
 | SNES | `snes` | `#cec9cc` warm gray-lavender | `#a7a4e0` lavender (X/Y) | `#908a99` | action (Enter, standing in for A/B) is `#514689` darker purple — **corrected in v20**, see above | Community-sourced (color-hex.com NA palette), not official Nintendo spec |
 | Game Boy Color | `gameboy-color` | `#4a2f5e` grape | `#3a2a4a` dark violet | `#8a6ba8` | none — fully monochrome except `stickyon` (green LED bloom) | Informed approximation, no source found — "Grape" is also a real GBC colorway name, worth double-checking against a photo |
 
@@ -582,7 +797,7 @@ variant's own motif glyph:
 | Commodore 64 | 0.26 | 0.10 | 0.09 | 0.020 | 1.15 | 0.16 → 0.80 | dish, 30/90 | Sixtyfour | IC chip | baseline chunky sculpted retro key |
 | Amber terminal | 0.10 | 0.04 | 0.05 | 0.014 | 1.3 | 0.04 → 0.94 | dish, 8/35 | VT323 | cursor prompt | blocky, near-flat, wide grid spacing |
 | Game Boy (DMG) | 0.30 | 0.09 | 0.14 | 0.020 | 1.2 | 0.12 → 0.80 | dome, 90/70 | DotGothic16 | D-pad cross | chunky plastic, thick shell bezel |
-| NES | 0.13 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | dome, 75/70 | Press Start 2P | button pair | rectangular, minimal rounding |
+| NES | 0.42 | 0.05 | 0.11 | 0.020 | 1.15 | 0.10 → 0.82 | dome, 75/70 | Press Start 2P | button pair | round, glossy (**corrected in v24** — was 0.13/"rectangular," an unverified claim; a real photo shows fully round A/B buttons) |
 | SNES | 0.44 | 0.09 | 0.05 | 0.012 | 1.05 | 0.22 → 0.78 | dome, 130/45 | Jersey 10 | diamond cluster (4-color) | roundest, thinnest bezel, glossiest |
 | Game Boy Color | 0.34 | 0.10 | 0.13 | 0.020 | 1.15 | 0.14 → 0.80 | dome, 95/65 | Pixelify Sans | D-pad cross | rounder/softer than DMG, moderate bezel |
 
@@ -607,19 +822,24 @@ import needs everything present, not references back to the repo root):
   `row0`/`row1`/`row2` pairs for any future `row_banded` profile; none
   currently use this, see "Row-banded variants" above), a gradient
   background PNG matching the variant's case tone scattered with its own
-  motif glyph, and (since v23) its own `FONT-ATTRIBUTION.txt` naming its
-  own font's author/license/source.
+  motif glyph, its own `FONT-ATTRIBUTION.txt` naming its own font's
+  author/license/source (since v23), its own full `Icon-*.png` set plus
+  its own `ICON-ATTRIBUTION.txt` (since v25), and (since v26) its own
+  `Button-morekeysbox.png` in its own well/rim colors — see the v25 and
+  v26 entries above.
 - **Copied from `scripts/fonts/` (since v23, not the repo root)**: each
   variant's own font file (see the v23 table above) — no longer
   FiraCode, and no longer shared across variants at all.
-- **Copied unchanged from the repo root**: `Icon-*.png` (icons are always
-  force-recolored at runtime via canvas `source-in` compositing — see
-  `CLAUDE.md` fact #3 — so the same alpha-shape PNGs work for every
-  variant's `foreground_tint`), `ICON-ATTRIBUTION.txt`, and
-  `Button-morekey.png`/`Button-morekeysbox.png` (the long-press popup
-  styling — still the original gold-ring look from Groovy Code v11, not
-  restyled per variant or per the organic-shape pass; see "Open items" in
-  `docs/GROOVY-CODE-THEME.md`, same low-priority reasoning applies here).
+- **Generated but necessarily identical everywhere**: `Button-morekey.png`
+  has to render fully transparent regardless of theme (see the v26 entry
+  above) — every variant calls the same `render_morekey_transparent()`,
+  so the *file* is byte-identical across all 9 themes even though nothing
+  is actually copied. As of v26, this is the only asset in the repo where
+  that's true, and it's a content constraint (there is no other valid
+  content for this asset's role), not an unaddressed sharing gap.
+  Nothing in this repo is copied from the root repo directory into a
+  variant anymore — every other asset class (borders, background, font,
+  icons, `morekeysbox`) is generated fresh per theme.
 
 ## Packaging and releases
 
@@ -666,6 +886,28 @@ remembering this.**
 
 **None of the eight have been confirmed on a real device yet** — same
 outstanding gap as Groovy Code itself.
+
+## Open items
+
+- **`bloom_action`/`bloom_stickyon` are likely invisible in the rendered
+  asset for most variants that rely on them** — found and fixed for Game
+  Boy DMG's action key in v24 (see that section), by switching to a real
+  `face_action` fill instead. Not yet audited or fixed for: NES's action/
+  stickyon red glow, amber terminal's action gold glow
+  (`bloom_action_color=(255,176,0)`), or any variant's `stickyon` bloom
+  (every variant has one). Groovy Code itself and SNES are unaffected —
+  both already give their accent keys a distinct `face_action`/
+  `face_stickyon` color independent of any bloom. A real fix means either
+  reworking `render_organic_key`'s bloom layer to actually expand past the
+  rim's own footprint (not just add to a corner-rounding fraction) or
+  compositing it after the face layer instead of before — untested, and
+  touches shared code all 9 themes depend on, so treat as its own
+  follow-up rather than a quick patch.
+- Game Boy Color's `face_default` (`#3a2a4a`, dark violet) is a more
+  purple-leaning read than the real photo's neutral dark charcoal
+  (`~#323439`, pixel-sampled in v24) — close enough not to call it a
+  confirmed error, but not an exact match either. Worth a second look if
+  a higher-resolution or better-lit reference photo turns up.
 
 ## Adding another variant
 

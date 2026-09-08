@@ -8,7 +8,7 @@
 name = "SNES"
 author = "Shelbee"
 id = "com.shelbee.snes"
-version = 6
+version = 9
 description = "Classic SNES variant, corrected to match the real North American controller (SNS-005): a warm gray-lavender body, lavender-purple keys (matching the concave X/Y buttons), and a darker purple action/enter key (matching the convex A/B buttons) -- not the green/blue/yellow/red rainbow, which is actually the Japanese/European Super Famicom's color scheme, not the NA SNES's. Rounded and glossy like the real concave buttons, with a small two-tone diamond motif scattered on the background. Set in Jersey 10."
 
 [options]

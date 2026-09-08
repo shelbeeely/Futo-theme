@@ -56,11 +56,13 @@ import os
 import shutil
 
 from keycap_render import (
-    KEY_SIZE, SPACE_SIZE,
-    render_organic_key, vertical_gradient, scale, compute_slicing, scatter_motifs,
+    KEY_SIZE, SPACE_SIZE, MOREKEY_SIZE, MOREKEYSBOX_SIZE,
+    render_organic_key, render_morekey_transparent, render_morekeysbox,
+    vertical_gradient, scale, compute_slicing, scatter_motifs,
     motif_switch_cross, motif_crt, motif_chip, motif_cursor,
     motif_dpad, motif_button_pair, motif_diamond_cluster,
 )
+from icon_render import render_icon_set
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VARIANTS_DIR = os.path.join(REPO_ROOT, "variants")
@@ -128,15 +130,6 @@ FONT_INFO = {
     ),
 }
 
-SHARED_FILES = [
-    "Icon-backspace.png", "Icon-emoji.png", "Icon-shift-press.png", "Icon-shift.png",
-    "Icon-enter.png", "Icon-globe.png", "Icon-mic.png", "Icon-tab.png",
-    "Icon-arrow-left.png", "Icon-arrow-right.png",
-    "ICON-ATTRIBUTION.txt",
-    "Button-morekey.png", "Button-morekeysbox.png",
-]
-
-
 def hexs(rgb):
     return "#%02x%02x%02x" % rgb
 
@@ -160,7 +153,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 6
+version = 9
 description = "{description}"
 
 [options]
@@ -636,6 +629,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.16, "wobble": 0.06, "margin_frac": 0.15, "rim_frac": 0.030,
         "gap": 1.05,
         "font_file": "IBMPlexMono-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.075, rounded=False, pixel_grid=None),
         "depth_style": "dish", "specular_alpha": 20, "edge_ao_alpha": 110,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (198, 194, 180),
@@ -674,6 +668,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.42, "wobble": 0.07, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.1,
         "font_file": "Silkscreen-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.045, rounded=True, pixel_grid=None),
         "depth_style": "dish", "specular_alpha": 40, "edge_ao_alpha": 55,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (138, 134, 110),
@@ -719,6 +714,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.26, "wobble": 0.10, "margin_frac": 0.09, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "Sixtyfour-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.065, rounded=True, pixel_grid=16),
         "depth_style": "dish", "specular_alpha": 30, "edge_ao_alpha": 90,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (164, 143, 122),
@@ -759,6 +755,7 @@ KEYBOARD_PROFILES = [
         "radius_frac": 0.10, "wobble": 0.04, "margin_frac": 0.05, "rim_frac": 0.014,
         "gap": 1.3,
         "font_file": "VT323-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.050, rounded=False, pixel_grid=14),
         "depth_style": "dish", "specular_alpha": 8, "edge_ao_alpha": 35,
         "face_top_blend": 0.05, "face_bottom_scale": 0.92,
         "well": (196, 178, 138),
@@ -799,18 +796,40 @@ CONSOLE_PROFILES = [
         "slug": "gameboy-dmg",
         "name": "Game Boy",
         "theme_id": "com.shelbee.gameboydmg",
-        "reference_note": "the original Game Boy (DMG)'s putty-gray shell and dark gray buttons (approximated -- no sourced hex found)",
-        "description": "Classic Game Boy (DMG) variant: dark gray buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a small D-pad-cross motif scattered on the background and marking caps-lock. No per-row or per-role color coding (the real hardware has none) -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16.",
-        # Chunky molded plastic buttons sitting in a thick shell bezel --
-        # the DMG's brick-like housing is the most visible "well" of any
-        # variant here.
+        "reference_note": "the original Game Boy (DMG) via a real Wikimedia Commons archival photo (Game-Boy-FL.jpg by Evan-Amos, public domain, pixel-sampled directly): putty-gray shell, near-black D-pad/Select/Start, and dark magenta/burgundy (~#7f1e53) A/B buttons",
+        # CORRECTED: this profile previously had no magenta anywhere and
+        # called the buttons uniformly "dark gray" -- true of the D-pad
+        # and Select/Start, but not of A/B, which a real archival photo
+        # (downloaded and pixel-sampled, not guessed) shows are a
+        # distinct dark magenta/burgundy, the only spot of color on the
+        # whole unit. Gave the action key its own `face_action` in that
+        # sampled color -- a real, visible fill, not a `bloom_action`
+        # accent -- after discovering `render_organic_key`'s bloom effect
+        # is essentially invisible in practice: `bloom_*_color/_alpha`
+        # only shows in the sliver where a key's own silhouette differs
+        # from its neighbors' corner-rounding, which for most profiles'
+        # tight radius_frac/margin_frac/rim_frac gaps is imperceptibly
+        # thin even before blur washes it out further (confirmed by
+        # direct pixel-sampling: max R-G across a full center scanline
+        # was 0 at bloom_alpha up to 220). `face_action`/`face_stickyon`
+        # overrides (already how SNES and Groovy Code itself carry their
+        # accent colors) are the only mechanism in this renderer that
+        # reliably shows -- see the v24 changelog in docs/VARIANTS.md for
+        # the full writeup; this repo's other `bloom_action`/
+        # `bloom_stickyon` uses (NES, amber-terminal, every `stickyon`)
+        # likely have the same near-invisibility problem and are flagged
+        # as an open item rather than fixed here, since a real fix touches
+        # shared rendering code used by all 9 themes.
+        "description": "Classic Game Boy (DMG) variant: near-black D-pad and buttons in a putty-gray shell, chunky and thick-bezeled like real molded plastic buttons, with a dark magenta/burgundy action/enter key matching the real A/B buttons' actual color (the only non-gray element on the real hardware) and a small D-pad-cross motif scattered on the background. No per-row or per-role color coding otherwise -- only caps-lock brightens and picks up the console's own red power-LED glow. Set in DotGothic16.",
         "radius_frac": 0.30, "wobble": 0.09, "margin_frac": 0.14, "rim_frac": 0.020,
         "gap": 1.2,
         "font_file": "DotGothic16-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.090, rounded=False, pixel_grid=10),
         "depth_style": "dome", "specular_alpha": 90, "edge_ao_alpha": 70,
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
         "face_default": (58, 58, 56),
+        "face_action": (127, 30, 83),
         "face_stickyon": (75, 75, 72),
         "rim": (90, 88, 78),
         "legend": (230, 224, 200),
@@ -822,13 +841,28 @@ CONSOLE_PROFILES = [
         "slug": "nes",
         "name": "NES",
         "theme_id": "com.shelbee.nes",
-        "reference_note": "the Nintendo Entertainment System controller's light gray shell and near-black D-pad/buttons (approximated -- no sourced hex found)",
-        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, minimally rounded like the real controller's famously rectangular buttons, with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow, a nod to the console's red logotype rather than any real on-button indicator. Set in Press Start 2P.",
-        # The NES controller's buttons are famously rectangular, not
-        # round -- minimal corner rounding here, a moderate bezel.
-        "radius_frac": 0.13, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
+        "reference_note": "the real NES controller (via a Wikimedia Commons archival photo, NES_controller.JPG by Denis Apel, CC-BY-SA-3.0, pixel-sampled directly): light gray shell, near-black D-pad/Select/Start, and ROUND red A/B buttons",
+        # CORRECTED: this profile previously claimed the NES controller's
+        # A/B buttons were "famously rectangular" and rendered them nearly
+        # square (radius_frac 0.13) -- that claim was never actually
+        # checked against a real photo or source. A real archival photo
+        # (downloaded and pixel-sampled, not AI-generated -- see the
+        # repo-wide lesson from the keyboard variants' v22 round) shows
+        # the shipped NES controller's A/B buttons are fully ROUND, not
+        # rectangular. This confusion likely traces to the earliest
+        # Famicom prototype, which briefly had square A/B buttons before
+        # Nintendo changed them to circular for production because the
+        # square buttons could catch in the controller casing -- so even
+        # the "rectangular" claim's own premise was for a design that was
+        # never actually shipped. Also sampled the real button color
+        # directly: a strong, saturated red (~#f4281b), matching the
+        # bloom_action/bloom_stickyon red already used here (already
+        # correct, so left unchanged) -- only the SHAPE was wrong.
+        "description": "Classic NES variant: near-black D-pad and buttons in a light gray shell, round like the real controller's actual A/B buttons (corrected from an earlier, unverified claim that they were rectangular), with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow matching the real A/B buttons' saturated red. Set in Press Start 2P.",
+        "radius_frac": 0.42, "wobble": 0.05, "margin_frac": 0.11, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "PressStart2P-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.080, rounded=False, pixel_grid=10),
         "depth_style": "dome", "specular_alpha": 75, "edge_ao_alpha": 70,
         "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
@@ -867,6 +901,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.44, "wobble": 0.09, "margin_frac": 0.05, "rim_frac": 0.012,
         "gap": 1.05,
         "font_file": "Jersey10-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.050, rounded=True, pixel_grid=None),
         "depth_style": "dome", "specular_alpha": 130, "edge_ao_alpha": 45,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (206, 201, 204),
@@ -892,6 +927,7 @@ CONSOLE_PROFILES = [
         "radius_frac": 0.34, "wobble": 0.10, "margin_frac": 0.13, "rim_frac": 0.020,
         "gap": 1.15,
         "font_file": "PixelifySans-Regular.ttf",
+        "icon_style": dict(stroke_frac=0.070, rounded=True, pixel_grid=12),
         "depth_style": "dome", "specular_alpha": 95, "edge_ao_alpha": 65,
         "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
@@ -1011,8 +1047,12 @@ def generate_variant(profile):
     background_file = f"{slug}-background.png"
     build_background(well, motif_fn, rim, motif_kwargs, seed=5).save(os.path.join(out_dir, background_file))
 
-    for fname in SHARED_FILES:
-        shutil.copy(os.path.join(REPO_ROOT, fname), os.path.join(out_dir, fname))
+    # v26: this variant's own long-press popup, in its own well/rim colors
+    # -- the last genuinely shared asset in the repo (every variant used
+    # to copy Groovy Code's own gold-rimmed Button-morekeysbox.png
+    # byte-for-byte). See docs/VARIANTS.md's v26 entry.
+    render_morekeysbox(MOREKEYSBOX_SIZE, scale(well, 0.30), rim).save(os.path.join(out_dir, "Button-morekeysbox.png"))
+    render_morekey_transparent(MOREKEY_SIZE).save(os.path.join(out_dir, "Button-morekey.png"))
 
     font_file = profile["font_file"]
     font_name, font_author, font_source, font_note = FONT_INFO[font_file]
@@ -1023,6 +1063,31 @@ def generate_variant(profile):
             f"Licensed under the SIL Open Font License 1.1 -- free to use, modify, and\n"
             f"redistribute as part of this theme. Source: {font_source}\n"
             f"{font_note}\n"
+        )
+
+    # v25: every variant now renders its own icon set instead of copying
+    # FUTO's shared official icons byte-identical into all 9 themes -- the
+    # user asked for genuinely separate themes with no shared assets.
+    # Since the app force-recolors every icon from its alpha channel alone
+    # (icon RGB is always discarded, see CLAUDE.md fact #3), the only real
+    # per-variant lever is silhouette: stroke weight, sharp-vs-round
+    # joints, and an optional pixel-grid quantization for the variants
+    # built around a pixel-art-era font -- see icon_style above and
+    # docs/VARIANTS.md's v25 entry.
+    icon_style = profile["icon_style"]
+    render_icon_set(out_dir, **icon_style)
+    with open(os.path.join(out_dir, "ICON-ATTRIBUTION.txt"), "w") as f:
+        f.write(
+            "All 10 Icon-*.png files in this theme are original, procedurally\n"
+            "generated art (scripts/icon_render.py), not derived from FUTO's own\n"
+            "icon SVGs -- each variant renders its own distinct silhouette style\n"
+            "(stroke weight, sharp-vs-round joints, and pixel-grid quantization\n"
+            "where the profile calls for it), so no icon file is shared byte-\n"
+            "identical with any other theme in this repo.\n\n"
+            "The app recolors every icon at render time using the theme's\n"
+            "foreground color for that key state (canvas source-in compositing)\n"
+            "-- only each icon's alpha-channel shape matters, not any RGB baked\n"
+            "into the PNG.\n"
         )
 
     function_legend = profile.get("function_legend", legend)

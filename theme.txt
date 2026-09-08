@@ -7,7 +7,7 @@
 name = "Groovy Code"
 author = "Shelbee"
 id = "com.shelbee.groovycode"
-version = 20
+version = 21
 description = "Warm-toned 70's-inspired theme with organic, hand-drawn-looking keycaps: a brown outer well, a bright orange inset face, and a thin gold rim on every key, uniform in color, with a rust-red enter key and a bright gold caps-lock marked by a small sunburst. Font by Nikita Prokopov (SIL Open Font License v1.1)."
 
 [options]
