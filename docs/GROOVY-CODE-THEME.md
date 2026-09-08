@@ -475,6 +475,23 @@ this theme ships under for third-party art/font.
   standalone and checking the alpha silhouette directly instead — still
   open for a real on-device check, same as the rest of this theme's icon
   work.
+- **Published theme zip rejected by FUTO Keyboard's importer as
+  "Invalid file" (packaging-only bug, no `theme.txt`/asset change, so no
+  version bump):** `.github/workflows/package-theme.yml`'s root-package
+  `zip -x` exclude list dropped `docs/*`, `scripts/*`, `.claude/*`, and
+  `vendor/*` but never `variants/*` — so every published root zip
+  (`groovy-code-v*.zip`, confirmed on the v24 release asset) bundled all 8
+  classic-hardware variants' own `theme.txt`/font/`Button-*.png`/
+  `Icon-*.png` files nested under a `variants/` directory on top of the
+  real package, instead of the clean single-`theme.txt` package the
+  importer expects. Fixed by adding `'variants/*'` (and `.gitignore`,
+  also unintentionally included) to the exclude list. Confirmed locally by
+  running the same `zip -r … -x …` command the workflow runs and checking
+  the result only contains the 27 flat files `theme.txt` actually
+  references — no `variants/` tree. The 8 variant packages themselves are
+  unaffected — `package-variant` zips each `variants/<slug>/` directory
+  from its own directory, not from the repo root, so it was never able to
+  pick up this stray content.
 
 ## Verification method
 

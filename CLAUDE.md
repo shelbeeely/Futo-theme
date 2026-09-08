@@ -221,6 +221,25 @@ is sparsely documented anywhere else.
 
 ## Bugs found and fixed this round (don't reintroduce them)
 
+- **Root theme zip rejected by FUTO Keyboard's importer as "Invalid
+  file" — packaging bug, no theme content changed:**
+  `.github/workflows/package-theme.yml`'s root-package `zip -x` exclude
+  list was missing `variants/*` (it had `docs/*`/`scripts/*`/`.claude/*`/
+  `vendor/*` but not that one) — confirmed by downloading the actual
+  published `groovy-code-v24.zip` release asset and finding all 8
+  classic-hardware variants' own `theme.txt`/font/asset files nested
+  under a `variants/` directory alongside the real package, instead of
+  the clean single-`theme.txt` package the importer expects. Fixed by
+  adding `'variants/*'` (and `.gitignore`) to the exclude list; verified
+  locally that the same `zip -x` command now produces exactly the 27
+  files `theme.txt` references, no `variants/` tree. Each
+  `variants/<slug>/` package itself was never affected — `package-variant`
+  zips from inside that directory, not the repo root. Full writeup:
+  `docs/GROOVY-CODE-THEME.md`'s matching entry. **Not yet re-verified by
+  actually importing a freshly-built zip into FUTO Keyboard on a real
+  device** — the fix is confirmed correct by inspecting zip contents, not
+  yet by a successful import.
+
 - **`Icon-emoji.png` swapped to Tabler's `mood-spark.svg` (Groovy Code
   v24):** a direct user request, swapping v23's plain `mood-smile.svg`
   pick for `mood-spark.svg` (a smiley with a sparkle accent). Only an
