@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v21**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v24**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -83,10 +83,19 @@ Repo layout:
   Since it's a submodule, `git clone` needs
   `--recurse-submodules` (or `git submodule update --init`) to actually
   populate it; its own huge pnpm/React/Vue/etc. build tooling is never run
-  from here — only its `icons/` SVGs are relevant. If any of its icons are
-  ever rasterized into a shipped asset, add a Tabler Icons entry to
-  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna) at that point, same as the
-  existing FUTO-icons attribution.
+  from here — only its `icons/` SVGs are relevant. As of Groovy Code v23,
+  ALL 10 of Groovy Code's own `Icon-*.png` files are rasterized from
+  here — v22 moved the two icons with no official FUTO SVG
+  (`Icon-tab.png`, `Icon-shift-press.png`) first, v23 replaced the
+  remaining 8 default-FUTO icons too, once the user asked for every
+  default icon to be replaced with a Tabler equivalent (see both
+  changelog entries below) — with a matching Tabler Icons attribution in
+  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna), replacing the old
+  FUTO-icons attribution entirely. As of variants v27, every one of the 8
+  hardware variants' `Icon-emoji.png` is ALSO sourced from here
+  (`brand-apple.svg` for Mac Plus, generic device/terminal/gamepad glyphs
+  for the rest — see that changelog entry and `docs/VARIANTS.md`'s v27
+  entry), via `scripts/icon_render.py`'s `render_svg_icon()`.
 - `.claude/skills/preview-theme/` — a Claude Code skill that renders a real
   preview of the theme (using `keyboard-theme-editor`'s actual rendering
   code, headlessly) without needing an Android device. Use it after any
@@ -211,6 +220,94 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **`Icon-emoji.png` swapped to Tabler's `mood-spark.svg` (Groovy Code
+  v24):** a direct user request, swapping v23's plain `mood-smile.svg`
+  pick for `mood-spark.svg` (a smiley with a sparkle accent). Only an
+  outline version exists in Tabler for this glyph — fine, since v23 had
+  already found outline matched `Icon-emoji.png`'s original FUTO look
+  better than filled anyway. Same `cairosvg`-at-288×288 rasterization as
+  every other icon. Confirmed via `preview-theme`.
+
+- **Replaced all 8 remaining default-FUTO icons with Tabler equivalents
+  (Groovy Code v23):** after v22 moved the two orphan icons (no official
+  FUTO SVG) to Tabler, the user asked to replace every *other* default
+  FUTO icon too — so none of Groovy Code's `Icon-*.png` files trace back
+  to FUTO's own SVG set anymore, all 10 now come from `vendor/tabler-
+  icons`. Picked whichever Tabler variant (outline or filled) actually
+  rendered closest to the FUTO original per icon, by rendering both and
+  comparing rather than assuming: `backspace`/`world`/`microphone` used
+  their `filled/` versions (FUTO's originals are solid shapes);
+  `arrow-big-up-line`/`corner-down-left`/`arrow-left`/`arrow-right`/
+  `mood-smile` used `outline/` (FUTO's originals are thin/hollow shapes,
+  and `mood-smile`'s outline ring-plus-dot-eyes matched noticeably better
+  than its filled/solid-disc sibling). `Icon-shift.png` now pairs with
+  the already-Tabler `Icon-shift-press.png` as the outline counterpart of
+  the same `arrow-big-up` glyph family. Rewrote `ICON-ATTRIBUTION.txt`
+  from scratch — see that file for the full old-FUTO-icon -> new-Tabler-
+  icon mapping. Confirmed via `preview-theme` on QWERTY that every icon
+  renders correctly recolored and legible; not yet confirmed on a real
+  device. Full writeup: `docs/GROOVY-CODE-THEME.md`'s v23 entry.
+
+- **`action_emoji` sourced from real Tabler icons on all 8 variants
+  (variants v27; Groovy Code untouched):** asked directly whether an Apple
+  logo icon exists in `vendor/tabler-icons` (it does:
+  `icons/{outline,filled}/brand-apple.svg`) and whether it could become
+  Mac Plus's `action_emoji` icon, then whether the other 7 variants could
+  get something similar. Given the choice of Mac Plus only / all 8 / pick
+  per-variant, **the user chose all 8**. Tabler only has a real brand logo
+  for Apple, though — no Nintendo/IBM/Commodore/Sega mark exists in the
+  set — so the other 7 variants get the closest generic device glyph
+  instead (`device-desktop.svg` for the two desktop-computer keyboards,
+  `terminal-2.svg` for Amber Terminal, `device-gamepad-2.svg` for all four
+  consoles), restyled per variant the same way every other icon already
+  is. Added `render_svg_icon()` to `scripts/icon_render.py` (rasterizes a
+  real vendored SVG via `cairosvg`, rewriting its stroke attributes to
+  match that variant's own procedural stroke weight/joints before
+  quantizing it through the same pixel-grid step). Caught one real bug via
+  `preview-theme` before shipping: the first choice for Amber Terminal
+  (`terminal.svg`, a bare thin `>_` glyph) fell apart into an illegible
+  smudge under that variant's `pixel_grid=14` quantization, tuned for
+  bolder procedural shapes — fixed by switching to `terminal-2.svg` (the
+  same prompt glyph inside a full screen-bezel frame that actually fills
+  the canvas). This is a real, disclosed trade-off, not an oversight:
+  `action_emoji` opens the emoji picker, and 7 of these 8 icons no longer
+  read as an emoji trigger — flagged to the user before implementing, who
+  chose hardware theming anyway. Full writeup: `docs/VARIANTS.md`'s v27
+  entry.
+
+- **Merge the appropriate Tabler PNG icons (Groovy Code v22):** the
+  `vendor/tabler-icons` submodule (added the round before this one) was
+  vendored explicitly as source material for "future icon work... sourcing
+  new `Icon-*.png` art" — this round cashed that in for the one concrete
+  case it was flagged for: `Icon-shift-press.png` and `Icon-tab.png`, the
+  two icons with no official FUTO SVG to rasterize from (everything else
+  already comes from FUTO's own icon set, see `ICON-ATTRIBUTION.txt`).
+  Searched `vendor/tabler-icons/icons/{outline,filled}` for the closest
+  real Tabler glyph to what was already hand-drawn there rather than
+  inventing new iconography: `icons/outline/arrow-bar-to-right.svg` (an
+  arrow into a vertical bar — the standard ⇥ Tab-key glyph, same concept
+  the hand-drawn version already used) for `Icon-tab.png`, and
+  `icons/filled/arrow-big-up.svg` (a solid house-shaped up arrow — the
+  standard caps-lock-engaged glyph) for `Icon-shift-press.png`. Rasterized
+  both with `cairosvg` at 288×288 (matching the size most other icons in
+  this theme already use, up from the previous hand-drawn versions'
+  144×144) — same "rasterize from SVG, no shape changes" approach already
+  used for the 8 FUTO-sourced icons, and safe regardless of RGB/stroke
+  color since icons are always force-recolored from their alpha channel
+  alone (fact #3). `Icon-shift.png` (the *unpressed* shift icon) was left
+  alone — it already has a real FUTO source and isn't one of the two
+  orphaned icons. Added a Tabler Icons attribution entry to
+  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna) per the plan already written
+  down when the submodule was vendored. Confirmed via `preview-theme` that
+  the overall render is unaffected (QWERTY keys, shift/backspace/enter all
+  still correct) — neither `Icon-tab.png` (no Tab key in the default
+  soft-keyboard layout) nor `Icon-shift-press.png` (caps-lock press state,
+  which the editor's own preview doesn't drive) has a reachable on-screen
+  state in this tool, so those two shapes were instead verified by
+  rendering each source SVG standalone and inspecting the alpha silhouette
+  directly — real on-device confirmation is still open, same as the rest
+  of this theme's icon/asset work (see "Open items").
 
 - **The last shared assets: `Button-morekeysbox.png`/`Button-morekey.png`
   (variants v26, Groovy Code v21):** immediately after v25, the user
@@ -757,11 +854,13 @@ hand-maintained, untouched files — see the v12 entry above for the
 original reasoning, now superseded); it still deliberately never touches
 `Icon-*.png` for the same icon-clobbering reason.
 
-Icons: 8 of them (`Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`)
-are straight rasterizations of FUTO's own SVGs — if you need to regenerate,
-re-clone `keyboard-theme-editor` and convert `www/icons/*.svg` with `cairosvg`
-at ~288×288. `Icon-shift-press.png` (solid caps-lock arrow) and `Icon-tab.png`
-are original, hand-drawn — no official SVG exists for either.
+Icons: as of v23, all 10 `Icon-*.png` files are straight rasterizations of
+real `vendor/tabler-icons` SVGs via `cairosvg` at 288×288, no shape changes
+(see `ICON-ATTRIBUTION.txt` for the exact source SVG per file). They were
+originally converted from FUTO's own `keyboard-theme-editor` SVGs instead
+(`www/icons/*.svg`) — `Icon-shift-press.png`/`Icon-tab.png` moved to Tabler
+first in v22 (FUTO's set has no official SVG for either), the remaining 8
+followed in v23.
 
 ## Verification checklist before calling any change "done"
 

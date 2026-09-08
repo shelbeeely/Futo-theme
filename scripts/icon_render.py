@@ -26,9 +26,23 @@ keyboard stays legible by the same visual vocabulary a FUTO user already
 knows.
 """
 
+import io
+import os
+import re
+
 from PIL import Image, ImageDraw
 
 ICON_SIZE = (288, 288)
+
+# vendor/tabler-icons/icons/outline -- real, MIT-licensed source SVGs used
+# by render_svg_icon() below for the handful of icons sourced from a real
+# brand mark or device glyph instead of drawn procedurally (see
+# docs/VARIANTS.md's action_emoji entry). Path is relative to this file so
+# it resolves regardless of the caller's own cwd.
+TABLER_ICONS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "vendor", "tabler-icons", "icons", "outline",
+)
 
 
 def _rgba(color, alpha):
@@ -70,6 +84,43 @@ def render_icon(draw_fn, size=ICON_SIZE, color=(255, 255, 255), alpha=255,
     draw = ImageDraw.Draw(img)
     sw = max(2, round(min(w, h) * stroke_frac))
     draw_fn(draw, w, h, sw, color, alpha, rounded, **kwargs)
+    return _pixelate(img, pixel_grid)
+
+
+def render_svg_icon(svg_filename, size=ICON_SIZE, stroke_frac=0.06, rounded=True,
+                     pixel_grid=None, icons_dir=TABLER_ICONS_DIR):
+    """Rasterize a real vendored SVG icon (Tabler Icons, MIT) into this
+    theme's icon canvas, restyled with the same stroke-weight/joint/
+    pixel-grid knobs the procedural glyphs above use -- so a real sourced
+    icon still carries its own variant's silhouette identity instead of
+    Tabler's fixed default stroke weight. Only works for outline-style
+    SVGs built the way every icon in vendor/tabler-icons/icons/outline is:
+    a 24x24 viewBox, `stroke="currentColor"`, `stroke-width="2"`. Only the
+    resulting alpha shape ever reaches the screen (FUTO force-recolors
+    every icon at render time, see CLAUDE.md fact #3), so no fill color
+    handling is needed here.
+    """
+    import cairosvg
+
+    w, h = size
+    sw = max(2, round(min(w, h) * stroke_frac))
+    # Tabler's outline SVGs use a 24-unit viewBox at stroke-width 2 --
+    # convert the target pixel stroke width back into viewBox units so the
+    # rasterized icon comes out at the same effective weight as this same
+    # set's procedurally-drawn icons.
+    viewbox_stroke = sw / (min(w, h) / 24)
+    linecap = "round" if rounded else "butt"
+    linejoin = "round" if rounded else "miter"
+
+    with open(os.path.join(icons_dir, svg_filename)) as f:
+        svg_text = f.read()
+    svg_text = re.sub(r'stroke-width="[^"]*"', f'stroke-width="{viewbox_stroke}"', svg_text)
+    svg_text = re.sub(r'stroke-linecap="[^"]*"', f'stroke-linecap="{linecap}"', svg_text)
+    svg_text = re.sub(r'stroke-linejoin="[^"]*"', f'stroke-linejoin="{linejoin}"', svg_text)
+
+    png_bytes = cairosvg.svg2png(bytestring=svg_text.encode("utf-8"),
+                                  output_width=w, output_height=h)
+    img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
     return _pixelate(img, pixel_grid)
 
 
@@ -205,13 +256,24 @@ ICON_FUNCS = {
 }
 
 
-def render_icon_set(out_dir, stroke_frac=0.06, rounded=True, pixel_grid=None, save=True):
+def render_icon_set(out_dir, stroke_frac=0.06, rounded=True, pixel_grid=None, save=True,
+                     emoji_icon_svg=None):
     """Render all 10 icon files with one style into `out_dir`. Returns a
-    dict of filename -> PIL.Image for callers that want them in memory."""
-    import os
+    dict of filename -> PIL.Image for callers that want them in memory.
+
+    `emoji_icon_svg`, if given, is a filename in `vendor/tabler-icons/icons/
+    outline` (e.g. "brand-apple.svg") rasterized via render_svg_icon() in
+    place of the usual procedural smiley for Icon-emoji.png -- used to give
+    a variant a real hardware-appropriate action_emoji glyph instead of a
+    generic emoji face (see docs/VARIANTS.md's action_emoji entry).
+    """
     images = {}
     for name, fn in ICON_FUNCS.items():
-        img = render_icon(fn, stroke_frac=stroke_frac, rounded=rounded, pixel_grid=pixel_grid)
+        if name == "Icon-emoji.png" and emoji_icon_svg:
+            img = render_svg_icon(emoji_icon_svg, stroke_frac=stroke_frac,
+                                   rounded=rounded, pixel_grid=pixel_grid)
+        else:
+            img = render_icon(fn, stroke_frac=stroke_frac, rounded=rounded, pixel_grid=pixel_grid)
         images[name] = img
         if save:
             img.save(os.path.join(out_dir, name))

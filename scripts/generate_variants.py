@@ -67,6 +67,31 @@ from icon_render import render_icon_set
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VARIANTS_DIR = os.path.join(REPO_ROOT, "variants")
 
+# Human-readable reasoning per action_emoji source SVG (see each profile's
+# own emoji_icon_svg), written into that variant's ICON-ATTRIBUTION.txt.
+EMOJI_ICON_NOTES = {
+    "brand-apple.svg": (
+        "the real Apple logo, since classic Mac keyboards genuinely had an "
+        "Apple-logo key -- the one variant here with an exact real-hardware "
+        "match, not just a generic device glyph;"
+    ),
+    "device-desktop.svg": (
+        "a generic desktop-computer glyph, evoking this variant's real "
+        "desktop hardware (Tabler has no IBM or Commodore logo to source "
+        "an exact brand match from);"
+    ),
+    "terminal-2.svg": (
+        "a terminal-screen-with-command-prompt glyph, evoking this "
+        "variant's real terminal hardware;"
+    ),
+    "device-gamepad-2.svg": (
+        "a generic two-handed gamepad glyph, evoking this variant's real "
+        "game-console hardware (Tabler has no Nintendo logo, and no "
+        "dedicated handheld-console icon for the two Game Boy variants, "
+        "so this is an approximation, not an exact shape match);"
+    ),
+}
+
 BACKGROUND_SIZE = (1080, 1080)
 
 FONTS_DIR = os.path.join(REPO_ROOT, "scripts", "fonts")
@@ -153,7 +178,7 @@ HEAD_TEMPLATE = """\
 name = "{name}"
 author = "Shelbee"
 id = "{theme_id}"
-version = 9
+version = 10
 description = "{description}"
 
 [options]
@@ -630,6 +655,7 @@ KEYBOARD_PROFILES = [
         "gap": 1.05,
         "font_file": "IBMPlexMono-Regular.ttf",
         "icon_style": dict(stroke_frac=0.075, rounded=False, pixel_grid=None),
+        "emoji_icon_svg": "device-desktop.svg",
         "depth_style": "dish", "specular_alpha": 20, "edge_ao_alpha": 110,
         "face_top_blend": 0.10, "face_bottom_scale": 0.76,
         "well": (198, 194, 180),
@@ -669,6 +695,7 @@ KEYBOARD_PROFILES = [
         "gap": 1.1,
         "font_file": "Silkscreen-Regular.ttf",
         "icon_style": dict(stroke_frac=0.045, rounded=True, pixel_grid=None),
+        "emoji_icon_svg": "brand-apple.svg",
         "depth_style": "dish", "specular_alpha": 40, "edge_ao_alpha": 55,
         "face_top_blend": 0.08, "face_bottom_scale": 0.90,
         "well": (138, 134, 110),
@@ -715,6 +742,7 @@ KEYBOARD_PROFILES = [
         "gap": 1.15,
         "font_file": "Sixtyfour-Regular.ttf",
         "icon_style": dict(stroke_frac=0.065, rounded=True, pixel_grid=16),
+        "emoji_icon_svg": "device-desktop.svg",
         "depth_style": "dish", "specular_alpha": 30, "edge_ao_alpha": 90,
         "face_top_blend": 0.16, "face_bottom_scale": 0.80,
         "well": (164, 143, 122),
@@ -756,6 +784,7 @@ KEYBOARD_PROFILES = [
         "gap": 1.3,
         "font_file": "VT323-Regular.ttf",
         "icon_style": dict(stroke_frac=0.050, rounded=False, pixel_grid=14),
+        "emoji_icon_svg": "terminal-2.svg",
         "depth_style": "dish", "specular_alpha": 8, "edge_ao_alpha": 35,
         "face_top_blend": 0.05, "face_bottom_scale": 0.92,
         "well": (196, 178, 138),
@@ -825,6 +854,7 @@ CONSOLE_PROFILES = [
         "gap": 1.2,
         "font_file": "DotGothic16-Regular.ttf",
         "icon_style": dict(stroke_frac=0.090, rounded=False, pixel_grid=10),
+        "emoji_icon_svg": "device-gamepad-2.svg",
         "depth_style": "dome", "specular_alpha": 90, "edge_ao_alpha": 70,
         "face_top_blend": 0.12, "face_bottom_scale": 0.80,
         "well": (196, 190, 164),
@@ -863,6 +893,7 @@ CONSOLE_PROFILES = [
         "gap": 1.15,
         "font_file": "PressStart2P-Regular.ttf",
         "icon_style": dict(stroke_frac=0.080, rounded=False, pixel_grid=10),
+        "emoji_icon_svg": "device-gamepad-2.svg",
         "depth_style": "dome", "specular_alpha": 75, "edge_ao_alpha": 70,
         "face_top_blend": 0.10, "face_bottom_scale": 0.82,
         "well": (184, 184, 178),
@@ -902,6 +933,7 @@ CONSOLE_PROFILES = [
         "gap": 1.05,
         "font_file": "Jersey10-Regular.ttf",
         "icon_style": dict(stroke_frac=0.050, rounded=True, pixel_grid=None),
+        "emoji_icon_svg": "device-gamepad-2.svg",
         "depth_style": "dome", "specular_alpha": 130, "edge_ao_alpha": 45,
         "face_top_blend": 0.22, "face_bottom_scale": 0.78,
         "well": (206, 201, 204),
@@ -928,6 +960,7 @@ CONSOLE_PROFILES = [
         "gap": 1.15,
         "font_file": "PixelifySans-Regular.ttf",
         "icon_style": dict(stroke_frac=0.070, rounded=True, pixel_grid=12),
+        "emoji_icon_svg": "device-gamepad-2.svg",
         "depth_style": "dome", "specular_alpha": 95, "edge_ao_alpha": 65,
         "face_top_blend": 0.14, "face_bottom_scale": 0.80,
         "well": (74, 47, 94),
@@ -1074,16 +1107,36 @@ def generate_variant(profile):
     # joints, and an optional pixel-grid quantization for the variants
     # built around a pixel-art-era font -- see icon_style above and
     # docs/VARIANTS.md's v25 entry.
+    #
+    # v27: action_emoji (the emoji-picker key) swaps the procedural smiley
+    # for a real, hardware-appropriate glyph sourced from vendor/
+    # tabler-icons instead -- the user asked for this after noticing Mac
+    # Plus could use the real Apple logo (classic Mac keyboards had an
+    # actual Apple-logo key). Applied to all 8 variants, not just Mac
+    # Plus's exact match, per the user's own call -- see EMOJI_ICON_NOTES
+    # below and docs/VARIANTS.md's v27 entry for the per-variant reasoning
+    # and the caveat that most of these are generic device icons, not
+    # real brand marks (Tabler has no Nintendo/IBM/Commodore logo).
     icon_style = profile["icon_style"]
-    render_icon_set(out_dir, **icon_style)
+    emoji_icon_svg = profile.get("emoji_icon_svg")
+    render_icon_set(out_dir, emoji_icon_svg=emoji_icon_svg, **icon_style)
+    emoji_note = EMOJI_ICON_NOTES.get(emoji_icon_svg, "")
     with open(os.path.join(out_dir, "ICON-ATTRIBUTION.txt"), "w") as f:
         f.write(
-            "All 10 Icon-*.png files in this theme are original, procedurally\n"
+            "9 of the 10 Icon-*.png files in this theme are original, procedurally\n"
             "generated art (scripts/icon_render.py), not derived from FUTO's own\n"
             "icon SVGs -- each variant renders its own distinct silhouette style\n"
             "(stroke weight, sharp-vs-round joints, and pixel-grid quantization\n"
             "where the profile calls for it), so no icon file is shared byte-\n"
             "identical with any other theme in this repo.\n\n"
+            f"Icon-emoji.png is the one exception: {emoji_note}\n"
+            f"rasterized from vendor/tabler-icons/icons/outline/{emoji_icon_svg}\n"
+            "(github.com/shelbeeely/tabler-icons, a fork of tabler/tabler-icons)\n"
+            "with the same stroke-weight/joint/pixel-grid restyling as this\n"
+            "variant's other icons, via scripts/icon_render.py's render_svg_icon().\n"
+            "Copyright (c) 2020-2025 Paweł Kuna. Redistributed under the MIT\n"
+            "License (see LICENSE at the same repo) -- redistribution in binary\n"
+            "(PNG) form is permitted with this attribution retained.\n\n"
             "The app recolors every icon at render time using the theme's\n"
             "foreground color for that key state (canvas source-in compositing)\n"
             "-- only each icon's alpha-channel shape matters, not any RGB baked\n"

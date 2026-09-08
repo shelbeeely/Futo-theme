@@ -1,9 +1,18 @@
-All 10 Icon-*.png files in this theme are original, procedurally
+9 of the 10 Icon-*.png files in this theme are original, procedurally
 generated art (scripts/icon_render.py), not derived from FUTO's own
 icon SVGs -- each variant renders its own distinct silhouette style
 (stroke weight, sharp-vs-round joints, and pixel-grid quantization
 where the profile calls for it), so no icon file is shared byte-
 identical with any other theme in this repo.
+
+Icon-emoji.png is the one exception: a generic two-handed gamepad glyph, evoking this variant's real game-console hardware (Tabler has no Nintendo logo, and no dedicated handheld-console icon for the two Game Boy variants, so this is an approximation, not an exact shape match);
+rasterized from vendor/tabler-icons/icons/outline/device-gamepad-2.svg
+(github.com/shelbeeely/tabler-icons, a fork of tabler/tabler-icons)
+with the same stroke-weight/joint/pixel-grid restyling as this
+variant's other icons, via scripts/icon_render.py's render_svg_icon().
+Copyright (c) 2020-2025 Paweł Kuna. Redistributed under the MIT
+License (see LICENSE at the same repo) -- redistribution in binary
+(PNG) form is permitted with this attribution retained.
 
 The app recolors every icon at render time using the theme's
 foreground color for that key state (canvas source-in compositing)
