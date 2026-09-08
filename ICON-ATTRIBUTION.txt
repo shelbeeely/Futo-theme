@@ -1,19 +1,27 @@
-Icon-backspace.png, Icon-shift.png, Icon-enter.png, Icon-emoji.png, Icon-globe.png,
-Icon-mic.png, Icon-arrow-left.png, and Icon-arrow-right.png are converted from the
-default icon set bundled with FUTO's keyboard-theme-editor
-(github.com/futo-org/keyboard-theme-editor, www/icons/*.svg), rasterized from SVG
-to PNG with no shape changes.
-
-Copyright 2026 FUTO Holdings, Inc. Redistributed under the terms of that project's
-BSD-3-Clause-style license (see LICENSE.md at the same repo) — redistribution in
-binary (PNG) form is permitted with this attribution retained.
-
-Icon-shift-press.png (solid caps-lock arrow) and Icon-tab.png have no
-official FUTO SVG, so they're rasterized from Tabler Icons instead
+All 10 Icon-*.png files in this theme are rasterized from Tabler Icons
 (vendor/tabler-icons, github.com/shelbeeely/tabler-icons — a fork of
-tabler/tabler-icons): Icon-shift-press.png from icons/filled/arrow-big-up.svg,
-Icon-tab.png from icons/outline/arrow-bar-to-right.svg, both converted to PNG
-with no shape changes.
+tabler/tabler-icons), converted from SVG to PNG with no shape changes:
+
+  Icon-backspace.png    <- icons/filled/backspace.svg
+  Icon-shift.png        <- icons/outline/arrow-big-up-line.svg
+  Icon-shift-press.png  <- icons/filled/arrow-big-up.svg
+  Icon-enter.png        <- icons/outline/corner-down-left.svg
+  Icon-emoji.png        <- icons/outline/mood-smile.svg
+  Icon-globe.png        <- icons/filled/world.svg
+  Icon-mic.png          <- icons/filled/microphone.svg
+  Icon-tab.png          <- icons/outline/arrow-bar-to-right.svg
+  Icon-arrow-left.png   <- icons/outline/arrow-left.svg
+  Icon-arrow-right.png  <- icons/outline/arrow-right.svg
+
+These replace an earlier set converted from FUTO's own keyboard-theme-editor
+icon SVGs (github.com/futo-org/keyboard-theme-editor, www/icons/*.svg,
+BSD-3-Clause-style, Copyright FUTO Holdings, Inc.) — Icon-shift-press.png and
+Icon-tab.png had already moved to Tabler earlier, since FUTO's set has no
+official SVG for either; the remaining 8 were switched over to match, each
+picked as the closest real Tabler glyph to the FUTO icon it replaces (same
+real shape a keyboard user already recognizes for that role — a delete-key
+outline with an X, a globe, a microphone, a bent arrow for enter, etc.),
+not a redesign of what any of them communicate.
 
 Copyright (c) 2020-2025 Paweł Kuna. Redistributed under the MIT License (see
 LICENSE at the same repo) — redistribution in binary (PNG) form is permitted

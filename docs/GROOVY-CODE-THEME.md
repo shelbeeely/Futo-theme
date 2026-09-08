@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v22**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v23**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -292,16 +292,16 @@ mapping. It deliberately never touches `Icon-*.png`, `Button-morekey.png`,
 or `Button-morekeysbox.png` — see the icon-regression bug below for why
 that boundary is load-bearing, not incidental.
 
-Icons: `Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`
-are straight rasterizations of FUTO's own SVGs — if you regenerate, re-clone
-`keyboard-theme-editor` and convert `www/icons/*.svg` with `cairosvg` at
-~288×288. `Icon-shift-press.png` (solid caps-lock arrow) and `Icon-tab.png`
-have no official FUTO SVG, so (as of v21) they're rasterized the same way
-from `vendor/tabler-icons` instead — `icons/filled/arrow-big-up.svg` and
-`icons/outline/arrow-bar-to-right.svg` respectively, both via `cairosvg` at
-288×288 with no shape changes. See `ICON-ATTRIBUTION.txt`/
-`FONT-ATTRIBUTION.txt` for the license terms this theme ships under for
-third-party art/font.
+Icons: all 10 `Icon-*.png` files are straight rasterizations of real
+`vendor/tabler-icons` SVGs via `cairosvg` at 288×288, no shape changes
+(see `ICON-ATTRIBUTION.txt` for the exact source SVG per file). This
+theme's icons were originally converted from FUTO's own `keyboard-
+theme-editor` SVGs instead (`www/icons/*.svg`); `Icon-shift-press.png`
+and `Icon-tab.png` moved to Tabler first (v22, since FUTO's set has no
+official SVG for either), and the remaining 8 followed in v23 once the
+user asked to replace every default FUTO icon with a Tabler equivalent.
+See `ICON-ATTRIBUTION.txt`/`FONT-ATTRIBUTION.txt` for the license terms
+this theme ships under for third-party art/font.
 
 ## Bugs found and fixed (history — don't reintroduce these)
 
@@ -418,6 +418,33 @@ third-party art/font.
   untouched assets; Groovy Code's own long-press popup keeps its original
   near-black-fill/gold-rim look, just generated now rather than static.
   See `docs/VARIANTS.md`'s v26 entry for the per-variant half.
+- **Replaced all 8 remaining default-FUTO icons with Tabler equivalents
+  (v23):** after v22 moved the two orphan icons (`Icon-tab.png`,
+  `Icon-shift-press.png`) to Tabler, the user asked to replace every
+  *other* default FUTO icon with a Tabler equivalent too, so none of
+  Groovy Code's icons trace back to FUTO's own SVG set anymore. For each
+  of the 8, picked whichever Tabler variant (outline or filled) came out
+  closest to the FUTO icon it replaces, by actually rendering both and
+  comparing rather than assuming: `Icon-backspace.png` <-
+  `filled/backspace.svg`, `Icon-shift.png` <- `outline/arrow-big-up-
+  line.svg` (the outline counterpart to `Icon-shift-press.png`'s already-
+  adopted filled `arrow-big-up.svg`), `Icon-enter.png` <- `outline/corner-
+  down-left.svg`, `Icon-emoji.png` <- `outline/mood-smile.svg` (its
+  outline style matched FUTO's thin-ring-plus-dot-eyes original much
+  closer than the filled variant), `Icon-globe.png` <- `filled/world.svg`,
+  `Icon-mic.png` <- `filled/microphone.svg`, `Icon-arrow-left.png`/
+  `Icon-arrow-right.png` <- `outline/arrow-left.svg`/`outline/arrow-
+  right.svg` (dedicated files existed for both directions, so no mirroring
+  needed). Every replacement rasterized via `cairosvg` at 288×288 with no
+  shape changes, same technique already used for v22's two icons.
+  Rewrote `ICON-ATTRIBUTION.txt` from scratch (all 10 files now list a
+  Tabler source; the old FUTO-icons attribution is kept as history in this
+  changelog rather than in the shipped file, since none of the shipped
+  icons reference it anymore). Confirmed via `preview-theme` on QWERTY —
+  every icon (shift, backspace, emoji, mic, enter) renders correctly
+  recolored and legible at real on-keyboard size; not yet confirmed on a
+  real device.
+
 - **Sourced Icon-tab.png/Icon-shift-press.png from the vendored Tabler
   Icons library instead of hand-drawing them (v22):** `vendor/tabler-icons`
   had been vendored specifically as source material for icon work like
