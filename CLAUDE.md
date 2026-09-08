@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v23**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v24**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -220,6 +220,14 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **`Icon-emoji.png` swapped to Tabler's `mood-spark.svg` (Groovy Code
+  v24):** a direct user request, swapping v23's plain `mood-smile.svg`
+  pick for `mood-spark.svg` (a smiley with a sparkle accent). Only an
+  outline version exists in Tabler for this glyph — fine, since v23 had
+  already found outline matched `Icon-emoji.png`'s original FUTO look
+  better than filled anyway. Same `cairosvg`-at-288×288 rasterization as
+  every other icon. Confirmed via `preview-theme`.
 
 - **Replaced all 8 remaining default-FUTO icons with Tabler equivalents
   (Groovy Code v23):** after v22 moved the two orphan icons (no official

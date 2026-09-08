@@ -6,7 +6,7 @@ tabler/tabler-icons), converted from SVG to PNG with no shape changes:
   Icon-shift.png        <- icons/outline/arrow-big-up-line.svg
   Icon-shift-press.png  <- icons/filled/arrow-big-up.svg
   Icon-enter.png        <- icons/outline/corner-down-left.svg
-  Icon-emoji.png        <- icons/outline/mood-smile.svg
+  Icon-emoji.png        <- icons/outline/mood-spark.svg
   Icon-globe.png        <- icons/filled/world.svg
   Icon-mic.png          <- icons/filled/microphone.svg
   Icon-tab.png          <- icons/outline/arrow-bar-to-right.svg

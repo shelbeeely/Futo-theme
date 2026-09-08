@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v23**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v24**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -418,6 +418,16 @@ this theme ships under for third-party art/font.
   untouched assets; Groovy Code's own long-press popup keeps its original
   near-black-fill/gold-rim look, just generated now rather than static.
   See `docs/VARIANTS.md`'s v26 entry for the per-variant half.
+- **Swapped `Icon-emoji.png` from `mood-smile.svg` to `mood-spark.svg`
+  (v24):** a direct user request to use Tabler's "mood-spark" glyph (a
+  smiley with a sparkle accent) instead of the plain smiley picked in
+  v23. Only an outline version of this icon exists in Tabler (no
+  `filled/mood-spark.svg`), which is consistent with v23's own reasoning
+  for `Icon-emoji.png` — the outline style already matched FUTO's
+  original thin-ring look better than the filled alternative. Same
+  rasterization technique as every other icon here: `cairosvg` at
+  288×288, no shape changes. Confirmed via `preview-theme` on QWERTY.
+
 - **Replaced all 8 remaining default-FUTO icons with Tabler equivalents
   (v23):** after v22 moved the two orphan icons (`Icon-tab.png`,
   `Icon-shift-press.png`) to Tabler, the user asked to replace every
