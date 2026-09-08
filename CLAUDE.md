@@ -88,9 +88,13 @@ Repo layout:
   `Icon-shift-press.png`, the two icons with no official FUTO SVG to
   source from (see that changelog entry below) — with a matching Tabler
   Icons attribution entry in `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna),
-  same as the existing FUTO-icons attribution. If any *more* of its icons
-  get rasterized into a shipped asset later, extend that same
-  attribution entry.
+  same as the existing FUTO-icons attribution. As of variants v27, every
+  one of the 8 hardware variants' `Icon-emoji.png` is ALSO sourced from
+  here (`brand-apple.svg` for Mac Plus, generic device/terminal/gamepad
+  glyphs for the rest — see that changelog entry and
+  `docs/VARIANTS.md`'s v27 entry), via `scripts/icon_render.py`'s
+  `render_svg_icon()`. If any *more* of its icons get rasterized into a
+  shipped asset later, extend the same attribution pattern.
 - `.claude/skills/preview-theme/` — a Claude Code skill that renders a real
   preview of the theme (using `keyboard-theme-editor`'s actual rendering
   code, headlessly) without needing an Android device. Use it after any
@@ -215,6 +219,33 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **`action_emoji` sourced from real Tabler icons on all 8 variants
+  (variants v27; Groovy Code untouched):** asked directly whether an Apple
+  logo icon exists in `vendor/tabler-icons` (it does:
+  `icons/{outline,filled}/brand-apple.svg`) and whether it could become
+  Mac Plus's `action_emoji` icon, then whether the other 7 variants could
+  get something similar. Given the choice of Mac Plus only / all 8 / pick
+  per-variant, **the user chose all 8**. Tabler only has a real brand logo
+  for Apple, though — no Nintendo/IBM/Commodore/Sega mark exists in the
+  set — so the other 7 variants get the closest generic device glyph
+  instead (`device-desktop.svg` for the two desktop-computer keyboards,
+  `terminal-2.svg` for Amber Terminal, `device-gamepad-2.svg` for all four
+  consoles), restyled per variant the same way every other icon already
+  is. Added `render_svg_icon()` to `scripts/icon_render.py` (rasterizes a
+  real vendored SVG via `cairosvg`, rewriting its stroke attributes to
+  match that variant's own procedural stroke weight/joints before
+  quantizing it through the same pixel-grid step). Caught one real bug via
+  `preview-theme` before shipping: the first choice for Amber Terminal
+  (`terminal.svg`, a bare thin `>_` glyph) fell apart into an illegible
+  smudge under that variant's `pixel_grid=14` quantization, tuned for
+  bolder procedural shapes — fixed by switching to `terminal-2.svg` (the
+  same prompt glyph inside a full screen-bezel frame that actually fills
+  the canvas). This is a real, disclosed trade-off, not an oversight:
+  `action_emoji` opens the emoji picker, and 7 of these 8 icons no longer
+  read as an emoji trigger — flagged to the user before implementing, who
+  chose hardware theming anyway. Full writeup: `docs/VARIANTS.md`'s v27
+  entry.
 
 - **Merge the appropriate Tabler PNG icons (Groovy Code v22):** the
   `vendor/tabler-icons` submodule (added the round before this one) was

@@ -8,7 +8,7 @@
 name = "NES"
 author = "Shelbee"
 id = "com.shelbee.nes"
-version = 9
+version = 10
 description = "Classic NES variant: near-black D-pad and buttons in a light gray shell, round like the real controller's actual A/B buttons (corrected from an earlier, unverified claim that they were rectangular), with a small twin-button motif scattered on the background. No per-row or per-role color coding (the real controller has none) -- only the action key and caps-lock pick up a soft red glow matching the real A/B buttons' saturated red. Set in Press Start 2P."
 
 [options]

@@ -584,6 +584,76 @@ open items) — this can only be confirmed on a real device, same
 long-standing limitation as before. All 8 variants' `theme.txt`
 `version` bumped 8→9; Groovy Code's own `version` bumped 20→21.
 
+## v27: `action_emoji` gets a real, hardware-appropriate icon per variant
+
+Prompted by a direct question — is there an Apple logo icon available? —
+after `vendor/tabler-icons` (vendored the round before this one, see
+`CLAUDE.md`) turned out to have the real bitten-apple mark
+(`icons/{outline,filled}/brand-apple.svg`). Since Mac Plus's `action_emoji`
+key was still the same generic procedural smiley every other variant uses,
+this was an obvious candidate: classic Mac keyboards genuinely had an
+Apple-logo key. Asked the user how far to take it — Mac Plus only, all 8
+variants, or pick per-variant — **the user chose all 8**.
+
+Tabler has real brand logos for very few of the companies these variants
+are named after — Apple, and that's essentially it (no Nintendo, IBM,
+Commodore, or Sega mark exists in the set). So only Mac Plus gets an exact
+real-logo match; the other 7 get the closest *generic device* glyph
+instead, each shared across variants of the same hardware family and
+restyled per profile the same way every other icon already is (stroke
+weight, joint style, pixel-grid quantization):
+
+| Variant | `emoji_icon_svg` | Why |
+|---|---|---|
+| Mac Plus | `brand-apple.svg` | The real Apple logo — an exact hardware match, not an approximation |
+| IBM Model M | `device-desktop.svg` | Generic desktop-computer glyph — no IBM logo in Tabler |
+| Commodore 64 | `device-desktop.svg` | Same generic glyph as Model M, differentiated by its own `icon_style` (rounded, `pixel_grid=16`) — no Commodore logo in Tabler |
+| Amber Terminal | `terminal-2.svg` | A terminal-screen-with-prompt glyph — thematically exact, though not a real product logo |
+| Game Boy (DMG) | `device-gamepad-2.svg` | Generic two-handed gamepad — Tabler has no dedicated handheld-console icon |
+| NES | `device-gamepad-2.svg` | Same glyph, restyled sharp/pixelated per NES's own `icon_style` |
+| SNES | `device-gamepad-2.svg` | Same glyph, restyled round/unpixelated per SNES's own `icon_style` |
+| Game Boy Color | `device-gamepad-2.svg` | Same handheld caveat as DMG |
+
+Implementation: added `render_svg_icon()` to `scripts/icon_render.py`,
+which rasterizes a real vendored SVG via `cairosvg` and re-writes its
+`stroke-width`/`stroke-linecap`/`stroke-linejoin` attributes before
+rendering so the result comes out at the same effective stroke weight and
+joint style as that variant's own procedurally-drawn icons, then runs it
+through the same `_pixelate()` quantization the rest of that variant's
+icon set uses. `render_icon_set()` gained an `emoji_icon_svg` parameter
+that swaps in this path for `Icon-emoji.png` only, when a profile sets it.
+Each profile's `ICON-ATTRIBUTION.txt` now calls out `Icon-emoji.png` as
+the one exception to "9 of the 10 icons are procedural," with a real
+MIT/Paweł Kuna attribution.
+
+**One real bug caught before it shipped**: the first pass used
+`terminal.svg` (a bare `>_` chevron-and-line with almost no other ink) for
+Amber Terminal, whose `icon_style` uses a fairly coarse `pixel_grid=14`
+quantization tuned for the *procedural* icons' bolder, more canvas-filling
+shapes. `terminal.svg`'s thin, small glyph fell apart under that grid —
+rendered as an illegible gray smudge, confirmed by actually viewing the
+output rather than assuming the same stroke_frac/pixel_grid numbers would
+transfer cleanly from a hand-drawn glyph to an unrelated real SVG. Switched
+to `terminal-2.svg` (the same prompt glyph, but inside a full screen-bezel
+frame that fills the viewBox the way the procedural icons do) — confirmed
+legible after the swap, both in isolation and via `preview-theme`.
+
+**A real, disclosed trade-off, not an oversight**: `action_emoji` is a
+functional key (it opens the emoji picker), and every variant used to keep
+a recognizable smiley there, just restyled. Seven of these eight icons no
+longer look like an emoji trigger at all — this was surfaced to the user
+directly before implementing (`action_emoji` semantics vs. hardware
+theming, plus the fact that only Apple has a real logo to source), and the
+user chose hardware theming for all 8 anyway.
+
+Confirmed via `preview-theme` on Mac Plus (Apple logo, clean and correctly
+recolored on the real render), Amber Terminal (terminal-2 frame+prompt,
+legible at pixel_grid=14), and NES (gamepad glyph, legible at
+pixel_grid=10) — not yet confirmed on a real device. All 8 variants'
+`theme.txt` `version` bumped 9→10; Groovy Code itself is untouched by this
+round (it already sources `Icon-emoji.png` from FUTO's own SVG, not from
+this pipeline).
+
 ## Structure: shared rendering code, per-variant palette AND geometry
 
 Every variant reuses the same underlying structure — an outer well body, an
