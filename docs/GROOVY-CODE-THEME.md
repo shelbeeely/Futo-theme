@@ -1,7 +1,7 @@
 # Groovy Code — this repo's theme
 
 "Groovy Code" is a warm-toned 70's palette (gold/orange/rust/brown) with an
-orange accent, set in FiraCode. Currently at **v20**. The repo root *is* the
+orange accent, set in FiraCode. Currently at **v22**. The repo root *is* the
 theme package — `theme.txt` plus PNG assets plus the font, ready to zip and
 sideload into FUTO Keyboard's theme importer. See `docs/THEME-FORMAT.md` for
 what every field in `theme.txt` means in general; this doc is about the
@@ -296,9 +296,12 @@ Icons: `Icon-backspace/shift/enter/emoji/globe/mic/arrow-left/arrow-right.png`
 are straight rasterizations of FUTO's own SVGs — if you regenerate, re-clone
 `keyboard-theme-editor` and convert `www/icons/*.svg` with `cairosvg` at
 ~288×288. `Icon-shift-press.png` (solid caps-lock arrow) and `Icon-tab.png`
-are original, hand-drawn — no official SVG exists for either. See
-`ICON-ATTRIBUTION.txt`/`FONT-ATTRIBUTION.txt` for the license terms this
-theme ships under for third-party art/font.
+have no official FUTO SVG, so (as of v21) they're rasterized the same way
+from `vendor/tabler-icons` instead — `icons/filled/arrow-big-up.svg` and
+`icons/outline/arrow-bar-to-right.svg` respectively, both via `cairosvg` at
+288×288 with no shape changes. See `ICON-ATTRIBUTION.txt`/
+`FONT-ATTRIBUTION.txt` for the license terms this theme ships under for
+third-party art/font.
 
 ## Bugs found and fixed (history — don't reintroduce these)
 
@@ -415,6 +418,26 @@ theme ships under for third-party art/font.
   untouched assets; Groovy Code's own long-press popup keeps its original
   near-black-fill/gold-rim look, just generated now rather than static.
   See `docs/VARIANTS.md`'s v26 entry for the per-variant half.
+- **Sourced Icon-tab.png/Icon-shift-press.png from the vendored Tabler
+  Icons library instead of hand-drawing them (v22):** `vendor/tabler-icons`
+  had been vendored specifically as source material for icon work like
+  this. `Icon-tab.png` and `Icon-shift-press.png` were the two icons in
+  the theme with no official FUTO SVG to convert (every other `Icon-*.png`
+  is a straight FUTO rasterization). Matched each to the closest real
+  Tabler glyph for the concept already hand-drawn there —
+  `icons/outline/arrow-bar-to-right.svg` (arrow into a bar, the standard
+  Tab-key ⇥ glyph) and `icons/filled/arrow-big-up.svg` (a solid
+  house-shaped up arrow, the standard caps-lock glyph) — and rasterized
+  both with `cairosvg` at 288×288, same technique already used for the
+  FUTO icons. Added the corresponding Tabler Icons attribution to
+  `ICON-ATTRIBUTION.txt`. Confirmed via `preview-theme` that nothing else
+  in the render regressed; the two changed icons themselves aren't
+  reachable in that tool's default QWERTY view (no Tab key in the
+  soft-keyboard layout; caps-lock press isn't driven by the editor's
+  preview), so their shapes were verified by rendering each source SVG
+  standalone and checking the alpha silhouette directly instead — still
+  open for a real on-device check, same as the rest of this theme's icon
+  work.
 
 ## Verification method
 

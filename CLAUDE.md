@@ -4,7 +4,7 @@
 
 A custom theme for **FUTO Keyboard** (Android) called "Groovy Code" — a warm-toned
 70's palette (gold/orange/rust/brown) with an orange accent, set in FiraCode.
-Currently at **v21**. The repo root is the theme package itself: `theme.txt` plus
+Currently at **v22**. The repo root is the theme package itself: `theme.txt` plus
 PNG assets plus the font, ready to zip and sideload into the FUTO Keyboard app's
 theme importer.
 
@@ -83,10 +83,14 @@ Repo layout:
   Since it's a submodule, `git clone` needs
   `--recurse-submodules` (or `git submodule update --init`) to actually
   populate it; its own huge pnpm/React/Vue/etc. build tooling is never run
-  from here — only its `icons/` SVGs are relevant. If any of its icons are
-  ever rasterized into a shipped asset, add a Tabler Icons entry to
-  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna) at that point, same as the
-  existing FUTO-icons attribution.
+  from here — only its `icons/` SVGs are relevant. As of Groovy Code v22,
+  two of its icons ARE rasterized into shipped assets — `Icon-tab.png` and
+  `Icon-shift-press.png`, the two icons with no official FUTO SVG to
+  source from (see that changelog entry below) — with a matching Tabler
+  Icons attribution entry in `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna),
+  same as the existing FUTO-icons attribution. If any *more* of its icons
+  get rasterized into a shipped asset later, extend that same
+  attribution entry.
 - `.claude/skills/preview-theme/` — a Claude Code skill that renders a real
   preview of the theme (using `keyboard-theme-editor`'s actual rendering
   code, headlessly) without needing an Android device. Use it after any
@@ -211,6 +215,39 @@ is sparsely documented anywhere else.
     technique from Christmas 2025, not a hypothetical.
 
 ## Bugs found and fixed this round (don't reintroduce them)
+
+- **Merge the appropriate Tabler PNG icons (Groovy Code v22):** the
+  `vendor/tabler-icons` submodule (added the round before this one) was
+  vendored explicitly as source material for "future icon work... sourcing
+  new `Icon-*.png` art" — this round cashed that in for the one concrete
+  case it was flagged for: `Icon-shift-press.png` and `Icon-tab.png`, the
+  two icons with no official FUTO SVG to rasterize from (everything else
+  already comes from FUTO's own icon set, see `ICON-ATTRIBUTION.txt`).
+  Searched `vendor/tabler-icons/icons/{outline,filled}` for the closest
+  real Tabler glyph to what was already hand-drawn there rather than
+  inventing new iconography: `icons/outline/arrow-bar-to-right.svg` (an
+  arrow into a vertical bar — the standard ⇥ Tab-key glyph, same concept
+  the hand-drawn version already used) for `Icon-tab.png`, and
+  `icons/filled/arrow-big-up.svg` (a solid house-shaped up arrow — the
+  standard caps-lock-engaged glyph) for `Icon-shift-press.png`. Rasterized
+  both with `cairosvg` at 288×288 (matching the size most other icons in
+  this theme already use, up from the previous hand-drawn versions'
+  144×144) — same "rasterize from SVG, no shape changes" approach already
+  used for the 8 FUTO-sourced icons, and safe regardless of RGB/stroke
+  color since icons are always force-recolored from their alpha channel
+  alone (fact #3). `Icon-shift.png` (the *unpressed* shift icon) was left
+  alone — it already has a real FUTO source and isn't one of the two
+  orphaned icons. Added a Tabler Icons attribution entry to
+  `ICON-ATTRIBUTION.txt` (MIT, © Paweł Kuna) per the plan already written
+  down when the submodule was vendored. Confirmed via `preview-theme` that
+  the overall render is unaffected (QWERTY keys, shift/backspace/enter all
+  still correct) — neither `Icon-tab.png` (no Tab key in the default
+  soft-keyboard layout) nor `Icon-shift-press.png` (caps-lock press state,
+  which the editor's own preview doesn't drive) has a reachable on-screen
+  state in this tool, so those two shapes were instead verified by
+  rendering each source SVG standalone and inspecting the alpha silhouette
+  directly — real on-device confirmation is still open, same as the rest
+  of this theme's icon/asset work (see "Open items").
 
 - **The last shared assets: `Button-morekeysbox.png`/`Button-morekey.png`
   (variants v26, Groovy Code v21):** immediately after v25, the user
